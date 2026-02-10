@@ -174,13 +174,13 @@ struct PaywallView: View {
     // MARK: - Legal Section
 
     private var legalSection: some View {
-        VStack(spacing: 8) {
-            Text("After your 7-day free trial, your subscription will automatically renew at the selected price unless cancelled at least 24 hours before the end of the trial period.")
+        VStack(spacing: 12) {
+            Text("After your 7-day free trial, your subscription will automatically renew at the selected price unless cancelled at least 24 hours before the end of the trial period. Payment will be charged to your Apple ID account at confirmation of purchase. Your subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. You can manage and cancel your subscriptions by going to your App Store account settings after purchase.")
                 .brutalTypography(.bodySmall, color: .brutalTextTertiary)
                 .multilineTextAlignment(.center)
 
             HStack(spacing: 16) {
-                Link("Terms of Service", destination: URL(string: "https://imghost.isolated.tech/terms")!)
+                Link("Terms of Use (EULA)", destination: URL(string: "https://imghost.isolated.tech/terms")!)
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
 
                 Text("|")

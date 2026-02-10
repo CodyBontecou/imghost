@@ -11,6 +11,7 @@ struct LoginView: View {
     @State private var errorMessage: String?
     @State private var showRegister = false
     @State private var showForgotPassword = false
+    @State private var showPlansPreview = false
 
     var body: some View {
         NavigationStack {
@@ -117,6 +118,12 @@ struct LoginView: View {
 
                         Spacer(minLength: 48)
 
+                        // View Plans link
+                        BrutalTextButton(title: "View Pro Plans") {
+                            showPlansPreview = true
+                        }
+                        .padding(.bottom, 16)
+
                         // Register link
                         HStack(spacing: 8) {
                             Text("NO ACCOUNT?")
@@ -139,6 +146,23 @@ struct LoginView: View {
                 ForgotPasswordView()
             }
             .preferredColorScheme(.dark)
+            .sheet(isPresented: $showPlansPreview) {
+                NavigationStack {
+                    PaywallView()
+                        .environmentObject(SubscriptionState.shared)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button {
+                                    showPlansPreview = false
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .foregroundColor(.white)
+                                }
+                            }
+                        }
+                }
+                .preferredColorScheme(.dark)
+            }
         }
     }
 

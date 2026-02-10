@@ -307,6 +307,54 @@ struct SettingsView: View {
                     }
                     .padding(.bottom, 24)
 
+                    // Legal Section
+                    VStack(spacing: 0) {
+                        BrutalSectionHeader(title: "Legal")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 12)
+
+                        BrutalCard(showBorder: true) {
+                            VStack(spacing: 0) {
+                                Link(destination: URL(string: "https://imghost.isolated.tech/terms")!) {
+                                    HStack {
+                                        Text("Terms of Use (EULA)")
+                                            .brutalTypography(.bodyMedium)
+                                        Spacer()
+                                        Image(systemName: "arrow.up.right")
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.brutalTextSecondary)
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 14)
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+
+                                Rectangle()
+                                    .fill(Color.brutalBorder)
+                                    .frame(height: 1)
+
+                                Link(destination: URL(string: "https://imghost.isolated.tech/privacy")!) {
+                                    HStack {
+                                        Text("Privacy Policy")
+                                            .brutalTypography(.bodyMedium)
+                                        Spacer()
+                                        Image(systemName: "arrow.up.right")
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.brutalTextSecondary)
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 14)
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                    }
+                    .padding(.bottom, 24)
+
                     // Server Info
                     HStack(spacing: 8) {
                         Text("●")
