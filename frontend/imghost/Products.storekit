@@ -93,7 +93,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.imghost.pro.monthly",
+          "productID" : "imghost.pro.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Pro Monthly",
           "subscriptionGroupID" : "21514415",
@@ -124,7 +124,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.imghost.pro.annual",
+          "productID" : "imghost.pro.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Pro Annual",
           "subscriptionGroupID" : "21514415",

@@ -28,7 +28,9 @@ struct PaywallView: View {
         }
         .background(Color.brutalBackground)
         .task {
-            await storeKit.loadProducts()
+            if storeKit.products.isEmpty {
+                await storeKit.reloadProducts()
+            }
             // Default select monthly
             if selectedProduct == nil {
                 selectedProduct = storeKit.monthlyProduct
@@ -118,9 +120,38 @@ struct PaywallView: View {
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     .padding(.vertical, 32)
             } else if storeKit.products.isEmpty {
-                Text("Unable to load subscription options")
-                    .brutalTypography(.bodyMedium, color: .brutalError)
-                    .padding(.vertical, 32)
+                VStack(spacing: 16) {
+                    Text("Unable to load subscription options")
+                        .brutalTypography(.bodyMedium, color: .brutalError)
+
+                    if let error = storeKit.error {
+                        Text(error.localizedDescription)
+                            .brutalTypography(.bodySmall, color: .brutalTextSecondary)
+                            .multilineTextAlignment(.center)
+                    }
+
+                    Button {
+                        Task {
+                            await storeKit.reloadProducts()
+                            if selectedProduct == nil {
+                                selectedProduct = storeKit.monthlyProduct
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "arrow.clockwise")
+                            Text("Retry")
+                        }
+                        .brutalTypography(.mono, color: .brutalAccent)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 10)
+                        .background(
+                            Rectangle()
+                                .stroke(Color.brutalAccent, lineWidth: 1)
+                        )
+                    }
+                }
+                .padding(.vertical, 32)
             } else {
                 // Product Options
                 VStack(spacing: 12) {

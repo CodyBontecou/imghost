@@ -7,8 +7,8 @@ final class StoreKitManager: ObservableObject {
     static let shared = StoreKitManager()
 
     // Product IDs configured in App Store Connect
-    static let monthlyProductID = "com.imghost.pro.monthly"
-    static let annualProductID = "com.imghost.pro.annual"
+    static let monthlyProductID = "imghost.pro.monthly"
+    static let annualProductID = "imghost.pro.yearly"
     static let allProductIDs: Set<String> = [monthlyProductID, annualProductID]
 
     @Published private(set) var products: [Product] = []
@@ -26,31 +26,62 @@ final class StoreKitManager: ObservableObject {
 
     // MARK: - Public Methods
 
-    /// Load products from App Store
+    /// Load products from App Store with automatic retry
     func loadProducts() async {
+        // Skip if we already have products loaded
+        guard products.isEmpty else { return }
+
         isLoading = true
         error = nil
 
-        do {
-            let storeProducts = try await Product.products(for: Self.allProductIDs)
+        let maxRetries = 3
 
-            // Sort products by price (monthly first, then annual)
-            products = storeProducts.sorted { product1, product2 in
-                if product1.id == Self.monthlyProductID {
-                    return true
+        for attempt in 1...maxRetries {
+            do {
+                let storeProducts = try await Product.products(for: Self.allProductIDs)
+
+                if storeProducts.isEmpty && attempt < maxRetries {
+                    // Products returned empty — retry after a delay
+                    print("StoreKit returned 0 products (attempt \(attempt)/\(maxRetries)), retrying...")
+                    try? await Task.sleep(nanoseconds: UInt64(attempt) * 2_000_000_000) // 2s, 4s backoff
+                    continue
                 }
-                if product2.id == Self.monthlyProductID {
-                    return false
+
+                // Sort products by price (monthly first, then annual)
+                products = storeProducts.sorted { product1, product2 in
+                    if product1.id == Self.monthlyProductID {
+                        return true
+                    }
+                    if product2.id == Self.monthlyProductID {
+                        return false
+                    }
+                    return product1.price < product2.price
                 }
-                return product1.price < product2.price
+
+                if !storeProducts.isEmpty {
+                    self.error = nil
+                }
+
+                isLoading = false
+                return
+            } catch {
+                print("Failed to load products (attempt \(attempt)/\(maxRetries)): \(error)")
+
+                if attempt < maxRetries {
+                    try? await Task.sleep(nanoseconds: UInt64(attempt) * 2_000_000_000)
+                    continue
+                }
+
+                self.error = error
+                isLoading = false
             }
-
-            isLoading = false
-        } catch {
-            self.error = error
-            isLoading = false
-            print("Failed to load products: \(error)")
         }
+    }
+
+    /// Force reload products (ignores cache, used by retry button)
+    func reloadProducts() async {
+        products = []
+        await loadProducts()
     }
 
     /// Purchase a subscription product
