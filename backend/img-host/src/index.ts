@@ -933,13 +933,13 @@ export default {
         return await handleLanding(env);
       }
 
-      // GET /privacy.html - Serve privacy policy
-      if (method === 'GET' && path === '/privacy.html') {
+      // GET /privacy or /privacy.html - Serve privacy policy
+      if (method === 'GET' && (path === '/privacy' || path === '/privacy.html')) {
         return await handleStaticPage(env, 'privacy.html');
       }
 
-      // GET /terms.html - Serve terms of service
-      if (method === 'GET' && path === '/terms.html') {
+      // GET /terms or /terms.html - Serve terms of service
+      if (method === 'GET' && (path === '/terms' || path === '/terms.html')) {
         return await handleStaticPage(env, 'terms.html');
       }
 
