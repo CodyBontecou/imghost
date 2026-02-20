@@ -38,11 +38,9 @@ const APPLE_ROOT_CA_G3_PUBLIC_KEY_URL = 'https://www.apple.com/certificateauthor
 
 export class AppleIAP {
   private bundleId: string;
-  private environment: 'Production' | 'Sandbox';
 
-  constructor(bundleId: string, environment: 'Production' | 'Sandbox' = 'Production') {
+  constructor(bundleId: string) {
     this.bundleId = bundleId;
-    this.environment = environment;
   }
 
   /**
@@ -110,18 +108,16 @@ export class AppleIAP {
       if (transaction.bundleId !== this.bundleId) {
         return {
           isValid: false,
-          error: 'Bundle ID mismatch',
+          error: `Bundle ID mismatch: expected ${this.bundleId}, got ${transaction.bundleId}`,
           isTrialPeriod: false,
           status: 'unknown',
         };
       }
 
-      // Check environment (allow sandbox in development)
-      const expectedEnv = this.environment;
-      if (transaction.environment !== expectedEnv && expectedEnv === 'Production') {
-        // In production, we might want to reject sandbox transactions
-        // But for testing, we'll allow both
-        console.warn(`Transaction environment (${transaction.environment}) differs from expected (${expectedEnv})`);
+      // Accept both Production and Sandbox environments
+      // Apple App Review always tests in Sandbox, so we must accept both
+      if (transaction.environment !== 'Production' && transaction.environment !== 'Sandbox') {
+        console.warn(`Unexpected transaction environment: ${transaction.environment}`);
       }
 
       // Determine if this is a trial period

@@ -310,17 +310,24 @@ export class Database {
     tier: 'trial' | 'pro' | 'enterprise',
     status: 'active' | 'cancelled' | 'past_due' | 'trialing' | 'expired',
     stripeCustomerId?: string,
-    stripeSubscriptionId?: string
+    stripeSubscriptionId?: string,
+    trialDurationMs?: number
   ): Promise<Subscription> {
     const id = crypto.randomUUID();
     const now = Date.now();
 
+    // Set trial_ends_at and current_period_end for trial subscriptions
+    const trialEndsAt = (status === 'trialing' && trialDurationMs)
+      ? now + trialDurationMs
+      : null;
+    const currentPeriodEnd = trialEndsAt;
+
     await this.db
       .prepare(
-        `INSERT INTO subscriptions (id, user_id, tier, status, stripe_customer_id, stripe_subscription_id, cancel_at_period_end, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)`
+        `INSERT INTO subscriptions (id, user_id, tier, status, stripe_customer_id, stripe_subscription_id, cancel_at_period_end, trial_ends_at, current_period_end, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`
       )
-      .bind(id, userId, tier, status, stripeCustomerId || null, stripeSubscriptionId || null, now, now)
+      .bind(id, userId, tier, status, stripeCustomerId || null, stripeSubscriptionId || null, trialEndsAt, currentPeriodEnd, now, now)
       .run();
 
     return {
@@ -330,6 +337,8 @@ export class Database {
       status,
       stripe_customer_id: stripeCustomerId,
       stripe_subscription_id: stripeSubscriptionId,
+      trial_ends_at: trialEndsAt || undefined,
+      current_period_end: currentPeriodEnd || undefined,
       cancel_at_period_end: false,
       created_at: now,
       updated_at: now,

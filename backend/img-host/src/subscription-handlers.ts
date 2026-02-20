@@ -59,14 +59,15 @@ export async function handleVerifyPurchase(request: Request, env: Env): Promise<
       return json({ error: 'signedTransaction is required' }, 400);
     }
 
-    // Initialize Apple IAP verifier
+    // Initialize Apple IAP verifier (accepts both Production and Sandbox)
     const bundleId = env.APPLE_BUNDLE_ID || 'com.codybontecou.imghost';
-    const appleIAP = new AppleIAP(bundleId, 'Production');
+    const appleIAP = new AppleIAP(bundleId);
 
     // Verify the transaction
     const result = await appleIAP.verifyTransaction(signedTransaction);
 
     if (!result.isValid || !result.transaction) {
+      console.error('Transaction verification failed:', result.error);
       return json({
         error: 'Invalid transaction',
         details: result.error,
@@ -74,6 +75,7 @@ export async function handleVerifyPurchase(request: Request, env: Env): Promise<
     }
 
     const transaction = result.transaction;
+    console.log(`Verified transaction: productId=${transaction.productId}, env=${transaction.environment}, expires=${new Date(transaction.expiresDate).toISOString()}`);
 
     // Check if this transaction already exists
     const existingSubscription = await db.getSubscriptionByAppleTransactionId(transaction.originalTransactionId);
@@ -214,7 +216,7 @@ export async function handleSubscriptionStatus(request: Request, env: Env): Prom
         ? new Date(subscription.trial_ends_at).toISOString()
         : undefined,
       trial_days_remaining: trialDaysRemaining,
-      will_renew: !subscription.cancel_at_period_end,
+      will_renew: hasAccess && !subscription.cancel_at_period_end,
       user: {
         subscription_tier: user.subscription_tier,
         storage_limit_bytes: user.storage_limit_bytes,
@@ -249,9 +251,9 @@ export async function handleRestorePurchases(request: Request, env: Env): Promis
       return json({ error: 'signedTransactions array is required' }, 400);
     }
 
-    // Initialize Apple IAP verifier
+    // Initialize Apple IAP verifier (accepts both Production and Sandbox)
     const bundleId = env.APPLE_BUNDLE_ID || 'com.codybontecou.imghost';
-    const appleIAP = new AppleIAP(bundleId, 'Production');
+    const appleIAP = new AppleIAP(bundleId);
 
     // Find the most recent valid subscription
     let latestTransaction: {

@@ -96,8 +96,9 @@ final class StoreKitManager: ObservableObject {
             case .success(let verification):
                 let transaction = try checkVerified(verification)
 
-                // Verify with backend
-                try await verifyWithBackend(transaction: transaction)
+                // Verify with backend using JWS representation
+                let jwsRepresentation = verification.jwsRepresentation
+                try await verifyWithBackend(jwsRepresentation: jwsRepresentation, transaction: transaction)
 
                 // Finish the transaction
                 await transaction.finish()
@@ -198,9 +199,10 @@ final class StoreKitManager: ObservableObject {
     private func handleTransactionUpdate(_ result: VerificationResult<Transaction>) async {
         guard let transaction = try? checkVerified(result) else { return }
 
-        // Verify with backend
+        // Verify with backend using JWS representation
+        let jwsRepresentation = result.jwsRepresentation
         do {
-            try await verifyWithBackend(transaction: transaction)
+            try await verifyWithBackend(jwsRepresentation: jwsRepresentation, transaction: transaction)
         } catch {
             print("Failed to verify transaction with backend: \(error)")
         }
@@ -221,19 +223,10 @@ final class StoreKitManager: ObservableObject {
         }
     }
 
-    /// Verify transaction with backend
-    private func verifyWithBackend(transaction: Transaction) async throws {
-        // Get the JSON representation of the transaction
-        let jsonRepresentation = transaction.jsonRepresentation
-
-        // Create a signed transaction string for backend verification
-        // StoreKit 2 provides the signed transaction data
-        let signedTransaction = String(data: jsonRepresentation, encoding: .utf8) ?? ""
-
-        // For now, we'll use the transaction ID as we need the actual JWS
-        // In production, you'd use the signedTransactionInfo from the receipt
+    /// Verify transaction with backend using the JWS representation
+    private func verifyWithBackend(jwsRepresentation: String, transaction: Transaction) async throws {
         try await SubscriptionService.shared.verifyPurchase(
-            signedTransaction: signedTransaction,
+            signedTransaction: jwsRepresentation,
             productId: transaction.productID,
             originalTransactionId: String(transaction.originalID),
             expiresDate: transaction.expirationDate

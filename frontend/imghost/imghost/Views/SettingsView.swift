@@ -113,9 +113,9 @@ struct SettingsView: View {
                         .padding(.horizontal, 24)
                         .padding(.bottom, 12)
 
-                    // Upgrade to Pro Button (visible when user doesn't have active subscription)
-                    if !subscriptionState.hasAccess {
-                        BrutalPrimaryButton(title: "Upgrade to Pro") {
+                    // Upgrade to Pro Button (visible during trial or when no subscription)
+                    if !subscriptionState.hasAccess || subscriptionState.status == .trialing {
+                        BrutalPrimaryButton(title: subscriptionState.status == .trialing ? "Upgrade to Pro" : "Subscribe to Pro") {
                             showPaywall = true
                         }
                         .padding(.horizontal, 24)

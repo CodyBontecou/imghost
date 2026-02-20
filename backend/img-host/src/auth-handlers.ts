@@ -101,8 +101,9 @@ export async function handleRegisterV2(request: Request, env: Env): Promise<Resp
     // Create user
     const user = await db.createUser(email, passwordHash, apiToken, 'trial');
 
-    // Create trial subscription
-    await db.createSubscription(user.id, 'trial', 'trialing');
+    // Create trial subscription with 7-day expiration
+    const TRIAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+    await db.createSubscription(user.id, 'trial', 'trialing', undefined, undefined, TRIAL_DURATION_MS);
 
     // Generate email verification token
     const verificationToken = Auth.generateSecureToken();
@@ -675,8 +676,9 @@ export async function handleAppleSignIn(request: Request, env: Env): Promise<Res
         // Create new user with Apple credentials
         user = await db.createAppleUser(email, appleUserId, 'trial');
 
-        // Create trial subscription for new user
-        await db.createSubscription(user.id, 'trial', 'trialing');
+        // Create trial subscription for new user with 7-day expiration
+        const APPLE_TRIAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+        await db.createSubscription(user.id, 'trial', 'trialing', undefined, undefined, APPLE_TRIAL_DURATION_MS);
       }
     }
 
