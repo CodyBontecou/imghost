@@ -1,0 +1,5 @@
+• Improved subscription flow — smoother purchasing experience
+• Fixed purchase verification for sandbox and production environments
+• "Upgrade to Pro" button now visible during free trial in Settings
+• Trial subscriptions now properly expire after 7 days
+• Bug fixes and performance improvements
