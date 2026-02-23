@@ -20,6 +20,8 @@ struct MacMediaView: View {
     @State private var uploadBannerMessage = ""
     @State private var uploadBannerIsError = false
 
+    @EnvironmentObject var subscriptionState: SubscriptionState
+
     private let historyService = HistoryService.shared
     private let uploadService = MacUploadService.shared
     private let qualityService = UploadQualityService.shared
@@ -578,7 +580,17 @@ struct MacMediaView: View {
                     }
                 }
 
-                if failed.isEmpty {
+                // Check if any failure was subscription-related
+                let hasSubscriptionError = results.contains { result in
+                    result.error?.contains("subscription is required") == true ||
+                    result.error?.contains("active subscription") == true
+                }
+
+                if hasSubscriptionError {
+                    // Refresh subscription state — this will trigger the paywall gate in MacContentView
+                    Task { await subscriptionState.checkStatus() }
+                    showBanner(message: "Subscription required to upload", isError: true)
+                } else if failed.isEmpty {
                     let fileWord = successful.count == 1 ? "file" : "files"
                     showBanner(message: "\(successful.count) \(fileWord) uploaded — link\(successful.count == 1 ? "" : "s") copied", isError: false)
                 } else if successful.isEmpty {
@@ -641,7 +653,16 @@ struct MacMediaView: View {
                     }
                 }
 
-                if failed.isEmpty {
+                // Check if any failure was subscription-related
+                let hasSubscriptionError = results.contains { result in
+                    result.error?.contains("subscription is required") == true ||
+                    result.error?.contains("active subscription") == true
+                }
+
+                if hasSubscriptionError {
+                    Task { await subscriptionState.checkStatus() }
+                    showBanner(message: "Subscription required to upload", isError: true)
+                } else if failed.isEmpty {
                     let fileWord = successful.count == 1 ? "file" : "files"
                     showBanner(message: "\(successful.count) \(fileWord) uploaded — link\(successful.count == 1 ? "" : "s") copied", isError: false)
                 } else if successful.isEmpty {

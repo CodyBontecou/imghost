@@ -115,9 +115,9 @@ final class UploadService: NSObject {
             return try parseUploadResponse(data: retryData, imageData: imageData, filename: filename)
         }
 
-        // Handle 403 - email verification required
+        // Handle 403 - email verification or subscription required
         if httpResponse.statusCode == 403 {
-            throw ImghostError.emailVerificationRequired
+            throw Self.parse403Error(data: data)
         }
 
         guard httpResponse.statusCode == 200 else {
@@ -126,6 +126,16 @@ final class UploadService: NSObject {
         }
 
         return try parseUploadResponse(data: data, imageData: imageData, filename: filename)
+    }
+
+    /// Parse a 403 response to distinguish subscription_required from email verification
+    static func parse403Error(data: Data) -> ImghostError {
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let subscriptionRequired = json["subscription_required"] as? Bool,
+           subscriptionRequired {
+            return .subscriptionRequired
+        }
+        return .emailVerificationRequired
     }
 
     private func parseUploadResponse(data: Data, imageData: Data, filename: String) throws -> UploadRecord {
@@ -230,9 +240,9 @@ final class UploadService: NSObject {
             return try parseUploadResponseWithThumbnail(data: retryData, thumbnailData: thumbnailData, filename: filename)
         }
 
-        // Handle 403 - email verification required
+        // Handle 403 - email verification or subscription required
         if httpResponse.statusCode == 403 {
-            throw ImghostError.emailVerificationRequired
+            throw Self.parse403Error(data: data)
         }
 
         guard httpResponse.statusCode == 200 else {

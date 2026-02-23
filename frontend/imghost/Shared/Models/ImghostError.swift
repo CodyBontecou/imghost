@@ -11,6 +11,7 @@ enum ImghostError: LocalizedError {
     case imageProcessingFailed
     case deleteFailed(statusCode: Int, message: String?)
     case emailVerificationRequired
+    case subscriptionRequired
 
     var errorDescription: String? {
         switch self {
@@ -40,6 +41,8 @@ enum ImghostError: LocalizedError {
             return "Delete failed with status code \(statusCode)"
         case .emailVerificationRequired:
             return "Please verify your email before uploading images."
+        case .subscriptionRequired:
+            return "An active subscription is required to upload files."
         }
     }
 
@@ -65,6 +68,8 @@ enum ImghostError: LocalizedError {
             return "The image may have already been deleted, or your token may not have delete permissions."
         case .emailVerificationRequired:
             return "Open the imghost app and verify your email address to enable uploads."
+        case .subscriptionRequired:
+            return "Subscribe to imghost Pro to unlock uploads and storage."
         }
     }
 }

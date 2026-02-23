@@ -31,6 +31,8 @@ struct MacContentView: View {
                 MacLoginView()
             } else if !authState.isEmailVerified {
                 MacEmailVerificationView()
+            } else if subscriptionState.status == .loading || subscriptionState.isLoading {
+                loadingView
             } else if subscriptionState.shouldShowPaywall {
                 MacPaywallView()
             } else {
@@ -38,6 +40,21 @@ struct MacContentView: View {
             }
         }
         .background(Color.brutalBackground)
+        .task {
+            // Check subscription status when authenticated
+            if authState.isAuthenticated && authState.isEmailVerified {
+                await subscriptionState.checkStatus()
+            }
+        }
+        .onChange(of: authState.isAuthenticated) { _, isAuthenticated in
+            if isAuthenticated && authState.isEmailVerified {
+                Task {
+                    await subscriptionState.checkStatus()
+                }
+            } else if !isAuthenticated {
+                subscriptionState.reset()
+            }
+        }
     }
 
     // MARK: - Main App
