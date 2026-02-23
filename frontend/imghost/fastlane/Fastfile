@@ -1,7 +1,6 @@
 default_platform(:ios)
 
 APP_ID = "com.codybontecou.imghost"
-MAC_APP_ID = "com.codybontecou.imghost.mac"
 APPLE_ID = "bontecouc@gmail.com"
 TEAM_ID = "67KC823C9A"
 
@@ -93,11 +92,10 @@ platform :mac do
   desc "Upload metadata only"
   lane :upload_metadata do
     deliver(
-      app_identifier: MAC_APP_ID,
+      app_identifier: APP_ID,
       username: APPLE_ID,
       team_id: TEAM_ID,
       app_version: "1.0",
-      metadata_path: "./fastlane/metadata-mac",
       skip_binary_upload: true,
       skip_screenshots: true,
       run_precheck_before_submit: false,
@@ -110,11 +108,10 @@ platform :mac do
   desc "Upload screenshots only"
   lane :upload_screenshots do
     deliver(
-      app_identifier: MAC_APP_ID,
+      app_identifier: APP_ID,
       username: APPLE_ID,
       team_id: TEAM_ID,
       app_version: "1.0",
-      metadata_path: "./fastlane/metadata-mac",
       skip_binary_upload: true,
       skip_metadata: true,
       overwrite_screenshots: true,
@@ -127,11 +124,10 @@ platform :mac do
   desc "Upload metadata + screenshots"
   lane :upload_all do
     deliver(
-      app_identifier: MAC_APP_ID,
+      app_identifier: APP_ID,
       username: APPLE_ID,
       team_id: TEAM_ID,
       app_version: "1.0",
-      metadata_path: "./fastlane/metadata-mac",
       skip_binary_upload: true,
       overwrite_screenshots: true,
       run_precheck_before_submit: false,
@@ -156,11 +152,10 @@ platform :mac do
   desc "Submit for review"
   lane :submit do
     deliver(
-      app_identifier: MAC_APP_ID,
+      app_identifier: APP_ID,
       username: APPLE_ID,
       team_id: TEAM_ID,
       app_version: "1.0",
-      metadata_path: "./fastlane/metadata-mac",
       skip_binary_upload: true,
       skip_screenshots: true,
       run_precheck_before_submit: false,

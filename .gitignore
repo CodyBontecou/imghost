@@ -9,3 +9,5 @@ node_modules/
 # Xcode user data
 *.xcuserstate
 xcuserdata/
+frontend/imghost/design/
+frontend/imghost/build/

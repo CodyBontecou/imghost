@@ -847,7 +847,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.mac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost;
 				PRODUCT_NAME = imghost;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1105,7 +1105,7 @@
 				INFOPLIST_FILE = MacShareExtension/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.mac.ShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.ShareExtension;
 				PRODUCT_NAME = MacShareExtension;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SHARE_EXTENSION";
@@ -1134,7 +1134,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.mac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost;
 				PRODUCT_NAME = imghost;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1153,7 +1153,7 @@
 				INFOPLIST_FILE = MacShareExtension/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.mac.ShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.ShareExtension;
 				PRODUCT_NAME = MacShareExtension;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SHARE_EXTENSION";
