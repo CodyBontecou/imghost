@@ -85,6 +85,7 @@
 		B1000001001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000001000 /* OnboardingView.swift */; };
 		B32FCD9E2162490030E563F7 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000013000 /* KeychainService.swift */; };
 		B49E7B51BF8DB84A1296BAB9 /* MacHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */; };
+		B49E7B51BF8DB84A1296BAB0 /* MacMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4CA97A2C8A52DDB7773830 /* MacMediaView.swift */; };
 		B9584D08A4CF9EE53295496B /* MacContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F4668E2429EDB4F6EA2448 /* MacContentView.swift */; };
 		BC66DDD0D6A4A72FAF5797AB /* MacBrutalDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */; };
 		BF090D7998F3920533D43774 /* BrutalComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B2B177AAB3C2D4F56ED74C /* BrutalComponents.swift */; };
@@ -182,6 +183,7 @@
 		508DE51ED34D28B1427CB933 /* MacForgotPasswordView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacForgotPasswordView.swift; sourceTree = "<group>"; };
 		555A5A7CA698117B65CCB23A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacHistoryView.swift; sourceTree = "<group>"; };
+		5B4CA97A2C8A52DDB7773830 /* MacMediaView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacMediaView.swift; sourceTree = "<group>"; };
 		6231EC7A2F30C82400E42DCC /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		77EF9A77B62440BA76E7919A /* GoogleColors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleColors.swift; sourceTree = "<group>"; };
 		7959712CC568EEFA9B373EFD /* MacShareViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacShareViewController.swift; sourceTree = "<group>"; };
@@ -362,6 +364,7 @@
 			children = (
 				FF43FEFAF628F50F0A18D1FC /* Auth */,
 				5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */,
+				5B4CA97A2C8A52DDB7773830 /* MacMediaView.swift */,
 				C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */,
 				0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */,
 				1040C9A1CA69D632C30E4554 /* MacUploadDetailView.swift */,
@@ -690,6 +693,7 @@
 				7D04552B096C14B6D51B106E /* MacLoginView.swift in Sources */,
 				4AC6FF9B1186BCD5050E4437 /* MacRegisterView.swift in Sources */,
 				B49E7B51BF8DB84A1296BAB9 /* MacHistoryView.swift in Sources */,
+				B49E7B51BF8DB84A1296BAB0 /* MacMediaView.swift in Sources */,
 				85E1DD5379CF38E4F8F4FEA9 /* MacOnboardingView.swift in Sources */,
 				EF4E0702692B2A1ED065A0D1 /* MacSettingsView.swift in Sources */,
 				7997CF8DB66E8AAC9D130E62 /* MacUploadDetailView.swift in Sources */,
