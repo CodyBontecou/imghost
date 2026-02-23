@@ -158,6 +158,7 @@ struct MacMediaView: View {
                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.white)
                 .tracking(2)
+                .fixedSize()
 
             Spacer()
 
@@ -183,6 +184,7 @@ struct MacMediaView: View {
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextTertiary)
                     .tracking(1)
+                    .lineLimit(1)
 
                 Picker("", selection: $selectedQuality) {
                     ForEach(UploadQuality.allCases) { quality in
@@ -195,6 +197,7 @@ struct MacMediaView: View {
                     qualityService.currentQuality = newValue
                 }
             }
+            .fixedSize()
 
             // Sync button
             Button(action: syncImages) {
@@ -215,6 +218,7 @@ struct MacMediaView: View {
                     Text("UPLOAD")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .tracking(1)
+                        .lineLimit(1)
                 }
                 .foregroundStyle(Color.black)
                 .padding(.horizontal, 12)
@@ -222,6 +226,7 @@ struct MacMediaView: View {
                 .background(Color.white)
             }
             .buttonStyle(.plain)
+            .fixedSize()
             .help("Upload files (or drag & drop, or ⌘V to paste)")
 
             Text("\(filteredRecords.count)")
