@@ -15,7 +15,8 @@ The export feature allows users to create and download a ZIP archive containing 
 Initiates a new export job for the authenticated user.
 
 **Headers:**
-- `Authorization: Bearer <api_token>`
+- `Authorization: Bearer <access_token_or_api_key>`
+- `X-API-Key: <api_key>` (alternative)
 
 **Response (202 Accepted):**
 ```json
@@ -41,7 +42,8 @@ Initiates a new export job for the authenticated user.
 Checks the status of an export job.
 
 **Headers:**
-- `Authorization: Bearer <api_token>`
+- `Authorization: Bearer <access_token_or_api_key>`
+- `X-API-Key: <api_key>` (alternative)
 
 **Response (200 OK):**
 
@@ -90,7 +92,8 @@ When failed:
 Downloads the completed export archive.
 
 **Headers:**
-- `Authorization: Bearer <api_token>`
+- `Authorization: Bearer <access_token_or_api_key>`
+- `X-API-Key: <api_key>` (alternative)
 
 **Response (200 OK):**
 - Content-Type: `application/zip`

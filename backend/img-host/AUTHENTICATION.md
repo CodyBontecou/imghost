@@ -234,14 +234,24 @@ Request a new verification email.
 
 **Rate Limit:** 3 requests per hour per IP
 
-## Using JWT Tokens
+## Using JWT Tokens or API Keys
 
 ### Making Authenticated Requests
 
-Include the access token in the Authorization header:
+You can authenticate with either:
+
+1. **JWT access token** (recommended for web/mobile sessions)
+2. **API key** (recommended for CLI tools and coding agents)
 
 ```bash
+# JWT
 curl -H "Authorization: Bearer eyJhbGc..." https://api.example.com/user
+
+# API key in Authorization header
+curl -H "Authorization: Bearer your-api-token" https://api.example.com/user
+
+# API key in X-API-Key header
+curl -H "X-API-Key: your-api-token" https://api.example.com/user
 ```
 
 ### Token Expiry
@@ -418,7 +428,7 @@ The new authentication system maintains backward compatibility:
 
 - Legacy API tokens continue to work
 - Old SHA-256 password hashes are automatically upgraded to PBKDF2 on next login
-- All endpoints accept both JWT and API tokens in Authorization header
+- All authenticated endpoints accept JWTs plus API keys via either `Authorization: Bearer <token>` or `X-API-Key: <token>`
 
 ## Security Best Practices
 

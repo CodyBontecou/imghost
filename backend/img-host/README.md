@@ -130,13 +130,15 @@ Content-Type: application/json
 #### Get User Info
 ```bash
 GET /user
-Authorization: Bearer <api_token>
+Authorization: Bearer <access_token_or_api_key>
+# or: X-API-Key: <api_key>
 ```
 
 #### List User Images
 ```bash
 GET /images?limit=100&offset=0
-Authorization: Bearer <api_token>
+Authorization: Bearer <access_token_or_api_key>
+# or: X-API-Key: <api_key>
 ```
 
 ### Image Operations
@@ -144,7 +146,8 @@ Authorization: Bearer <api_token>
 #### Upload Image
 ```bash
 POST /upload
-Authorization: Bearer <api_token>
+Authorization: Bearer <access_token_or_api_key>
+# or: X-API-Key: <api_key>
 Content-Type: multipart/form-data
 
 image=<file>

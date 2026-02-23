@@ -4,6 +4,7 @@ import { Auth } from './auth';
 import { AppleAuth } from './apple-auth';
 import { Analytics } from './analytics';
 import { RateLimiter } from './rate-limiter';
+import { resolveAuthenticatedUser } from './request-auth';
 
 interface Env {
   DB: D1Database;
@@ -533,33 +534,16 @@ export async function handleResendVerification(request: Request, env: Env): Prom
 /**
  * Delete user account and all associated data
  * DELETE /auth/account
- * Requires: Bearer token (access token)
+ * Requires: JWT access token or API key
  */
 export async function handleDeleteAccount(request: Request, env: Env, r2Bucket: R2Bucket): Promise<Response> {
   const db = new Database(env.DB);
 
   try {
-    // Verify authentication
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return json({ error: 'Unauthorized' }, 401);
-    }
-
-    const token = authHeader.slice(7);
-    const jwtSecret = env.JWT_SECRET || 'default-secret-change-in-production';
-
-    // Import Auth for JWT verification
-    const { Auth } = await import('./auth');
-    const jwtPayload = await Auth.verifyJWT(token, jwtSecret);
-
-    if (!jwtPayload || jwtPayload.type !== 'access') {
-      return json({ error: 'Invalid token' }, 401);
-    }
-
-    // Get user to confirm they exist
-    const user = await db.getUserById(jwtPayload.sub);
+    // Verify authentication (JWT access token or API key)
+    const user = await resolveAuthenticatedUser(request, env, db);
     if (!user) {
-      return json({ error: 'User not found' }, 404);
+      return json({ error: 'Unauthorized' }, 401);
     }
 
     // Delete all user data from database and get R2 keys

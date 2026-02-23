@@ -58,7 +58,7 @@ echo "3. Get user information"
 echo "----------------------"
 echo "GET $BASE_URL/user"
 curl -s -X GET "$BASE_URL/user" \
-  -H "Authorization: Bearer $API_TOKEN" | jq '.'
+  -H "X-API-Key: $API_TOKEN" | jq '.'
 
 echo ""
 echo "4. Upload an image"
@@ -77,7 +77,7 @@ fi
 
 if [ -f "/tmp/test-image.png" ]; then
   UPLOAD_RESPONSE=$(curl -s -X POST "$BASE_URL/upload" \
-    -H "Authorization: Bearer $API_TOKEN" \
+    -H "X-API-Key: $API_TOKEN" \
     -F "image=@/tmp/test-image.png")
 
   echo "$UPLOAD_RESPONSE" | jq '.'
@@ -100,7 +100,7 @@ echo "5. List user's images"
 echo "--------------------"
 echo "GET $BASE_URL/images?limit=10&offset=0"
 curl -s -X GET "$BASE_URL/images?limit=10&offset=0" \
-  -H "Authorization: Bearer $API_TOKEN" | jq '.'
+  -H "X-API-Key: $API_TOKEN" | jq '.'
 
 echo ""
 echo "6. Get uploaded image"

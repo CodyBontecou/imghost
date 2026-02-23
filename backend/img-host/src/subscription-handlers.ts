@@ -1,7 +1,7 @@
 // Subscription endpoint handlers for Apple In-App Purchases
 import { Database } from './database';
-import { Auth } from './auth';
-import { AppleIAP, PRODUCT_IDS, TRIAL_PERIOD_MS } from './apple-iap';
+import { AppleIAP } from './apple-iap';
+import { resolveAuthenticatedUser } from './request-auth';
 
 interface Env {
   DB: D1Database;
@@ -21,21 +21,7 @@ function json(data: unknown, status = 200): Response {
  */
 async function getAuthenticatedUser(request: Request, env: Env) {
   const db = new Database(env.DB);
-  const authHeader = request.headers.get('Authorization');
-  const token = Auth.extractBearerToken(authHeader);
-
-  if (!token) {
-    return null;
-  }
-
-  const jwtSecret = env.JWT_SECRET || 'default-secret-change-in-production';
-  const jwtPayload = await Auth.verifyJWT(token, jwtSecret);
-
-  if (!jwtPayload || jwtPayload.type !== 'access') {
-    return null;
-  }
-
-  return db.getUserById(jwtPayload.sub);
+  return resolveAuthenticatedUser(request, env, db);
 }
 
 /**
