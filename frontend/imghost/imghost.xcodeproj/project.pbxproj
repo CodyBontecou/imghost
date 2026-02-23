@@ -177,7 +177,7 @@
 		43B2B177AAB3C2D4F56ED74C /* BrutalComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BrutalComponents.swift; sourceTree = "<group>"; };
 		4470F77C9598F7A661CB26D4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = StoreKit.framework; sourceTree = "<group>"; };
 		4A09518DA218CA8C573BCEEF /* GoogleSpacing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleSpacing.swift; sourceTree = "<group>"; };
-		4A69739601E0174857359C1D /* imghostMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imghostMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A69739601E0174857359C1D /* imghost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imghost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50461452072EC76077903A65 /* MacPaywallView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacPaywallView.swift; sourceTree = "<group>"; };
 		508DE51ED34D28B1427CB933 /* MacForgotPasswordView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacForgotPasswordView.swift; sourceTree = "<group>"; };
 		555A5A7CA698117B65CCB23A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
@@ -285,7 +285,6 @@
 				0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */,
 				2176F70E7A81BD20B52041F1 /* MacUploadQualityService.swift */,
 			);
-			name = Services;
 			path = Services;
 			sourceTree = "<group>";
 		};
@@ -295,7 +294,6 @@
 				F945098B16B8B4E7F8C72EEB /* MacShareView.swift */,
 				7959712CC568EEFA9B373EFD /* MacShareViewController.swift */,
 			);
-			name = MacShareExtension;
 			path = MacShareExtension;
 			sourceTree = "<group>";
 		};
@@ -336,7 +334,6 @@
 				A22512A751B999C854FE3BA1 /* MacBrutalComponents.swift */,
 				8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */,
 			);
-			name = DesignSystem;
 			path = DesignSystem;
 			sourceTree = "<group>";
 		};
@@ -345,7 +342,6 @@
 			children = (
 				50461452072EC76077903A65 /* MacPaywallView.swift */,
 			);
-			name = Subscription;
 			path = Subscription;
 			sourceTree = "<group>";
 		};
@@ -358,7 +354,6 @@
 				0CECC016CE9793A4A55E8D4D /* Services */,
 				9F6D3CAB8C102D2686F948F2 /* Views */,
 			);
-			name = imghostMac;
 			path = imghostMac;
 			sourceTree = "<group>";
 		};
@@ -373,7 +368,6 @@
 				14F2AC8D68F29B962385ECC7 /* MacUploadView.swift */,
 				871C181611D0B0A1DEE5060E /* Subscription */,
 			);
-			name = Views;
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -491,7 +485,7 @@
 			children = (
 				A1000080000 /* imghost.app */,
 				A1000040000 /* ShareExtension.appex */,
-				4A69739601E0174857359C1D /* imghostMac.app */,
+				4A69739601E0174857359C1D /* imghost.app */,
 				33C12964A312DC16C820B724 /* MacShareExtension.appex */,
 			);
 			name = Products;
@@ -531,7 +525,6 @@
 				1BBC4E12232045D8B7721410 /* MacLoginView.swift */,
 				1AA81CA82C5642420DB9E90F /* MacRegisterView.swift */,
 			);
-			name = Auth;
 			path = Auth;
 			sourceTree = "<group>";
 		};
@@ -554,7 +547,7 @@
 			);
 			name = imghostMac;
 			productName = imghostMac;
-			productReference = 4A69739601E0174857359C1D /* imghostMac.app */;
+			productReference = 4A69739601E0174857359C1D /* imghost.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A1000060000 /* ShareExtension */ = {
@@ -839,10 +832,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 67KC823C9A;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = imghostMac/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = imghost;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -1102,7 +1096,7 @@
 				CODE_SIGN_ENTITLEMENTS = MacShareExtension/MacShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 67KC823C9A;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MacShareExtension/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
@@ -1125,10 +1119,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 67KC823C9A;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = imghostMac/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = imghost;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -1149,7 +1144,7 @@
 				CODE_SIGN_ENTITLEMENTS = MacShareExtension/MacShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 67KC823C9A;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MacShareExtension/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
