@@ -53,10 +53,11 @@ export class AppleAuth {
 
   /**
    * Verify Apple identity token and extract payload
+   * Accepts a single audience string or an array of valid audiences (e.g. iOS + macOS bundle IDs)
    */
   static async verifyIdentityToken(
     identityToken: string,
-    expectedAudience: string
+    expectedAudience: string | string[]
   ): Promise<AppleTokenPayload | null> {
     try {
       // Decode JWT header to get key ID
@@ -117,9 +118,10 @@ export class AppleAuth {
         return null;
       }
 
-      // Validate audience (your app's Bundle ID)
-      if (payload.aud !== expectedAudience) {
-        console.error('Invalid audience:', payload.aud, 'expected:', expectedAudience);
+      // Validate audience (your app's Bundle ID — may be iOS or macOS)
+      const audiences = Array.isArray(expectedAudience) ? expectedAudience : [expectedAudience];
+      if (!audiences.includes(payload.aud)) {
+        console.error('Invalid audience:', payload.aud, 'expected one of:', audiences);
         return null;
       }
 

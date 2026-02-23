@@ -13,6 +13,7 @@ interface Env {
   EMAIL_API_KEY?: string;
   BASE_URL?: string;
   APPLE_CLIENT_ID?: string;
+  APPLE_MAC_CLIENT_ID?: string;
 }
 
 function json(data: unknown, status = 200): Response {
@@ -621,8 +622,10 @@ export async function handleAppleSignIn(request: Request, env: Env): Promise<Res
     }
 
     // Verify the identity token with Apple
-    const clientId = env.APPLE_CLIENT_ID || 'com.codybontecou.imghost';
-    const tokenPayload = await AppleAuth.verifyIdentityToken(identity_token, clientId);
+    // Accept both iOS and macOS bundle IDs
+    const iosClientId = env.APPLE_CLIENT_ID || 'com.codybontecou.imghost';
+    const macClientId = env.APPLE_MAC_CLIENT_ID || `${iosClientId}.mac`;
+    const tokenPayload = await AppleAuth.verifyIdentityToken(identity_token, [iosClientId, macClientId]);
 
     if (!tokenPayload) {
       return json({ error: 'Invalid Apple identity token' }, 401);
