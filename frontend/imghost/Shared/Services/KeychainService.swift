@@ -14,6 +14,20 @@ final class KeychainService {
 
     // MARK: - Public Methods
 
+    /// Apply platform-specific keychain attributes to a query dictionary
+    private func applyPlatformAttributes(to query: inout [String: Any]) {
+        if let accessGroup = accessGroup {
+            query[kSecAttrAccessGroup as String] = accessGroup
+        }
+        #if os(macOS)
+        // Use data protection keychain on macOS to avoid
+        // "would like to access data from other apps" privacy prompt.
+        // The data protection keychain handles shared access groups
+        // natively without triggering TCC prompts.
+        query[kSecUseDataProtectionKeychain as String] = true
+        #endif
+    }
+
     func save(key: String, value: String) throws {
         guard let data = value.data(using: .utf8) else {
             throw ImghostError.keychainError(status: errSecParam)
@@ -30,9 +44,7 @@ final class KeychainService {
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
         ]
 
-        if let accessGroup = accessGroup {
-            query[kSecAttrAccessGroup as String] = accessGroup
-        }
+        applyPlatformAttributes(to: &query)
 
         let status = SecItemAdd(query as CFDictionary, nil)
 
@@ -50,9 +62,7 @@ final class KeychainService {
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
 
-        if let accessGroup = accessGroup {
-            query[kSecAttrAccessGroup as String] = accessGroup
-        }
+        applyPlatformAttributes(to: &query)
 
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
@@ -78,9 +88,7 @@ final class KeychainService {
             kSecAttrAccount as String: key
         ]
 
-        if let accessGroup = accessGroup {
-            query[kSecAttrAccessGroup as String] = accessGroup
-        }
+        applyPlatformAttributes(to: &query)
 
         let status = SecItemDelete(query as CFDictionary)
 
