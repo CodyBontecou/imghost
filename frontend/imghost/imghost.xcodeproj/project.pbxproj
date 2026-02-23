@@ -7,9 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		019644CBCB0D5D1819D9D5AE /* MacUploadQualityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2176F70E7A81BD20B52041F1 /* MacUploadQualityService.swift */; };
+		0537A006BB7933FD04D2154D /* MacUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14F2AC8D68F29B962385ECC7 /* MacUploadView.swift */; };
+		05595FAF81C8CA4BB650EBB6 /* ImghostMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF02C598282236C1976A945C /* ImghostMacApp.swift */; };
+		062250B58347ECEA1B60E5D1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 555A5A7CA698117B65CCB23A /* Cocoa.framework */; };
+		092C1CC4817149B1121621E6 /* MacShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F945098B16B8B4E7F8C72EEB /* MacShareView.swift */; };
+		0C1063295AD86545A1FE8A40 /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1000002000 /* SubscriptionService.swift */; };
+		13851E8CCDDE5D40F00C9117 /* MacForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508DE51ED34D28B1427CB933 /* MacForgotPasswordView.swift */; };
 		14EBDD7432ABCF77C17602EE /* GoogleColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EF9A77B62440BA76E7919A /* GoogleColors.swift */; };
+		16FFB720A96741E73047C25D /* LinkFormatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000001000 /* LinkFormatService.swift */; };
+		1EA9E105C108A819EB63F12D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 555A5A7CA698117B65CCB23A /* Cocoa.framework */; };
+		222C32F312AF008A013636EE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000019000 /* User.swift */; };
 		22BE19555A3C3B23E913A532 /* GoogleSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A09518DA218CA8C573BCEEF /* GoogleSpacing.swift */; };
+		26F3857E280DF0F41E5515B1 /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000014000 /* HistoryService.swift */; };
+		2E53321ACBC21BEB4FA98853 /* MacImageSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3275B71610368ABB7FD83EA5 /* MacImageSyncService.swift */; };
+		334D2D7504F6F4F21410DD19 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000017000 /* AuthService.swift */; };
+		406E6E115655E5FC5479E7CF /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBC9CF58171A40A2D5DF37C7 /* AuthenticationServices.framework */; };
+		43914DD3B17086E1C30E04FA /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000010000 /* Config.swift */; };
+		45A1649480A61B106680165B /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000018000 /* AuthResponse.swift */; };
+		462CD917D757E704DFE4DE78 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 812AD3BC6795A9E37DCDD328 /* AuthenticationServices.framework */; };
 		46C6716F291ACC3B60FD7C97 /* GoogleTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FBA8EDF575959E863DA8C8 /* GoogleTypography.swift */; };
+		4AC6FF9B1186BCD5050E4437 /* MacRegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA81CA82C5642420DB9E90F /* MacRegisterView.swift */; };
+		52736C4BDA79EEC087286ED3 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4470F77C9598F7A661CB26D4 /* StoreKit.framework */; };
+		5C3E2FD3A80276A90348B0FC /* MacShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7959712CC568EEFA9B373EFD /* MacShareViewController.swift */; };
+		6452812DD9B8382E7925388B /* MacImageSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3275B71610368ABB7FD83EA5 /* MacImageSyncService.swift */; };
+		66239299ECF9E9145E0607CB /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100001A000 /* AuthState.swift */; };
+		667627C0313DE4C6E0C74C08 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000018000 /* AuthResponse.swift */; };
+		69E32A68E12177B7E3DA9E75 /* MacEmailVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D620286BAE758FC54171B205 /* MacEmailVerificationView.swift */; };
+		6A7056738713617BC17DB9CF /* SubscriptionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1000001000 /* SubscriptionState.swift */; };
+		750710B4F36F86B6F3351CB8 /* MacBrutalComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22512A751B999C854FE3BA1 /* MacBrutalComponents.swift */; };
+		7542595887644DCC9FE8306E /* MacBrutalComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22512A751B999C854FE3BA1 /* MacBrutalComponents.swift */; };
+		7997CF8DB66E8AAC9D130E62 /* MacUploadDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1040C9A1CA69D632C30E4554 /* MacUploadDetailView.swift */; };
+		7D04552B096C14B6D51B106E /* MacLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBC4E12232045D8B7721410 /* MacLoginView.swift */; };
+		85E1DD5379CF38E4F8F4FEA9 /* MacOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */; };
+		893674DB5E53E09B996D33D6 /* StoreKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1000003000 /* StoreKitManager.swift */; };
+		95715A2339CC0390E06FDA55 /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000014000 /* HistoryService.swift */; };
+		9A4BD5872D6B0C494F747225 /* MacUploadQualityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2176F70E7A81BD20B52041F1 /* MacUploadQualityService.swift */; };
+		9F6C823755755D3F6E7AB141 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000010000 /* Config.swift */; };
 		A1000001001 /* ImghostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000 /* ImghostApp.swift */; };
 		A1000002001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000002000 /* ContentView.swift */; };
 		A1000003001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000003000 /* SettingsView.swift */; };
@@ -45,19 +79,40 @@
 		A1000039001 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000019000 /* User.swift */; };
 		A100003A001 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100001A000 /* AuthState.swift */; };
 		A1000040001 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A1000040000 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AC20A2BBBE9BB00DED1CDB16 /* ImghostError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000012000 /* ImghostError.swift */; };
+		ACA5B50B9EBEDDB41BEB6E76 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1000001000 /* Assets.xcassets */; };
 		AF090D7998F3920533D43773 /* GoogleComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B2B177AAB3C2D4F56ED74B /* GoogleComponents.swift */; };
 		B1000001001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000001000 /* OnboardingView.swift */; };
+		B32FCD9E2162490030E563F7 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000013000 /* KeychainService.swift */; };
+		B49E7B51BF8DB84A1296BAB9 /* MacHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */; };
+		B9584D08A4CF9EE53295496B /* MacContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F4668E2429EDB4F6EA2448 /* MacContentView.swift */; };
+		BC66DDD0D6A4A72FAF5797AB /* MacBrutalDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */; };
 		BF090D7998F3920533D43774 /* BrutalComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B2B177AAB3C2D4F56ED74C /* BrutalComponents.swift */; };
+		C03D303F4EA407DAA141FE53 /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F8915CA80904ADBA74F2AB9 /* ExportService.swift */; };
+		C0413AB18F440659E0943386 /* UploadRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000011000 /* UploadRecord.swift */; };
 		C1000001001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1000001000 /* Assets.xcassets */; };
+		C95B117BE6A4469825D58FBE /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100001A000 /* AuthState.swift */; };
+		C96FFB1CC5E94F268AE8AEC4 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000017000 /* AuthService.swift */; };
+		CD20E4812C666E373E9DF317 /* LinkFormatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000001000 /* LinkFormatService.swift */; };
+		CD98735329713BE92E9A869B /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000013000 /* KeychainService.swift */; };
 		D1000001001 /* LinkFormatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000001000 /* LinkFormatService.swift */; };
 		D1000002001 /* LinkFormatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000001000 /* LinkFormatService.swift */; };
 		D65665EB6905B182E0F76EBC /* PhotoGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EC531C9EE3CD96675D03D8 /* PhotoGridView.swift */; };
+		D89459C2B9F6ABDCAAF4B363 /* MacPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50461452072EC76077903A65 /* MacPaywallView.swift */; };
 		E1000001001 /* SubscriptionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1000001000 /* SubscriptionState.swift */; };
 		E1000002001 /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1000002000 /* SubscriptionService.swift */; };
 		E1000003001 /* StoreKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1000003000 /* StoreKitManager.swift */; };
+		EB28A416D0DD6725EA47970C /* MacUploadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */; };
+		EF4E0702692B2A1ED065A0D1 /* MacSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */; };
+		F055DAA3B8912E717C93BF3C /* MacShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 33C12964A312DC16C820B724 /* MacShareExtension.appex */; };
 		F1000001001 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000001000 /* PaywallView.swift */; };
 		F1000002001 /* SubscriptionStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000002000 /* SubscriptionStatusView.swift */; };
+		F2B2F1F63BDE5845C4C19933 /* MacUploadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */; };
 		F33ED62A592B4F05B51C4625 /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F8915CA80904ADBA74F2AB9 /* ExportService.swift */; };
+		F81DB1003FC501D9041D2C8E /* MacBrutalDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */; };
+		FAAA51BB6631B45DA5300A72 /* UploadRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000011000 /* UploadRecord.swift */; };
+		FB67617FEA76C9518F8C8BCB /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000019000 /* User.swift */; };
+		FDC654FA125E38D7EBD3B0C6 /* ImghostError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000012000 /* ImghostError.swift */; };
 		G1000001001 /* UploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G1000001000 /* UploadView.swift */; };
 		H1000001001 /* PhotosExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H1000001000 /* PhotosExportService.swift */; };
 		I1000001001 /* ImageSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = I1000001000 /* ImageSyncService.swift */; };
@@ -66,6 +121,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		485F9DA1A3F1752A7175AAAA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1000000000 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6D94486427B05CC1EB95C75;
+			remoteInfo = MacShareExtension;
+		};
 		A1000050000 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A1000000000 /* Project object */;
@@ -87,15 +149,44 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FCD4B1A93521376E522CF74B /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F055DAA3B8912E717C93BF3C /* MacShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacSettingsView.swift; sourceTree = "<group>"; };
+		0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacUploadService.swift; sourceTree = "<group>"; };
 		0F8915CA80904ADBA74F2AB9 /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
+		1040C9A1CA69D632C30E4554 /* MacUploadDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacUploadDetailView.swift; sourceTree = "<group>"; };
+		14F2AC8D68F29B962385ECC7 /* MacUploadView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacUploadView.swift; sourceTree = "<group>"; };
+		1AA81CA82C5642420DB9E90F /* MacRegisterView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacRegisterView.swift; sourceTree = "<group>"; };
+		1BBC4E12232045D8B7721410 /* MacLoginView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacLoginView.swift; sourceTree = "<group>"; };
+		2176F70E7A81BD20B52041F1 /* MacUploadQualityService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacUploadQualityService.swift; sourceTree = "<group>"; };
+		3275B71610368ABB7FD83EA5 /* MacImageSyncService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacImageSyncService.swift; sourceTree = "<group>"; };
 		33B2B177AAB3C2D4F56ED74B /* GoogleComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleComponents.swift; sourceTree = "<group>"; };
+		33C12964A312DC16C820B724 /* MacShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MacShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		43B2B177AAB3C2D4F56ED74C /* BrutalComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BrutalComponents.swift; sourceTree = "<group>"; };
+		4470F77C9598F7A661CB26D4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = StoreKit.framework; sourceTree = "<group>"; };
 		4A09518DA218CA8C573BCEEF /* GoogleSpacing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleSpacing.swift; sourceTree = "<group>"; };
+		4A69739601E0174857359C1D /* imghostMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imghostMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		50461452072EC76077903A65 /* MacPaywallView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacPaywallView.swift; sourceTree = "<group>"; };
+		508DE51ED34D28B1427CB933 /* MacForgotPasswordView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacForgotPasswordView.swift; sourceTree = "<group>"; };
+		555A5A7CA698117B65CCB23A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacHistoryView.swift; sourceTree = "<group>"; };
 		6231EC7A2F30C82400E42DCC /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		77EF9A77B62440BA76E7919A /* GoogleColors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleColors.swift; sourceTree = "<group>"; };
+		7959712CC568EEFA9B373EFD /* MacShareViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacShareViewController.swift; sourceTree = "<group>"; };
+		812AD3BC6795A9E37DCDD328 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AuthenticationServices.framework; sourceTree = "<group>"; };
+		8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacBrutalDesignSystem.swift; sourceTree = "<group>"; };
 		92EC531C9EE3CD96675D03D8 /* PhotoGridView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoGridView.swift; sourceTree = "<group>"; };
 		A1000001000 /* ImghostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImghostApp.swift; sourceTree = "<group>"; };
 		A1000002000 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -128,15 +219,22 @@
 		A1000080000 /* imghost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imghost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000F1000 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		A10000F2000 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		A22512A751B999C854FE3BA1 /* MacBrutalComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacBrutalComponents.swift; sourceTree = "<group>"; };
 		A3FBA8EDF575959E863DA8C8 /* GoogleTypography.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleTypography.swift; sourceTree = "<group>"; };
 		B1000001000 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		BBC9CF58171A40A2D5DF37C7 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AuthenticationServices.framework; sourceTree = "<group>"; };
 		C1000001000 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacOnboardingView.swift; sourceTree = "<group>"; };
+		D0F4668E2429EDB4F6EA2448 /* MacContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacContentView.swift; sourceTree = "<group>"; };
 		D1000001000 /* LinkFormatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkFormatService.swift; sourceTree = "<group>"; };
+		D620286BAE758FC54171B205 /* MacEmailVerificationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacEmailVerificationView.swift; sourceTree = "<group>"; };
+		DF02C598282236C1976A945C /* ImghostMacApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImghostMacApp.swift; sourceTree = "<group>"; };
 		E1000001000 /* SubscriptionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionState.swift; sourceTree = "<group>"; };
 		E1000002000 /* SubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
 		E1000003000 /* StoreKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitManager.swift; sourceTree = "<group>"; };
 		F1000001000 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		F1000002000 /* SubscriptionStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStatusView.swift; sourceTree = "<group>"; };
+		F945098B16B8B4E7F8C72EEB /* MacShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacShareView.swift; sourceTree = "<group>"; };
 		G1000001000 /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
 		H1000001000 /* PhotosExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosExportService.swift; sourceTree = "<group>"; };
 		I1000001000 /* ImageSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSyncService.swift; sourceTree = "<group>"; };
@@ -144,6 +242,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		37432361600C3D534E3E0C38 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				062250B58347ECEA1B60E5D1 /* Cocoa.framework in Frameworks */,
+				462CD917D757E704DFE4DE78 /* AuthenticationServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1000090000 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -158,9 +265,51 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C740CF3956413A445C3CD879 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1EA9E105C108A819EB63F12D /* Cocoa.framework in Frameworks */,
+				52736C4BDA79EEC087286ED3 /* StoreKit.framework in Frameworks */,
+				406E6E115655E5FC5479E7CF /* AuthenticationServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0CECC016CE9793A4A55E8D4D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				3275B71610368ABB7FD83EA5 /* MacImageSyncService.swift */,
+				0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */,
+				2176F70E7A81BD20B52041F1 /* MacUploadQualityService.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		155B967DE898052E35CDFF10 /* MacShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				F945098B16B8B4E7F8C72EEB /* MacShareView.swift */,
+				7959712CC568EEFA9B373EFD /* MacShareViewController.swift */,
+			);
+			name = MacShareExtension;
+			path = MacShareExtension;
+			sourceTree = "<group>";
+		};
+		45E4D9E399F33815B8DF912A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				67C3E8542328591786A81CCE /* OS X */,
+				4470F77C9598F7A661CB26D4 /* StoreKit.framework */,
+				BBC9CF58171A40A2D5DF37C7 /* AuthenticationServices.framework */,
+				812AD3BC6795A9E37DCDD328 /* AuthenticationServices.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		553984877C35A24C0D159E8F /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,6 +322,61 @@
 			path = DesignSystem;
 			sourceTree = "<group>";
 		};
+		67C3E8542328591786A81CCE /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				555A5A7CA698117B65CCB23A /* Cocoa.framework */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
+		6A4F6AE7F3ECE4D6946231EF /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				A22512A751B999C854FE3BA1 /* MacBrutalComponents.swift */,
+				8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */,
+			);
+			name = DesignSystem;
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		871C181611D0B0A1DEE5060E /* Subscription */ = {
+			isa = PBXGroup;
+			children = (
+				50461452072EC76077903A65 /* MacPaywallView.swift */,
+			);
+			name = Subscription;
+			path = Subscription;
+			sourceTree = "<group>";
+		};
+		8C9A841E8355E62421B5ADFC /* imghostMac */ = {
+			isa = PBXGroup;
+			children = (
+				6A4F6AE7F3ECE4D6946231EF /* DesignSystem */,
+				DF02C598282236C1976A945C /* ImghostMacApp.swift */,
+				D0F4668E2429EDB4F6EA2448 /* MacContentView.swift */,
+				0CECC016CE9793A4A55E8D4D /* Services */,
+				9F6D3CAB8C102D2686F948F2 /* Views */,
+			);
+			name = imghostMac;
+			path = imghostMac;
+			sourceTree = "<group>";
+		};
+		9F6D3CAB8C102D2686F948F2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FF43FEFAF628F50F0A18D1FC /* Auth */,
+				5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */,
+				C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */,
+				0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */,
+				1040C9A1CA69D632C30E4554 /* MacUploadDetailView.swift */,
+				14F2AC8D68F29B962385ECC7 /* MacUploadView.swift */,
+				871C181611D0B0A1DEE5060E /* Subscription */,
+			);
+			name = Views;
+			path = Views;
+			sourceTree = "<group>";
+		};
 		A10000A0000 = {
 			isa = PBXGroup;
 			children = (
@@ -182,6 +386,9 @@
 				A10000C0000 /* ShareExtension */,
 				A10000D0000 /* Shared */,
 				A10000E0000 /* Products */,
+				45E4D9E399F33815B8DF912A /* Frameworks */,
+				8C9A841E8355E62421B5ADFC /* imghostMac */,
+				155B967DE898052E35CDFF10 /* MacShareExtension */,
 			);
 			sourceTree = "<group>";
 		};
@@ -284,6 +491,8 @@
 			children = (
 				A1000080000 /* imghost.app */,
 				A1000040000 /* ShareExtension.appex */,
+				4A69739601E0174857359C1D /* imghostMac.app */,
+				33C12964A312DC16C820B724 /* MacShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -314,9 +523,40 @@
 			path = Subscription;
 			sourceTree = "<group>";
 		};
+		FF43FEFAF628F50F0A18D1FC /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				D620286BAE758FC54171B205 /* MacEmailVerificationView.swift */,
+				508DE51ED34D28B1427CB933 /* MacForgotPasswordView.swift */,
+				1BBC4E12232045D8B7721410 /* MacLoginView.swift */,
+				1AA81CA82C5642420DB9E90F /* MacRegisterView.swift */,
+			);
+			name = Auth;
+			path = Auth;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3953672CF2B18CA551B981D2 /* imghostMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DF6E31CCEE3A430A2D04F066 /* Build configuration list for PBXNativeTarget "imghostMac" */;
+			buildPhases = (
+				29A465349BCD1CAC621509AC /* Sources */,
+				C740CF3956413A445C3CD879 /* Frameworks */,
+				BB5F488F96CEDDDD84C78D77 /* Resources */,
+				FCD4B1A93521376E522CF74B /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C7F18802CD422671CC8E7917 /* PBXTargetDependency */,
+			);
+			name = imghostMac;
+			productName = imghostMac;
+			productReference = 4A69739601E0174857359C1D /* imghostMac.app */;
+			productType = "com.apple.product-type.application";
+		};
 		A1000060000 /* ShareExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1000140000 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
@@ -353,6 +593,23 @@
 			productReference = A1000080000 /* imghost.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F6D94486427B05CC1EB95C75 /* MacShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 567F131A9FA12ECA989362E8 /* Build configuration list for PBXNativeTarget "MacShareExtension" */;
+			buildPhases = (
+				512B654F52E2D7AEF4208DFD /* Sources */,
+				37432361600C3D534E3E0C38 /* Frameworks */,
+				DE4AC2894E98AA1FE602C3A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacShareExtension;
+			productName = MacShareExtension;
+			productReference = 33C12964A312DC16C820B724 /* MacShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -386,6 +643,8 @@
 			targets = (
 				A10000F0000 /* imghost */,
 				A1000060000 /* ShareExtension */,
+				3953672CF2B18CA551B981D2 /* imghostMac */,
+				F6D94486427B05CC1EB95C75 /* MacShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -406,9 +665,86 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BB5F488F96CEDDDD84C78D77 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACA5B50B9EBEDDB41BEB6E76 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DE4AC2894E98AA1FE602C3A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		29A465349BCD1CAC621509AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				750710B4F36F86B6F3351CB8 /* MacBrutalComponents.swift in Sources */,
+				05595FAF81C8CA4BB650EBB6 /* ImghostMacApp.swift in Sources */,
+				B9584D08A4CF9EE53295496B /* MacContentView.swift in Sources */,
+				6452812DD9B8382E7925388B /* MacImageSyncService.swift in Sources */,
+				EB28A416D0DD6725EA47970C /* MacUploadService.swift in Sources */,
+				69E32A68E12177B7E3DA9E75 /* MacEmailVerificationView.swift in Sources */,
+				13851E8CCDDE5D40F00C9117 /* MacForgotPasswordView.swift in Sources */,
+				7D04552B096C14B6D51B106E /* MacLoginView.swift in Sources */,
+				4AC6FF9B1186BCD5050E4437 /* MacRegisterView.swift in Sources */,
+				B49E7B51BF8DB84A1296BAB9 /* MacHistoryView.swift in Sources */,
+				85E1DD5379CF38E4F8F4FEA9 /* MacOnboardingView.swift in Sources */,
+				EF4E0702692B2A1ED065A0D1 /* MacSettingsView.swift in Sources */,
+				7997CF8DB66E8AAC9D130E62 /* MacUploadDetailView.swift in Sources */,
+				0537A006BB7933FD04D2154D /* MacUploadView.swift in Sources */,
+				D89459C2B9F6ABDCAAF4B363 /* MacPaywallView.swift in Sources */,
+				43914DD3B17086E1C30E04FA /* Config.swift in Sources */,
+				667627C0313DE4C6E0C74C08 /* AuthResponse.swift in Sources */,
+				C95B117BE6A4469825D58FBE /* AuthState.swift in Sources */,
+				AC20A2BBBE9BB00DED1CDB16 /* ImghostError.swift in Sources */,
+				6A7056738713617BC17DB9CF /* SubscriptionState.swift in Sources */,
+				C0413AB18F440659E0943386 /* UploadRecord.swift in Sources */,
+				222C32F312AF008A013636EE /* User.swift in Sources */,
+				334D2D7504F6F4F21410DD19 /* AuthService.swift in Sources */,
+				C03D303F4EA407DAA141FE53 /* ExportService.swift in Sources */,
+				26F3857E280DF0F41E5515B1 /* HistoryService.swift in Sources */,
+				CD98735329713BE92E9A869B /* KeychainService.swift in Sources */,
+				16FFB720A96741E73047C25D /* LinkFormatService.swift in Sources */,
+				893674DB5E53E09B996D33D6 /* StoreKitManager.swift in Sources */,
+				0C1063295AD86545A1FE8A40 /* SubscriptionService.swift in Sources */,
+				019644CBCB0D5D1819D9D5AE /* MacUploadQualityService.swift in Sources */,
+				BC66DDD0D6A4A72FAF5797AB /* MacBrutalDesignSystem.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		512B654F52E2D7AEF4208DFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F6C823755755D3F6E7AB141 /* Config.swift in Sources */,
+				45A1649480A61B106680165B /* AuthResponse.swift in Sources */,
+				66239299ECF9E9145E0607CB /* AuthState.swift in Sources */,
+				FDC654FA125E38D7EBD3B0C6 /* ImghostError.swift in Sources */,
+				FAAA51BB6631B45DA5300A72 /* UploadRecord.swift in Sources */,
+				FB67617FEA76C9518F8C8BCB /* User.swift in Sources */,
+				C96FFB1CC5E94F268AE8AEC4 /* AuthService.swift in Sources */,
+				95715A2339CC0390E06FDA55 /* HistoryService.swift in Sources */,
+				B32FCD9E2162490030E563F7 /* KeychainService.swift in Sources */,
+				CD20E4812C666E373E9DF317 /* LinkFormatService.swift in Sources */,
+				092C1CC4817149B1121621E6 /* MacShareView.swift in Sources */,
+				5C3E2FD3A80276A90348B0FC /* MacShareViewController.swift in Sources */,
+				2E53321ACBC21BEB4FA98853 /* MacImageSyncService.swift in Sources */,
+				F2B2F1F63BDE5845C4C19933 /* MacUploadService.swift in Sources */,
+				7542595887644DCC9FE8306E /* MacBrutalComponents.swift in Sources */,
+				9A4BD5872D6B0C494F747225 /* MacUploadQualityService.swift in Sources */,
+				F81DB1003FC501D9041D2C8E /* MacBrutalDesignSystem.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1000110000 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -485,9 +821,42 @@
 			target = A1000060000 /* ShareExtension */;
 			targetProxy = A1000050000 /* PBXContainerItemProxy */;
 		};
+		C7F18802CD422671CC8E7917 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MacShareExtension;
+			target = F6D94486427B05CC1EB95C75 /* MacShareExtension */;
+			targetProxy = 485F9DA1A3F1752A7175AAAA /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		7C40096A99A40203B865E9E5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = imghostMac/imghostMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = imghostMac/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.mac;
+				PRODUCT_NAME = imghost;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		A1000180000 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A10000F1000 /* Debug.xcconfig */;
@@ -727,9 +1096,85 @@
 			};
 			name = Release;
 		};
+		AA7DC10D21D3410E7C09624C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MacShareExtension/MacShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MacShareExtension/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.mac.ShareExtension;
+				PRODUCT_NAME = MacShareExtension;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SHARE_EXTENSION";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E8B48D424DCC8C8DC0CD7CE9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = imghostMac/imghostMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = imghostMac/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.mac;
+				PRODUCT_NAME = imghost;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F94B079991EE1C1605FE2F98 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MacShareExtension/MacShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MacShareExtension/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codybontecou.imghost.mac.ShareExtension;
+				PRODUCT_NAME = MacShareExtension;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SHARE_EXTENSION";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		567F131A9FA12ECA989362E8 /* Build configuration list for PBXNativeTarget "MacShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA7DC10D21D3410E7C09624C /* Release */,
+				F94B079991EE1C1605FE2F98 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A1000100000 /* Build configuration list for PBXNativeTarget "imghost" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -753,6 +1198,15 @@
 			buildConfigurations = (
 				A1000180000 /* Debug */,
 				A1000190000 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DF6E31CCEE3A430A2D04F066 /* Build configuration list for PBXNativeTarget "imghostMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C40096A99A40203B865E9E5 /* Release */,
+				E8B48D424DCC8C8DC0CD7CE9 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
