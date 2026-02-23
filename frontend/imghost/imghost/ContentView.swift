@@ -41,17 +41,11 @@ struct ContentView: View {
             } else {
                 // Fully authenticated with subscription access - show main app
                 TabView(selection: $selectedTab) {
-                    HistoryView()
+                    MediaView()
                         .tabItem {
                             Label("Media", systemImage: "square.grid.2x2")
                         }
                         .tag(0)
-
-                    UploadView()
-                        .tabItem {
-                            Label("Upload", systemImage: "arrow.up.circle")
-                        }
-                        .tag(1)
 
                     NavigationStack {
                         SettingsView()
@@ -59,7 +53,7 @@ struct ContentView: View {
                     .tabItem {
                         Label("Settings", systemImage: "gearshape")
                     }
-                    .tag(2)
+                    .tag(1)
                 }
                 .tint(.white)
                 .preferredColorScheme(.dark)

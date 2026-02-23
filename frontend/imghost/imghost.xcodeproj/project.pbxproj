@@ -48,6 +48,7 @@
 		A1000002001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000002000 /* ContentView.swift */; };
 		A1000003001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000003000 /* SettingsView.swift */; };
 		A1000004001 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000004000 /* HistoryView.swift */; };
+		A1000004101 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000004100 /* MediaView.swift */; };
 		A1000005001 /* UploadDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000005000 /* UploadDetailView.swift */; };
 		A1000010001 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000010000 /* Config.swift */; };
 		A1000011001 /* UploadRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000011000 /* UploadRecord.swift */; };
@@ -192,6 +193,7 @@
 		A1000002000 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1000003000 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A1000004000 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		A1000004100 /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		A1000005000 /* UploadDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadDetailView.swift; sourceTree = "<group>"; };
 		A1000006000 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1000007000 /* imghost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = imghost.entitlements; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 			children = (
 				A1000003000 /* SettingsView.swift */,
 				A1000004000 /* HistoryView.swift */,
+				A1000004100 /* MediaView.swift */,
 				A1000005000 /* UploadDetailView.swift */,
 				G1000001000 /* UploadView.swift */,
 				A10000B2000 /* Auth */,
@@ -746,6 +749,7 @@
 				A1000002001 /* ContentView.swift in Sources */,
 				A1000003001 /* SettingsView.swift in Sources */,
 				A1000004001 /* HistoryView.swift in Sources */,
+				A1000004101 /* MediaView.swift in Sources */,
 				A1000005001 /* UploadDetailView.swift in Sources */,
 				G1000001001 /* UploadView.swift in Sources */,
 				A100001B001 /* LoginView.swift in Sources */,
