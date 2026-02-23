@@ -192,8 +192,8 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
     return json({ error: 'Invalid form data' }, 400);
   }
 
-  const file = formData.get('image');
-  if (!file || !(file instanceof File)) {
+  const file = formData.get('image') as unknown as File | null;
+  if (!file || typeof file === 'string') {
     return json({ error: 'Missing image field' }, 400);
   }
 
