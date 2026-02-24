@@ -18,6 +18,7 @@ struct MacShareView: View {
     @State private var selectedQuality: UploadQuality
     @State private var showDebug = false
     @State private var copiedIndex: Int? = nil
+    @State private var showPermissionExplainer = false
 
     private let uploadService = MacUploadService.shared
 
@@ -49,7 +50,9 @@ struct MacShareView: View {
             Divider().background(Color.brutalBorder)
 
             // Content
-            if let error = errorMessage {
+            if showPermissionExplainer {
+                permissionExplainerView
+            } else if let error = errorMessage {
                 errorView(message: error)
             } else if !KeychainService.shared.hasValidTokens && !isLoading {
                 notLoggedInView
@@ -74,7 +77,17 @@ struct MacShareView: View {
         .frame(width: 420, height: 480)
         .task {
             await gatherDebugInfo()
-            await loadFiles()
+            // Check if this is the first time using the share extension
+            let defaults = Config.sharedDefaults ?? UserDefaults.standard
+            let hasGrantedAccess = defaults.bool(forKey: "hasGrantedShareExtensionAccess")
+            if !hasGrantedAccess {
+                await MainActor.run {
+                    showPermissionExplainer = true
+                    isLoading = false
+                }
+            } else {
+                await loadFiles()
+            }
         }
     }
 
@@ -178,6 +191,81 @@ struct MacShareView: View {
 
                 Button(action: cancel) {
                     Text("CLOSE")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.black)
+                        .tracking(1)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                        .background(Color.white)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(12)
+            .background(Color.brutalSurface)
+        }
+    }
+
+    // MARK: - Permission Explainer
+
+    private var permissionExplainerView: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Image(systemName: "folder.badge.questionmark")
+                .font(.system(size: 36))
+                .foregroundStyle(Color.white)
+
+            Text("PERMISSION NEEDED")
+                .font(.system(size: 13, weight: .bold, design: .monospaced))
+                .foregroundStyle(Color.white)
+                .tracking(2)
+
+            VStack(spacing: 12) {
+                Text("macOS will ask imghost to \"access data from other apps.\"")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Color.white.opacity(0.85))
+                    .multilineTextAlignment(.center)
+
+                Text("This is required so imghost can read the files you share from Finder, Safari, and other apps. Without this permission, the share extension can't upload your files.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(Color.brutalTextSecondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 24)
+
+            HStack(spacing: 6) {
+                Image(systemName: "lock.shield")
+                    .font(.system(size: 11))
+                Text("Your files are only used for uploading — nothing is stored locally.")
+                    .font(.system(size: 10))
+            }
+            .foregroundStyle(Color.brutalTextTertiary)
+            .padding(.horizontal, 24)
+
+            Spacer()
+
+            HStack {
+                Spacer()
+
+                Button(action: cancel) {
+                    Text("CANCEL")
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .foregroundStyle(Color.brutalTextSecondary)
+                        .tracking(1)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+
+                Button(action: {
+                    let defaults = Config.sharedDefaults ?? UserDefaults.standard
+                    defaults.set(true, forKey: "hasGrantedShareExtensionAccess")
+                    showPermissionExplainer = false
+                    isLoading = true
+                    Task { await loadFiles() }
+                }) {
+                    Text("CONTINUE")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(.black)
                         .tracking(1)

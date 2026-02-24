@@ -7,6 +7,7 @@ struct MacOnboardingView: View {
     private let pages: [(title: String, subtitle: String)] = [
         ("HOST YOUR\nIMAGES", "Secure cloud storage"),
         ("SHARE FROM\nANYWHERE", "macOS Share Extension integration"),
+        ("ALLOW\nACCESS", "macOS will ask to access shared files — this lets imghost read files you share from other apps like Finder or Safari"),
         ("GET DIRECT\nLINKS", "Instant shareable URLs"),
         ("DRAG &\nDROP", "Upload files effortlessly"),
     ]
