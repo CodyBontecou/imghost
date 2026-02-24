@@ -68,7 +68,7 @@ struct MacMediaView: View {
     // MARK: - Body
 
     var body: some View {
-        HSplitView {
+        HStack(spacing: 0) {
             // Left: Grid + Upload
             VStack(spacing: 0) {
                 toolbar
@@ -113,7 +113,7 @@ struct MacMediaView: View {
                     handlePaste(providers: providers)
                 }
             }
-            .frame(minWidth: 400)
+            .frame(minWidth: 400, maxWidth: .infinity)
             .background(Color.brutalBackground)
             .fileImporter(
                 isPresented: $showFileImporter,
@@ -125,12 +125,15 @@ struct MacMediaView: View {
 
             // Right: Detail
             if let record = selectedRecord {
+                Divider().background(Color.brutalBorder)
                 MacUploadDetailView(record: record, onDelete: {
                     deleteRecord(record)
                 })
-                .frame(minWidth: 220, idealWidth: 300, maxWidth: 360)
+                .frame(width: detailWidth(for: record))
+                .transition(.move(edge: .trailing).combined(with: .opacity))
             }
         }
+        .animation(.easeInOut(duration: 0.25), value: selectedRecord?.id)
         .task {
             loadRecords()
         }
@@ -402,6 +405,27 @@ struct MacMediaView: View {
                 .stroke(Color.white, style: StrokeStyle(lineWidth: 2, dash: [12, 8]))
                 .padding(16)
         )
+    }
+
+    // MARK: - Detail Sidebar Sizing
+
+    /// Computes sidebar width so the image preview (at max 300pt height) shows the
+    /// full image without cropping.  Clamped to [280, 600] so controls stay usable
+    /// and the sidebar never dominates the window.
+    private func detailWidth(for record: UploadRecord) -> CGFloat {
+        let previewMaxHeight: CGFloat = 300
+        let minWidth: CGFloat = 280
+        let maxWidth: CGFloat = 600
+
+        if let data = record.thumbnailData, let nsImage = NSImage(data: data) {
+            let size = nsImage.size
+            if size.height > 0 {
+                let aspectRatio = size.width / size.height
+                let idealWidth = previewMaxHeight * aspectRatio
+                return max(minWidth, min(maxWidth, idealWidth))
+            }
+        }
+        return 320 // default fallback
     }
 
     // MARK: - History Actions
