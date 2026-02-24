@@ -100,17 +100,19 @@ struct MacShareView: View {
             if KeychainService.shared.hasValidTokens {
                 Circle()
                     .fill(Color.brutalSuccess)
-                    .frame(width: 6, height: 6)
+                    .frame(width: 8, height: 8)
             } else {
                 Circle()
                     .fill(Color.brutalError)
-                    .frame(width: 6, height: 6)
+                    .frame(width: 8, height: 8)
             }
 
             Button(action: cancel) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color.brutalTextSecondary)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
