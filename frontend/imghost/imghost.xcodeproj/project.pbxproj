@@ -23,7 +23,9 @@
 		2E53321ACBC21BEB4FA98853 /* MacImageSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3275B71610368ABB7FD83EA5 /* MacImageSyncService.swift */; };
 		334D2D7504F6F4F21410DD19 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000017000 /* AuthService.swift */; };
 		406E6E115655E5FC5479E7CF /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBC9CF58171A40A2D5DF37C7 /* AuthenticationServices.framework */; };
+		41CEB3951ED178996B43AEED /* MenuBarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEC8567A4F703CD4976EAF6 /* MenuBarManager.swift */; };
 		43914DD3B17086E1C30E04FA /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000010000 /* Config.swift */; };
+		43BBE5EFD5C9AA09F68A7204 /* MenuBarPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5476A8079EAF1802B5607F14 /* MenuBarPopoverView.swift */; };
 		45A1649480A61B106680165B /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000018000 /* AuthResponse.swift */; };
 		462CD917D757E704DFE4DE78 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 812AD3BC6795A9E37DCDD328 /* AuthenticationServices.framework */; };
 		46C6716F291ACC3B60FD7C97 /* GoogleTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FBA8EDF575959E863DA8C8 /* GoogleTypography.swift */; };
@@ -84,8 +86,8 @@
 		AF090D7998F3920533D43773 /* GoogleComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B2B177AAB3C2D4F56ED74B /* GoogleComponents.swift */; };
 		B1000001001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000001000 /* OnboardingView.swift */; };
 		B32FCD9E2162490030E563F7 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000013000 /* KeychainService.swift */; };
-		B49E7B51BF8DB84A1296BAB9 /* MacHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */; };
 		B49E7B51BF8DB84A1296BAB0 /* MacMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4CA97A2C8A52DDB7773830 /* MacMediaView.swift */; };
+		B49E7B51BF8DB84A1296BAB9 /* MacHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */; };
 		B9584D08A4CF9EE53295496B /* MacContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F4668E2429EDB4F6EA2448 /* MacContentView.swift */; };
 		BC66DDD0D6A4A72FAF5797AB /* MacBrutalDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */; };
 		BF090D7998F3920533D43774 /* BrutalComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B2B177AAB3C2D4F56ED74C /* BrutalComponents.swift */; };
@@ -181,15 +183,17 @@
 		4A69739601E0174857359C1D /* imghost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imghost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50461452072EC76077903A65 /* MacPaywallView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacPaywallView.swift; sourceTree = "<group>"; };
 		508DE51ED34D28B1427CB933 /* MacForgotPasswordView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacForgotPasswordView.swift; sourceTree = "<group>"; };
+		5476A8079EAF1802B5607F14 /* MenuBarPopoverView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MenuBarPopoverView.swift; sourceTree = "<group>"; };
 		555A5A7CA698117B65CCB23A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacHistoryView.swift; sourceTree = "<group>"; };
 		5B4CA97A2C8A52DDB7773830 /* MacMediaView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacMediaView.swift; sourceTree = "<group>"; };
+		5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacHistoryView.swift; sourceTree = "<group>"; };
 		6231EC7A2F30C82400E42DCC /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		77EF9A77B62440BA76E7919A /* GoogleColors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleColors.swift; sourceTree = "<group>"; };
 		7959712CC568EEFA9B373EFD /* MacShareViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacShareViewController.swift; sourceTree = "<group>"; };
 		812AD3BC6795A9E37DCDD328 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AuthenticationServices.framework; sourceTree = "<group>"; };
 		8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacBrutalDesignSystem.swift; sourceTree = "<group>"; };
 		92EC531C9EE3CD96675D03D8 /* PhotoGridView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoGridView.swift; sourceTree = "<group>"; };
+		9DEC8567A4F703CD4976EAF6 /* MenuBarManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MenuBarManager.swift; sourceTree = "<group>"; };
 		A1000001000 /* ImghostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImghostApp.swift; sourceTree = "<group>"; };
 		A1000002000 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1000003000 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -339,6 +343,16 @@
 			path = DesignSystem;
 			sourceTree = "<group>";
 		};
+		6C308575CDEDFDE518DB5F2A /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				9DEC8567A4F703CD4976EAF6 /* MenuBarManager.swift */,
+				5476A8079EAF1802B5607F14 /* MenuBarPopoverView.swift */,
+			);
+			name = MenuBar;
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
 		871C181611D0B0A1DEE5060E /* Subscription */ = {
 			isa = PBXGroup;
 			children = (
@@ -355,6 +369,7 @@
 				D0F4668E2429EDB4F6EA2448 /* MacContentView.swift */,
 				0CECC016CE9793A4A55E8D4D /* Services */,
 				9F6D3CAB8C102D2686F948F2 /* Views */,
+				6C308575CDEDFDE518DB5F2A /* MenuBar */,
 			);
 			path = imghostMac;
 			sourceTree = "<group>";
@@ -715,6 +730,8 @@
 				0C1063295AD86545A1FE8A40 /* SubscriptionService.swift in Sources */,
 				019644CBCB0D5D1819D9D5AE /* MacUploadQualityService.swift in Sources */,
 				BC66DDD0D6A4A72FAF5797AB /* MacBrutalDesignSystem.swift in Sources */,
+				41CEB3951ED178996B43AEED /* MenuBarManager.swift in Sources */,
+				43BBE5EFD5C9AA09F68A7204 /* MenuBarPopoverView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
