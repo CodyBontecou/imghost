@@ -213,24 +213,25 @@ struct MacThumbnailCell: View {
     let isSelected: Bool
 
     var body: some View {
-        ZStack {
-            Color.brutalSurface
-
-            if let data = record.thumbnailData, let nsImage = NSImage(data: data) {
-                Image(nsImage: nsImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else {
-                Image(systemName: "photo")
-                    .font(.system(size: 24))
-                    .foregroundStyle(Color.brutalTextTertiary)
-            }
-        }
-        .aspectRatio(1, contentMode: .fit)
-        .clipped()
-        .overlay(
-            Rectangle()
-                .stroke(isSelected ? Color.white : Color.clear, lineWidth: 2)
-        )
+        Color.brutalSurface
+            .aspectRatio(1, contentMode: .fit)
+            .overlay(
+                Group {
+                    if let data = record.thumbnailData, let nsImage = NSImage(data: data) {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } else {
+                        Image(systemName: "photo")
+                            .font(.system(size: 24))
+                            .foregroundStyle(Color.brutalTextTertiary)
+                    }
+                }
+            )
+            .clipped()
+            .overlay(
+                Rectangle()
+                    .stroke(isSelected ? Color.white : Color.clear, lineWidth: 2)
+            )
     }
 }
