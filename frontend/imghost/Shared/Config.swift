@@ -3,13 +3,16 @@ import Foundation
 struct Config {
     static let appGroup = "group.com.imghost.shared"
     static let keychainService = "com.imghost"
-    // On macOS, we must NOT set kSecAttrAccessGroup to the bare App Group ID
-    // ("group.com.imghost.shared") because the security daemon only recognises
-    // the team-ID-prefixed form ("67KC823C9A.group.com.imghost.shared").
-    // Setting this to nil lets the system use the default access group, which
-    // is the first entry in the keychain-access-groups entitlement — identical
-    // for both the main app and its extensions, so items are shared correctly.
-    static let keychainAccessGroup: String? = nil
+    // Both the main app and share extension must use the SAME explicit keychain
+    // access group so they can read each other's tokens.  When kSecAttrAccessGroup
+    // is omitted (nil), the system defaults to the app's own application-identifier
+    // (e.g. "67KC823C9A.com.codybontecou.imghost" vs
+    // "67KC823C9A.com.codybontecou.imghost.ShareExtension"), which are DIFFERENT —
+    // causing the share extension to think the user is not logged in.
+    //
+    // The value here must be the team-ID-prefixed form of the shared keychain
+    // group declared in both targets' keychain-access-groups entitlement.
+    static let keychainAccessGroup: String? = "67KC823C9A.group.com.imghost.shared"
 
     // Legacy access group used before this fix.  Kept only so the main app
     // can migrate tokens that were saved under the old (unprefixed) group.

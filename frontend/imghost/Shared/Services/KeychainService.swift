@@ -173,12 +173,16 @@ final class KeychainService {
 
     // MARK: - Legacy Migration
 
-    /// Migrate keychain items from the old (unprefixed) App-Group access group
-    /// to the current (default / team-ID-prefixed) access group.
+    /// Migrate keychain items from previous access group configurations to the
+    /// current explicit shared access group ("67KC823C9A.group.com.imghost.shared").
     ///
-    /// This is needed because earlier builds stored tokens under
-    /// "group.com.imghost.shared", which works in the main app but NOT in
-    /// extensions on macOS (the security daemon requires the team-ID prefix).
+    /// Earlier builds stored tokens under:
+    ///   1. The bare (unprefixed) app group "group.com.imghost.shared"
+    ///   2. No explicit access group (nil), which defaulted to the app's own
+    ///      application-identifier ("67KC823C9A.com.codybontecou.imghost")
+    ///
+    /// Both cases result in the share extension being unable to read the tokens.
+    /// This method migrates from either legacy location to the shared group.
     ///
     /// Call once on main-app launch.  It is a no-op when there is nothing to
     /// migrate, or when running inside an extension (which can't read the
@@ -188,32 +192,57 @@ final class KeychainService {
         // Extensions can't read the legacy group – skip.
         return
         #else
-        guard let legacyGroup = Config.legacyKeychainAccessGroup else { return }
-
-        // If we already have tokens under the new group, nothing to do.
+        // If we already have tokens under the new shared group, nothing to do.
         if loadAccessToken() != nil { return }
 
-        // Try loading from the legacy access group.
-        let legacyService = KeychainService(service: service, accessGroup: legacyGroup)
+        // --- Attempt 1: migrate from nil access group (app-identifier default) ---
+        // Previous builds used keychainAccessGroup = nil, which saved tokens under
+        // the app's own identifier. Create a service with nil group to read those.
+        let nilGroupService = KeychainService(service: service, accessGroup: nil)
+        if let accessToken = nilGroupService.loadAccessToken() {
+            let refreshToken = nilGroupService.loadRefreshToken()
+            let tokenExpiry = nilGroupService.loadTokenExpiry()
 
-        guard let accessToken = legacyService.loadAccessToken() else { return }
-        let refreshToken = legacyService.loadRefreshToken()
-        let tokenExpiry = legacyService.loadTokenExpiry()
+            do {
+                try saveAccessToken(accessToken)
+                if let rt = refreshToken { try saveRefreshToken(rt) }
+                if let exp = tokenExpiry { try saveTokenExpiry(exp) }
 
-        // Re-save under the new (default) access group.
-        do {
-            try saveAccessToken(accessToken)
-            if let rt = refreshToken { try saveRefreshToken(rt) }
-            if let exp = tokenExpiry { try saveTokenExpiry(exp) }
+                // Clean up old items
+                try? nilGroupService.deleteAccessToken()
+                try? nilGroupService.deleteRefreshToken()
+                try? nilGroupService.deleteTokenExpiry()
 
-            // Clean up legacy items so we don't migrate again.
-            try? legacyService.deleteAccessToken()
-            try? legacyService.deleteRefreshToken()
-            try? legacyService.deleteTokenExpiry()
+                print("[KeychainService] ✅ Migrated tokens from nil (app-identifier) access group")
+                return
+            } catch {
+                print("[KeychainService] ⚠️ Migration from nil access group failed: \(error)")
+            }
+        }
 
-            print("[KeychainService] ✅ Migrated tokens from legacy access group")
-        } catch {
-            print("[KeychainService] ⚠️ Migration failed: \(error)")
+        // --- Attempt 2: migrate from bare (unprefixed) app group ---
+        if let legacyGroup = Config.legacyKeychainAccessGroup {
+            let legacyService = KeychainService(service: service, accessGroup: legacyGroup)
+
+            if let accessToken = legacyService.loadAccessToken() {
+                let refreshToken = legacyService.loadRefreshToken()
+                let tokenExpiry = legacyService.loadTokenExpiry()
+
+                do {
+                    try saveAccessToken(accessToken)
+                    if let rt = refreshToken { try saveRefreshToken(rt) }
+                    if let exp = tokenExpiry { try saveTokenExpiry(exp) }
+
+                    // Clean up legacy items
+                    try? legacyService.deleteAccessToken()
+                    try? legacyService.deleteRefreshToken()
+                    try? legacyService.deleteTokenExpiry()
+
+                    print("[KeychainService] ✅ Migrated tokens from legacy access group")
+                } catch {
+                    print("[KeychainService] ⚠️ Migration from legacy access group failed: \(error)")
+                }
+            }
         }
         #endif
     }
