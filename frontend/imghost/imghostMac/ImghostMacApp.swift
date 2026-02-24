@@ -20,6 +20,10 @@ struct ImghostMacApp: App {
                     menuBarManager.setup()
 
                     Task {
+                        // Migrate tokens from legacy keychain access group
+                        // so the share extension can read them.
+                        KeychainService.shared.migrateFromLegacyAccessGroupIfNeeded()
+
                         await authState.checkAuthStatus()
                         storeKit.startListening()
                         await storeKit.loadProducts()

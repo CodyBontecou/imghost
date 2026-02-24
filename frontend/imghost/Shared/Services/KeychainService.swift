@@ -170,4 +170,51 @@ final class KeychainService {
     var hasValidTokens: Bool {
         loadAccessToken() != nil
     }
+
+    // MARK: - Legacy Migration
+
+    /// Migrate keychain items from the old (unprefixed) App-Group access group
+    /// to the current (default / team-ID-prefixed) access group.
+    ///
+    /// This is needed because earlier builds stored tokens under
+    /// "group.com.imghost.shared", which works in the main app but NOT in
+    /// extensions on macOS (the security daemon requires the team-ID prefix).
+    ///
+    /// Call once on main-app launch.  It is a no-op when there is nothing to
+    /// migrate, or when running inside an extension (which can't read the
+    /// legacy group anyway).
+    func migrateFromLegacyAccessGroupIfNeeded() {
+        #if SHARE_EXTENSION
+        // Extensions can't read the legacy group – skip.
+        return
+        #else
+        guard let legacyGroup = Config.legacyKeychainAccessGroup else { return }
+
+        // If we already have tokens under the new group, nothing to do.
+        if loadAccessToken() != nil { return }
+
+        // Try loading from the legacy access group.
+        let legacyService = KeychainService(service: service, accessGroup: legacyGroup)
+
+        guard let accessToken = legacyService.loadAccessToken() else { return }
+        let refreshToken = legacyService.loadRefreshToken()
+        let tokenExpiry = legacyService.loadTokenExpiry()
+
+        // Re-save under the new (default) access group.
+        do {
+            try saveAccessToken(accessToken)
+            if let rt = refreshToken { try saveRefreshToken(rt) }
+            if let exp = tokenExpiry { try saveTokenExpiry(exp) }
+
+            // Clean up legacy items so we don't migrate again.
+            try? legacyService.deleteAccessToken()
+            try? legacyService.deleteRefreshToken()
+            try? legacyService.deleteTokenExpiry()
+
+            print("[KeychainService] ✅ Migrated tokens from legacy access group")
+        } catch {
+            print("[KeychainService] ⚠️ Migration failed: \(error)")
+        }
+        #endif
+    }
 }

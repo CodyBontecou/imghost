@@ -20,6 +20,10 @@ struct ImghostApp: App {
                 .environmentObject(authState)
                 .environmentObject(subscriptionState)
                 .task {
+                    // Migrate tokens from legacy keychain access group
+                    // so the share extension can read them.
+                    KeychainService.shared.migrateFromLegacyAccessGroupIfNeeded()
+
                     // Check auth status first
                     await authState.checkAuthStatus()
 
