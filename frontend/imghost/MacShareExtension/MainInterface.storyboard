@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="19117" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="j4H-bL-xdR">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19117"/>
+    </dependencies>
+    <scenes>
+        <!--Mac Share View Controller-->
+        <scene sceneID="R2V-B0-nI4">
+            <objects>
+                <viewController id="j4H-bL-xdR" customClass="MacShareViewController" customModule="MacShareExtension" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="se5-gp-TjO">
+                        <rect key="frame" x="0.0" y="0.0" width="420" height="480"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </view>
+                </viewController>
+                <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="136" y="162"/>
+        </scene>
+    </scenes>
+</document>

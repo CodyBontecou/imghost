@@ -108,6 +108,7 @@
 		EB28A416D0DD6725EA47970C /* MacUploadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */; };
 		EF4E0702692B2A1ED065A0D1 /* MacSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */; };
 		F055DAA3B8912E717C93BF3C /* MacShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 33C12964A312DC16C820B724 /* MacShareExtension.appex */; };
+		FA00000100000000000A0002 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA00000100000000000A0001 /* MainInterface.storyboard */; };
 		F1000001001 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000001000 /* PaywallView.swift */; };
 		F1000002001 /* SubscriptionStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000002000 /* SubscriptionStatusView.swift */; };
 		F2B2F1F63BDE5845C4C19933 /* MacUploadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */; };
@@ -241,6 +242,7 @@
 		F1000001000 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		F1000002000 /* SubscriptionStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStatusView.swift; sourceTree = "<group>"; };
 		F945098B16B8B4E7F8C72EEB /* MacShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacShareView.swift; sourceTree = "<group>"; };
+		FA00000100000000000A0001 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		G1000001000 /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
 		H1000001000 /* PhotosExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosExportService.swift; sourceTree = "<group>"; };
 		I1000001000 /* ImageSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSyncService.swift; sourceTree = "<group>"; };
@@ -299,6 +301,7 @@
 			children = (
 				F945098B16B8B4E7F8C72EEB /* MacShareView.swift */,
 				7959712CC568EEFA9B373EFD /* MacShareViewController.swift */,
+				FA00000100000000000A0001 /* MainInterface.storyboard */,
 			);
 			path = MacShareExtension;
 			sourceTree = "<group>";
@@ -688,6 +691,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA00000100000000000A0002 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
