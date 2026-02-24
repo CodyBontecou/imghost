@@ -129,22 +129,6 @@ struct MacMediaView: View {
                     deleteRecord(record)
                 })
                 .frame(minWidth: 220, idealWidth: 300, maxWidth: 360)
-            } else {
-                VStack {
-                    Spacer()
-                    VStack(spacing: 12) {
-                        Image(systemName: "photo")
-                            .font(.system(size: 32))
-                            .foregroundStyle(Color.brutalTextTertiary)
-                        Text("SELECT AN IMAGE")
-                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .foregroundStyle(Color.brutalTextTertiary)
-                            .tracking(2)
-                    }
-                    Spacer()
-                }
-                .frame(minWidth: 220, idealWidth: 300, maxWidth: 360)
-                .background(Color.brutalSurface.opacity(0.5))
             }
         }
         .task {
