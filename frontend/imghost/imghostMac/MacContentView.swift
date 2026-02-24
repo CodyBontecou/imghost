@@ -33,6 +33,8 @@ struct MacContentView: View {
                 MacEmailVerificationView()
             } else if subscriptionState.status == .loading || subscriptionState.isLoading {
                 loadingView
+            } else if subscriptionState.status == .error {
+                subscriptionErrorView
             } else if subscriptionState.shouldShowPaywall {
                 MacPaywallView()
             } else {
@@ -137,6 +139,55 @@ struct MacContentView: View {
             MacMediaView()
         case .settings:
             MacSettingsView()
+        }
+    }
+
+    // MARK: - Subscription Error (retry instead of paywall)
+
+    private var subscriptionErrorView: some View {
+        ZStack {
+            Color.brutalBackground.ignoresSafeArea()
+            VStack(spacing: 24) {
+                Image("AppIconImage")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                VStack(spacing: 8) {
+                    Text("CONNECTION ISSUE")
+                        .font(.system(size: 14, weight: .bold, design: .monospaced))
+                        .foregroundStyle(Color.white)
+                        .tracking(2)
+
+                    Text("Unable to verify your subscription.\nPlease check your connection and try again.")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.brutalTextSecondary)
+                        .multilineTextAlignment(.center)
+                }
+
+                Button(action: {
+                    Task { await subscriptionState.checkStatus() }
+                }) {
+                    Text("RETRY")
+                        .font(.system(size: 13, weight: .medium, design: .monospaced))
+                        .tracking(1)
+                        .foregroundStyle(Color.black)
+                        .frame(width: 160, height: 44)
+                        .background(Color.white)
+                }
+                .buttonStyle(.plain)
+
+                Button(action: {
+                    authState.logout()
+                }) {
+                    Text("SIGN OUT")
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .foregroundStyle(Color.brutalTextSecondary)
+                        .tracking(1)
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 

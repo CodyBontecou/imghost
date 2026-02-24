@@ -61,8 +61,25 @@ final class SubscriptionService {
         }
     }
 
-    /// Get current subscription status from backend
+    /// Get current subscription status from backend (with automatic token refresh on 401)
     func getSubscriptionStatus() async throws -> SubscriptionStatusResponse {
+        do {
+            return try await fetchSubscriptionStatus()
+        } catch SubscriptionError.notAuthenticated {
+            // Token might be expired — try refreshing and retry once
+            print("[SubscriptionService] Token expired or missing, attempting refresh...")
+            do {
+                try await AuthService.shared.refreshTokens()
+                return try await fetchSubscriptionStatus()
+            } catch {
+                print("[SubscriptionService] Token refresh failed: \(error)")
+                throw SubscriptionError.notAuthenticated
+            }
+        }
+    }
+
+    /// Raw fetch for subscription status (no retry logic)
+    private func fetchSubscriptionStatus() async throws -> SubscriptionStatusResponse {
         guard let token = keychainService.loadAccessToken() else {
             throw SubscriptionError.notAuthenticated
         }
@@ -140,7 +157,7 @@ final class SubscriptionService {
 
 // MARK: - Errors
 
-enum SubscriptionError: LocalizedError {
+enum SubscriptionError: LocalizedError, Equatable {
     case notAuthenticated
     case invalidResponse
     case serverError(String)

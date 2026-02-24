@@ -33,6 +33,51 @@ struct ContentView: View {
             } else if !authState.isEmailVerified {
                 // Logged in but email not verified
                 EmailVerificationView()
+            } else if subscriptionState.status == .error {
+                // Transient error checking subscription — show retry, not paywall
+                ZStack {
+                    Color.brutalBackground.ignoresSafeArea()
+                    VStack(spacing: 24) {
+                        Image("AppIconImage")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 48, height: 48)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                        VStack(spacing: 8) {
+                            Text("CONNECTION ISSUE")
+                                .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                .foregroundStyle(Color.white)
+                                .tracking(2)
+
+                            Text("Unable to verify your subscription.\nPlease check your connection and try again.")
+                                .font(.system(size: 12))
+                                .foregroundStyle(Color.brutalTextSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+
+                        Button(action: {
+                            Task { await subscriptionState.checkStatus() }
+                        }) {
+                            Text("RETRY")
+                                .font(.system(size: 13, weight: .medium, design: .monospaced))
+                                .tracking(1)
+                                .foregroundStyle(Color.black)
+                                .frame(width: 160, height: 44)
+                                .background(Color.white)
+                        }
+
+                        Button(action: {
+                            authState.logout()
+                        }) {
+                            Text("SIGN OUT")
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundStyle(Color.brutalTextSecondary)
+                                .tracking(1)
+                        }
+                    }
+                }
+                .preferredColorScheme(.dark)
             } else if subscriptionState.shouldShowPaywall {
                 // Authenticated but no subscription - show paywall
                 PaywallView()

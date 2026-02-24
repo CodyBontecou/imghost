@@ -22,6 +22,7 @@ final class SubscriptionState: ObservableObject {
         case subscribed          // Active paid subscription - allow access
         case expired             // Subscription lapsed - show paywall
         case cancelled           // Cancelled but still active until period end
+        case error               // Transient error checking status - don't show paywall
 
         var displayName: String {
             switch self {
@@ -39,6 +40,8 @@ final class SubscriptionState: ObservableObject {
                 return "Expired"
             case .cancelled:
                 return "Cancelled"
+            case .error:
+                return "Error"
             }
         }
     }
@@ -63,22 +66,38 @@ final class SubscriptionState: ObservableObject {
         }
     }
 
-    /// Check subscription status from backend
+    /// Check subscription status from backend (with retry for transient errors)
     func checkStatus() async {
         isLoading = true
         error = nil
 
-        do {
-            let response = try await SubscriptionService.shared.getSubscriptionStatus()
-            updateFromResponse(response)
-            isLoading = false
-        } catch {
-            self.error = error
-            isLoading = false
-            print("Failed to check subscription status: \(error)")
-
-            // Default to no subscription on error
-            status = .noSubscription
+        // Retry up to 2 times for transient failures
+        for attempt in 1...3 {
+            do {
+                let response = try await SubscriptionService.shared.getSubscriptionStatus()
+                updateFromResponse(response)
+                isLoading = false
+                return
+            } catch let err as SubscriptionError where err == .notAuthenticated {
+                // Auth failure after token refresh was already attempted — don't retry
+                self.error = err
+                isLoading = false
+                print("[SubscriptionState] Auth failed after refresh, showing error state: \(err)")
+                status = .error
+                return
+            } catch {
+                print("[SubscriptionState] Attempt \(attempt)/3 failed: \(error)")
+                if attempt < 3 {
+                    // Brief delay before retry (500ms, then 1s)
+                    try? await Task.sleep(nanoseconds: UInt64(attempt) * 500_000_000)
+                } else {
+                    self.error = error
+                    isLoading = false
+                    print("[SubscriptionState] All attempts failed, showing error state")
+                    // Show error state instead of paywall — transient errors shouldn't block the user
+                    status = .error
+                }
+            }
         }
     }
 

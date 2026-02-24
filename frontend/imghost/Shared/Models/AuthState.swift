@@ -58,13 +58,26 @@ final class AuthState: ObservableObject {
 
     /// Set authenticated state after successful login/register
     func setAuthenticated(response: AuthResponse) async {
-        // Save tokens
-        try? keychainService.saveAccessToken(response.accessToken)
-        try? keychainService.saveRefreshToken(response.refreshToken)
+        // Save tokens (log errors instead of silently swallowing)
+        do {
+            try keychainService.saveAccessToken(response.accessToken)
+        } catch {
+            print("[AuthState] ⚠️ Failed to save access token to keychain: \(error)")
+        }
+
+        do {
+            try keychainService.saveRefreshToken(response.refreshToken)
+        } catch {
+            print("[AuthState] ⚠️ Failed to save refresh token to keychain: \(error)")
+        }
 
         // Calculate and save expiry
         let expiry = Date().addingTimeInterval(TimeInterval(response.expiresIn))
-        try? keychainService.saveTokenExpiry(expiry)
+        do {
+            try keychainService.saveTokenExpiry(expiry)
+        } catch {
+            print("[AuthState] ⚠️ Failed to save token expiry to keychain: \(error)")
+        }
 
         // Update state
         isAuthenticated = true
