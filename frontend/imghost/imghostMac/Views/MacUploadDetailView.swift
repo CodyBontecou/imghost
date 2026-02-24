@@ -1,4 +1,37 @@
 import SwiftUI
+import AppKit
+
+// MARK: - Selectable Link Text (NSViewRepresentable)
+// SwiftUI's .textSelection(.enabled) on Text can ignore foregroundStyle on macOS,
+// rendering black text that's invisible on dark backgrounds. This uses NSTextField
+// directly so we control the text color reliably.
+
+private struct SelectableLinkText: NSViewRepresentable {
+    let text: String
+
+    func makeNSView(context: Context) -> NSTextField {
+        let field = NSTextField(wrappingLabelWithString: text)
+        field.isEditable = false
+        field.isSelectable = true
+        field.drawsBackground = false
+        field.textColor = NSColor(white: 0.6, alpha: 1.0)
+        field.font = NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+        field.maximumNumberOfLines = 3
+        field.lineBreakMode = .byTruncatingTail
+        field.isBordered = false
+        field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        if let cell = field.cell as? NSTextFieldCell {
+            cell.wraps = true
+            cell.isScrollable = false
+        }
+        return field
+    }
+
+    func updateNSView(_ nsView: NSTextField, context: Context) {
+        nsView.stringValue = text
+        nsView.textColor = NSColor(white: 0.6, alpha: 1.0)
+    }
+}
 
 struct MacUploadDetailView: View {
     let record: UploadRecord
@@ -72,11 +105,7 @@ struct MacUploadDetailView: View {
 
                     // Link display
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(formattedLink)
-                            .font(.system(size: 11, design: .monospaced))
-                            .foregroundStyle(Color.brutalTextSecondary)
-                            .lineLimit(3)
-                            .textSelection(.enabled)
+                        SelectableLinkText(text: formattedLink)
                             .padding(10)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color.brutalSurface)
