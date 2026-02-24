@@ -1,6 +1,22 @@
 import SwiftUI
 import AppKit
 
+// MARK: - NSView Anchor (for positioning NSSharingServicePicker)
+
+private struct NSViewAnchor: NSViewRepresentable {
+    let onResolve: (NSView) -> Void
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async { onResolve(view) }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async { onResolve(nsView) }
+    }
+}
+
 // MARK: - Selectable Link Text (NSViewRepresentable)
 // SwiftUI's .textSelection(.enabled) on Text can ignore foregroundStyle on macOS,
 // rendering black text that's invisible on dark backgrounds. This uses NSTextField
@@ -40,6 +56,7 @@ struct MacUploadDetailView: View {
     @State private var isCopied = false
     @State private var showDeleteConfirm = false
     @State private var selectedFormat: LinkFormat
+    @State private var shareButtonView: NSView?
 
     private let linkFormatService = LinkFormatService.shared
 
@@ -162,6 +179,7 @@ struct MacUploadDetailView: View {
                                 .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
                             }
                             .buttonStyle(.plain)
+                            .background(NSViewAnchor { self.shareButtonView = $0 })
                         }
 
                         // Delete
@@ -253,11 +271,9 @@ struct MacUploadDetailView: View {
     }
 
     private func shareLink() {
-        // Use NSSharingServicePicker via the window
-        guard let window = NSApplication.shared.keyWindow,
-              let contentView = window.contentView else { return }
+        guard let anchor = shareButtonView else { return }
 
         let picker = NSSharingServicePicker(items: [record.url as NSString])
-        picker.show(relativeTo: contentView.bounds, of: contentView, preferredEdge: .minY)
+        picker.show(relativeTo: anchor.bounds, of: anchor, preferredEdge: .minY)
     }
 }
