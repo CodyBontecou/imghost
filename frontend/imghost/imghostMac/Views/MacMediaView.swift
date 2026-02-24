@@ -113,7 +113,7 @@ struct MacMediaView: View {
                     handlePaste(providers: providers)
                 }
             }
-            .frame(minWidth: 300)
+            .frame(minWidth: 400)
             .background(Color.brutalBackground)
             .fileImporter(
                 isPresented: $showFileImporter,
@@ -128,7 +128,7 @@ struct MacMediaView: View {
                 MacUploadDetailView(record: record, onDelete: {
                     deleteRecord(record)
                 })
-                .frame(minWidth: 280, idealWidth: 320)
+                .frame(minWidth: 220, idealWidth: 300, maxWidth: 360)
             } else {
                 VStack {
                     Spacer()
@@ -143,7 +143,7 @@ struct MacMediaView: View {
                     }
                     Spacer()
                 }
-                .frame(minWidth: 280, idealWidth: 320)
+                .frame(minWidth: 220, idealWidth: 300, maxWidth: 360)
                 .background(Color.brutalSurface.opacity(0.5))
             }
         }
@@ -155,14 +155,15 @@ struct MacMediaView: View {
     // MARK: - Toolbar
 
     private var toolbar: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
             Text("MEDIA")
                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.white)
                 .tracking(2)
                 .fixedSize()
+                .layoutPriority(1)
 
-            Spacer()
+            Spacer(minLength: 4)
 
             // Search
             HStack(spacing: 6) {
@@ -173,7 +174,7 @@ struct MacMediaView: View {
                 TextField("Search...", text: $searchText)
                     .textFieldStyle(.plain)
                     .font(.system(size: 12, design: .monospaced))
-                    .frame(width: 140)
+                    .frame(minWidth: 60, idealWidth: 120)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
@@ -181,7 +182,7 @@ struct MacMediaView: View {
             .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
 
             // Quality picker
-            HStack(spacing: 6) {
+            HStack(spacing: 4) {
                 Text("QUALITY")
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextTertiary)
@@ -194,7 +195,7 @@ struct MacMediaView: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .frame(width: 100)
+                .frame(width: 90)
                 .onChange(of: selectedQuality) { _, newValue in
                     qualityService.currentQuality = newValue
                 }
@@ -229,13 +230,15 @@ struct MacMediaView: View {
             }
             .buttonStyle(.plain)
             .fixedSize()
+            .layoutPriority(1)
             .help("Upload files (or drag & drop, or ⌘V to paste)")
 
             Text("\(filteredRecords.count)")
                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                 .foregroundStyle(Color.brutalTextSecondary)
+                .fixedSize()
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(Color.brutalSurface)
     }

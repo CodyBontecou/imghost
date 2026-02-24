@@ -13,7 +13,7 @@ struct ImghostMacApp: App {
                 .environmentObject(authState)
                 .environmentObject(subscriptionState)
                 .environmentObject(storeKit)
-                .frame(minWidth: 800, minHeight: 560)
+                .frame(minWidth: 960, minHeight: 560)
                 .onAppear {
                     Task {
                         await authState.checkAuthStatus()
