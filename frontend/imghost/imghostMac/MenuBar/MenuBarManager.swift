@@ -17,10 +17,11 @@ final class MenuBarManager: ObservableObject {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
         if let button = item.button {
-            // Use SF Symbol for the menu bar icon - a bold arrow.up.doc style
-            let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
-            let image = NSImage(systemSymbolName: "photo.arrow.up", accessibilityDescription: "imghost")?.withSymbolConfiguration(config)
-            button.image = image
+            // Use the app icon for the menu bar
+            if let image = NSImage(named: "MenuBarIcon") {
+                image.size = NSSize(width: 18, height: 18)
+                button.image = image
+            }
             button.action = #selector(togglePopover(_:))
             button.target = self
         }
