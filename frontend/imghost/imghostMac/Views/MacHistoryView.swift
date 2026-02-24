@@ -226,7 +226,7 @@ struct MacThumbnailCell: View {
                     .foregroundStyle(Color.brutalTextTertiary)
             }
         }
-        .aspectRatio(1, contentMode: .fill)
+        .aspectRatio(1, contentMode: .fit)
         .clipped()
         .overlay(
             Rectangle()
