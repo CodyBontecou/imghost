@@ -287,12 +287,22 @@ struct MacShareView: View {
 
                 Spacer()
 
-                Picker("", selection: $selectedQuality) {
-                    ForEach(UploadQuality.allCases) { q in
-                        Text(q.displayName).tag(q)
+                HStack(spacing: 0) {
+                    ForEach(UploadQuality.allCases) { quality in
+                        let isSelected = selectedQuality == quality
+                        Button(action: { selectedQuality = quality }) {
+                            Text(quality.displayName)
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .tracking(0.5)
+                                .foregroundStyle(isSelected ? .black : Color.brutalTextSecondary)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 28)
+                                .background(isSelected ? Color.white : Color.clear)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
-                .pickerStyle(.segmented)
+                .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
                 .frame(width: 280)
             }
             .padding(.horizontal, 12)
