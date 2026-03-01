@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "dev": "wrangler dev --ip 0.0.0.0",
     "deploy": "wrangler deploy",
     "db:init": "./scripts/init-db.sh",
@@ -23,7 +26,9 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240117.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "typescript": "^5.3.3",
+    "vitest": "^3.2.4",
     "wrangler": "^3.24.0"
   }
 }

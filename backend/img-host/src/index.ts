@@ -6,6 +6,13 @@ import { Analytics } from './analytics';
 import { RateLimiter, getIpRateLimitConfig } from './rate-limiter';
 import { ContentModerator } from './content-moderation';
 import {
+  parseTransformParams,
+  isTransformableContentType,
+  buildCloudflareImageOptions,
+  getBestFormat,
+  type ImageTransformOptions,
+} from './image-optimization';
+import {
   handleRegisterV2,
   handleLoginV2,
   handleRefreshToken,
@@ -320,18 +327,105 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
 }
 
 async function handleGet(request: Request, env: Env, key: string): Promise<Response> {
+  const url = new URL(request.url);
+
+  // Parse transform parameters
+  const { options, errors, hasTransforms } = parseTransformParams(url);
+
+  // Return validation errors early (before fetching from R2)
+  if (errors.length > 0) {
+    return json({
+      error: 'Invalid parameters',
+      details: errors,
+    }, 400);
+  }
+
+  // Fetch image from R2
   const object = await env.IMAGES.get(key);
 
   if (!object) {
     return json({ error: 'Not found' }, 404);
   }
 
-  const headers = new Headers();
-  headers.set('Content-Type', object.httpMetadata?.contentType || 'application/octet-stream');
-  headers.set('Cache-Control', 'public, max-age=31536000');
-  headers.set('ETag', object.httpEtag);
+  const contentType = object.httpMetadata?.contentType || 'application/octet-stream';
 
-  return new Response(object.body, { headers });
+  // If transforms requested, validate content type
+  if (hasTransforms && !isTransformableContentType(contentType)) {
+    return json({
+      error: 'Unsupported media type for transformation',
+      content_type: contentType,
+      hint: 'Image transformations only work with JPEG, PNG, GIF, WebP, AVIF, and SVG files.',
+    }, 415);
+  }
+
+  // If no transforms, serve original image directly
+  if (!hasTransforms) {
+    const headers = new Headers();
+    headers.set('Content-Type', contentType);
+    headers.set('Cache-Control', 'public, max-age=31536000');
+    headers.set('ETag', object.httpEtag);
+
+    return new Response(object.body, { headers });
+  }
+
+  // Apply image transformations using Cloudflare Image Resizing
+  // Handle format=auto by checking Accept header
+  const transformOptions = { ...options };
+  if (transformOptions.format === 'auto') {
+    const acceptHeader = request.headers.get('Accept');
+    transformOptions.format = getBestFormat(acceptHeader);
+  }
+
+  // Build Cloudflare image options
+  const cfImageOptions = buildCloudflareImageOptions(transformOptions);
+
+  // Use Cloudflare Image Resizing via fetch with cf.image
+  // The image needs to be accessible via URL for CF to transform it
+  const imageUrl = `${url.origin}/${key}`;
+
+  try {
+    const transformedResponse = await fetch(imageUrl, {
+      cf: {
+        image: cfImageOptions,
+        cacheEverything: true,
+        cacheTtl: 86400, // 24 hours
+      },
+    });
+
+    // Check if transformation was successful
+    if (!transformedResponse.ok) {
+      // If CF Image Resizing fails, fall back to original
+      console.error('Image transformation failed:', transformedResponse.status);
+
+      const headers = new Headers();
+      headers.set('Content-Type', contentType);
+      headers.set('Cache-Control', 'public, max-age=31536000');
+      headers.set('ETag', object.httpEtag);
+
+      return new Response(object.body, { headers });
+    }
+
+    // Build response headers for transformed image
+    const headers = new Headers(transformedResponse.headers);
+    headers.set('Cache-Control', 'public, max-age=31536000');
+    headers.set('Vary', 'Accept'); // Important for format=auto
+    headers.set('X-Image-Optimized', 'true');
+
+    return new Response(transformedResponse.body, {
+      status: 200,
+      headers,
+    });
+  } catch (error) {
+    // If transformation fails, fall back to serving original
+    console.error('Image transformation error:', error);
+
+    const headers = new Headers();
+    headers.set('Content-Type', contentType);
+    headers.set('Cache-Control', 'public, max-age=31536000');
+    headers.set('ETag', object.httpEtag);
+
+    return new Response(object.body, { headers });
+  }
 }
 
 async function handleDelete(request: Request, env: Env, id: string): Promise<Response> {
