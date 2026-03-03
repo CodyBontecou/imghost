@@ -11,3 +11,11 @@ node_modules/
 xcuserdata/
 frontend/imghost/design/
 frontend/imghost/build/
+
+# Build artifacts
+frontend/imghost/*.zip
+frontend/imghost/*.ipa
+frontend/imghost/*.pkg
+frontend/imghost/imghost.app/
+frontend/imghost/build/
+frontend/imghost/*.dSYM.zip
