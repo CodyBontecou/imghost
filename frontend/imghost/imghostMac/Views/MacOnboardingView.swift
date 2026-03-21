@@ -4,12 +4,12 @@ struct MacOnboardingView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var currentPage = 0
 
-    private let pages: [(title: String, subtitle: String)] = [
-        ("HOST YOUR\nIMAGES", "Secure cloud storage"),
-        ("SHARE FROM\nANYWHERE", "macOS Share Extension integration"),
-        ("ALLOW\nACCESS", "macOS will ask to access shared files — this lets imghost read files you share from other apps like Finder or Safari"),
-        ("GET DIRECT\nLINKS", "Instant shareable URLs"),
-        ("DRAG &\nDROP", "Upload files effortlessly"),
+    private let pages: [(titleKey: String, subtitleKey: String)] = [
+        ("onboarding.page1.title", "onboarding.page1.subtitle"),
+        ("onboarding.page2.title", "onboarding.page2.subtitle"),
+        ("onboarding.page3.title", "onboarding.page3.subtitle"),
+        ("onboarding.page4.title", "onboarding.page4.subtitle"),
+        ("onboarding.page5.title", "onboarding.page5.subtitle"),
     ]
 
     var body: some View {
@@ -27,7 +27,7 @@ struct MacOnboardingView: View {
 
                     Spacer()
 
-                    Text("\(currentPage + 1)/\(pages.count)")
+                    Text(verbatim: String(format: String(localized: "onboarding.page_indicator"), currentPage + 1, pages.count))
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalTextTertiary)
                 }
@@ -38,7 +38,7 @@ struct MacOnboardingView: View {
 
                 // Main content
                 VStack(alignment: .leading, spacing: 16) {
-                    Text(pages[currentPage].title)
+                    Text(LocalizedStringKey(pages[currentPage].titleKey))
                         .font(.system(size: 64, weight: .black))
                         .foregroundStyle(Color.white)
                         .lineSpacing(-4)
@@ -48,10 +48,11 @@ struct MacOnboardingView: View {
                             .fill(Color.white)
                             .frame(width: 24, height: 1)
 
-                        Text(pages[currentPage].subtitle.uppercased())
+                        Text(LocalizedStringKey(pages[currentPage].subtitleKey))
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
                             .foregroundStyle(Color.brutalTextSecondary)
                             .tracking(2)
+                            .textCase(.uppercase)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -77,7 +78,7 @@ struct MacOnboardingView: View {
                     HStack(spacing: 12) {
                         if currentPage < pages.count - 1 {
                             Button(action: { hasCompletedOnboarding = true }) {
-                                Text("SKIP")
+                                Text("onboarding.button.skip")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .foregroundStyle(Color.brutalTextSecondary)
                                     .tracking(1)
@@ -95,7 +96,9 @@ struct MacOnboardingView: View {
                                 currentPage += 1
                             }
                         }) {
-                            Text(currentPage == pages.count - 1 ? "START" : "NEXT")
+                            Text(currentPage == pages.count - 1
+                                 ? "onboarding.button.start"
+                                 : "onboarding.button.next")
                                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                                 .foregroundStyle(Color.black)
                                 .tracking(1)

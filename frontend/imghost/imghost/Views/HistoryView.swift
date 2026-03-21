@@ -14,27 +14,27 @@ struct HistoryView: View {
 
                 Group {
                     if isLoading {
-                        BrutalLoading(text: "Loading")
+                        BrutalLoading(text: String(localized: "state.loading"))
                     } else if let error = errorMessage {
                         BrutalEmptyState(
-                            title: "Something went wrong",
+                            title: String(localized: "history.error.title"),
                             subtitle: error,
                             action: loadHistory,
-                            actionTitle: "Retry"
+                            actionTitle: String(localized: "history.error.button.retry")
                         )
                     } else if records.isEmpty {
                         VStack(spacing: 24) {
-                            Text("NO\nMEDIA\nYET")
+                            Text("history.empty.title")
                                 .font(.system(size: 48, weight: .black))
                                 .foregroundStyle(.white)
                                 .multilineTextAlignment(.center)
 
                             VStack(spacing: 8) {
-                                Text("Upload files to get started.")
+                                Text("history.empty.subtitle.upload")
                                     .brutalTypography(.bodyMedium, color: .brutalTextSecondary)
                                     .multilineTextAlignment(.center)
 
-                                Text("Your uploads will appear here.")
+                                Text("history.empty.subtitle.sync")
                                     .brutalTypography(.bodyMedium, color: .brutalTextTertiary)
                                     .multilineTextAlignment(.center)
                             }
@@ -58,7 +58,7 @@ struct HistoryView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("MEDIA")
+                    Text("history.title")
                         .brutalTypography(.mono)
                         .tracking(2)
                 }

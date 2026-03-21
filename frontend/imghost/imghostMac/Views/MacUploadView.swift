@@ -29,7 +29,7 @@ struct MacUploadView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text("UPLOAD")
+                Text("upload.title")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .foregroundStyle(Color.white)
                     .tracking(2)
@@ -38,7 +38,7 @@ struct MacUploadView: View {
 
                 // Quality indicator (read-only, set in Settings)
                 HStack(spacing: 4) {
-                    Text("RESOLUTION")
+                    Text("upload.label.resolution")
                         .font(.system(size: 10, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalTextTertiary)
                         .tracking(1)
@@ -72,7 +72,7 @@ struct MacUploadView: View {
             handleFileImport(result)
         }
         .alert(confirmMessage, isPresented: $showUploadConfirm) {
-            Button("Upload", role: .none) {
+            Button(String(localized: "upload.confirm.button.upload"), role: .none) {
                 if let urls = pendingFileURLs {
                     pendingFileURLs = nil
                     uploadFiles(urls)
@@ -81,7 +81,7 @@ struct MacUploadView: View {
                     uploadImageData(data)
                 }
             }
-            Button("Cancel", role: .cancel) {
+            Button(String(localized: "upload.confirm.button.cancel"), role: .cancel) {
                 pendingFileURLs = nil
                 pendingImageData = nil
             }
@@ -109,17 +109,17 @@ struct MacUploadView: View {
                             .foregroundStyle(isDragOver ? Color.white : Color.brutalTextSecondary)
 
                         VStack(spacing: 4) {
-                            Text("DROP FILES HERE")
+                            Text("upload.drop_zone.title")
                                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                                 .foregroundStyle(Color.white)
                                 .tracking(2)
 
-                            Text("or click to browse")
+                            Text("upload.drop_zone.subtitle")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.brutalTextSecondary)
                         }
 
-                        Text("Images, videos, and files up to 500MB")
+                        Text("upload.drop_zone.hint")
                             .font(.system(size: 11, design: .monospaced))
                             .foregroundStyle(Color.brutalTextTertiary)
                     }
@@ -137,14 +137,14 @@ struct MacUploadView: View {
 
             // Keyboard shortcut hint
             HStack(spacing: 4) {
-                Text("⌘V")
+                Text(verbatim: "⌘V")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
 
-                Text("to paste from clipboard")
+                Text("upload.clipboard.hint")
                     .font(.system(size: 11))
                     .foregroundStyle(Color.brutalTextTertiary)
             }
@@ -164,7 +164,7 @@ struct MacUploadView: View {
             Spacer()
 
             VStack(spacing: 16) {
-                Text("UPLOADING")
+                Text("upload.progress.title")
                     .font(.system(size: 13, weight: .bold, design: .monospaced))
                     .foregroundStyle(Color.white)
                     .tracking(2)
@@ -177,7 +177,7 @@ struct MacUploadView: View {
                     .foregroundStyle(Color.white)
 
                 Button(action: cancelUpload) {
-                    Text("CANCEL")
+                    Text("upload.progress.cancel")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalError)
                         .tracking(1)
@@ -210,7 +210,7 @@ struct MacUploadView: View {
             // Upload more button
             HStack {
                 Button(action: { uploadResults.removeAll() }) {
-                    Text("UPLOAD MORE")
+                    Text("upload.success.button.upload_more")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.white)
                         .tracking(1)
@@ -227,7 +227,7 @@ struct MacUploadView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 12))
-                            Text("COPY ALL LINKS")
+                            Text("upload.success.button.copy_all")
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .tracking(1)
                         }
@@ -312,13 +312,15 @@ struct MacUploadView: View {
         if let urls = fileURLs {
             let count = urls.count
             confirmMessage = count == 1
-                ? "Upload "\(urls[0].lastPathComponent)"?"
-                : "Upload \(count) files?"
+                ? String(format: String(localized: "upload.confirm.file"), urls[0].lastPathComponent)
+                : String(format: String(localized: "upload.confirm.files_plural"), count)
             pendingFileURLs = urls
             pendingImageData = nil
         } else if let data = imageData {
             let count = data.count
-            confirmMessage = count == 1 ? "Upload clipboard image?" : "Upload \(count) items from clipboard?"
+            confirmMessage = count == 1
+                ? String(localized: "upload.confirm.clipboard_single")
+                : String(format: String(localized: "upload.confirm.clipboard_plural"), count)
             pendingImageData = data
             pendingFileURLs = nil
         }

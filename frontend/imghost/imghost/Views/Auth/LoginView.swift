@@ -34,7 +34,7 @@ struct LoginView: View {
 
                         // Hero text
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("SIGN\nIN")
+                            Text("auth.login.title")
                                 .font(.system(size: 72, weight: .black))
                                 .foregroundStyle(.white)
                                 .lineSpacing(-8)
@@ -44,7 +44,7 @@ struct LoginView: View {
                                     .fill(Color.white)
                                     .frame(width: 24, height: 1)
 
-                                Text("ACCESS YOUR IMAGES")
+                                Text("auth.login.subtitle")
                                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                     .tracking(2)
                             }
@@ -73,12 +73,12 @@ struct LoginView: View {
                                 }
                             }
 
-                            BrutalDivider(label: "or")
+                            BrutalDivider(label: String(localized: "auth.login.divider"))
 
                             // Form
                             VStack(spacing: 16) {
                                 BrutalTextField(
-                                    label: "Email",
+                                    label: String(localized: "auth.login.field.email"),
                                     text: $email,
                                     keyboardType: .emailAddress,
                                     textContentType: .emailAddress,
@@ -86,7 +86,7 @@ struct LoginView: View {
                                 )
 
                                 BrutalTextField(
-                                    label: "Password",
+                                    label: String(localized: "auth.login.field.password"),
                                     text: $password,
                                     isSecure: true,
                                     textContentType: .password
@@ -103,14 +103,14 @@ struct LoginView: View {
 
                             // Login button
                             BrutalPrimaryButton(
-                                title: "Sign In",
+                                title: String(localized: "auth.login.button.sign_in"),
                                 action: login,
                                 isLoading: isLoading,
                                 isDisabled: !isFormValid
                             )
 
                             // Forgot password
-                            BrutalTextButton(title: "Forgot Password?") {
+                            BrutalTextButton(title: String(localized: "auth.login.button.forgot_password")) {
                                 showForgotPassword = true
                             }
                         }
@@ -119,18 +119,18 @@ struct LoginView: View {
                         Spacer(minLength: 48)
 
                         // View Plans link
-                        BrutalTextButton(title: "View Pro Plans") {
+                        BrutalTextButton(title: String(localized: "auth.login.button.view_pro_plans")) {
                             showPlansPreview = true
                         }
                         .padding(.bottom, 16)
 
                         // Register link
                         HStack(spacing: 8) {
-                            Text("NO ACCOUNT?")
+                            Text("auth.login.prompt.no_account")
                                 .brutalTypography(.monoSmall, color: .brutalTextTertiary)
                                 .tracking(1)
 
-                            BrutalTextButton(title: "Create One", color: .white) {
+                            BrutalTextButton(title: String(localized: "auth.login.button.create_account"), color: .white) {
                                 showRegister = true
                             }
                         }
@@ -189,7 +189,7 @@ struct LoginView: View {
                 }
             } catch {
                 await MainActor.run {
-                    errorMessage = "An unexpected error occurred."
+                    errorMessage = String(localized: "auth.login.error.unexpected")
                 }
             }
 
@@ -203,13 +203,13 @@ struct LoginView: View {
         switch result {
         case .success(let authorization):
             guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-                errorMessage = "Invalid Apple ID credential."
+                errorMessage = String(localized: "auth.login.error.invalid_apple_credential")
                 return
             }
 
             guard let identityTokenData = appleIDCredential.identityToken,
                   let identityToken = String(data: identityTokenData, encoding: .utf8) else {
-                errorMessage = "Could not retrieve identity token."
+                errorMessage = String(localized: "auth.login.error.no_identity_token")
                 return
             }
 
@@ -227,7 +227,7 @@ struct LoginView: View {
                authError.code == .canceled {
                 return
             }
-            errorMessage = "Apple Sign-In failed: \(error.localizedDescription)"
+            errorMessage = String(format: String(localized: "auth.login.error.apple_failed"), error.localizedDescription)
         }
     }
 
@@ -245,7 +245,7 @@ struct LoginView: View {
                 }
             } catch {
                 await MainActor.run {
-                    errorMessage = "Apple Sign-In failed. Please try again."
+                    errorMessage = String(localized: "auth.login.error.apple_failed_generic")
                 }
             }
 

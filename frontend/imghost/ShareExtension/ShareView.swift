@@ -115,7 +115,7 @@ struct ShareView: View {
     private var loadingView: some View {
         VStack {
             Spacer()
-            Text("LOADING...")
+            Text("share.state.loading")
                 .font(.system(size: 13, weight: .medium, design: .monospaced))
                 .foregroundStyle(.white.opacity(0.4))
                 .tracking(3)
@@ -126,7 +126,9 @@ struct ShareView: View {
     private var readyView: some View {
         VStack(spacing: 0) {
             // Header
-            header(title: items.count == 1 ? (items.first?.filename ?? "FILE") : "\(items.count) ITEMS")
+            header(title: items.count == 1
+                ? (items.first?.filename ?? "FILE")
+                : String(format: String(localized: "share.preview.item_count_plural"), items.count))
             
             // Preview area
             previewSection
@@ -135,12 +137,14 @@ struct ShareView: View {
             VStack(spacing: 0) {
                 // File info bar
                 HStack {
-                    Text("\(items.count) \(items.count == 1 ? "ITEM" : "ITEMS")")
+                    Text(verbatim: items.count == 1
+                        ? String(format: String(localized: "share.preview.item_count_singular"), items.count)
+                        : String(format: String(localized: "share.preview.item_count_plural"), items.count))
                         .font(.system(size: 13, weight: .medium, design: .monospaced))
                     
                     Spacer()
                     
-                    Text(String(format: "%.1f MB TOTAL", totalSizeMB))
+                    Text(verbatim: String(format: String(localized: "share.preview.total_size"), totalSizeMB))
                         .font(.system(size: 13, weight: .medium, design: .monospaced))
                 }
                 .foregroundStyle(.white.opacity(0.4))
@@ -155,7 +159,7 @@ struct ShareView: View {
                     HStack(spacing: 12) {
                         Text("!")
                             .font(.system(size: 15, weight: .bold, design: .monospaced))
-                        Text("SOME FILES EXCEED 500MB LIMIT")
+                        Text("share.preview.warning.exceeds_limit")
                             .font(.system(size: 12, weight: .medium, design: .monospaced))
                             .tracking(1)
                         Spacer()
@@ -206,7 +210,7 @@ struct ShareView: View {
             Button {
                 dismiss()
             } label: {
-                Text("CANCEL")
+                Text("button.cancel")
                     .font(.system(size: 12, weight: .medium, design: .monospaced))
                     .foregroundStyle(.white.opacity(0.4))
                     .tracking(1)
@@ -214,7 +218,7 @@ struct ShareView: View {
             
             Spacer()
             
-            Text(title.uppercased())
+            Text(verbatim: title.uppercased())
                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                 .foregroundStyle(.white.opacity(0.6))
                 .tracking(1)
@@ -223,7 +227,7 @@ struct ShareView: View {
             Spacer()
             
             // Invisible spacer to balance
-            Text("CANCEL")
+            Text("button.cancel")
                 .font(.system(size: 12, weight: .medium, design: .monospaced))
                 .foregroundStyle(.clear)
                 .tracking(1)
@@ -355,7 +359,7 @@ struct ShareView: View {
                 Rectangle()
                     .fill(Color(hex: "FF453A").opacity(0.3))
                     .overlay(
-                        Text("TOO LARGE")
+                        Text("share.preview.item.too_large")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .foregroundStyle(Color(hex: "FF453A"))
                     )
@@ -366,7 +370,7 @@ struct ShareView: View {
     private var qualitySection: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("IMAGE QUALITY")
+                Text("share.preview.quality_label")
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(.white.opacity(0.4))
                     .tracking(2)
@@ -408,7 +412,9 @@ struct ShareView: View {
             Button {
                 startUpload()
             } label: {
-                Text("UPLOAD \(validItemCount) \(validItemCount == 1 ? "ITEM" : "ITEMS")")
+                Text(verbatim: validItemCount == 1
+                    ? String(format: String(localized: "share.preview.button.upload_singular"), validItemCount)
+                    : String(format: String(localized: "share.preview.button.upload_plural"), validItemCount))
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
                     .tracking(3)
                     .foregroundStyle(.black)
@@ -426,7 +432,7 @@ struct ShareView: View {
 
     private var uploadingView: some View {
         VStack(spacing: 0) {
-            header(title: "UPLOADING")
+            header(title: String(localized: "share.state.uploading"))
             
             // Items with status
             ScrollView {
@@ -469,7 +475,7 @@ struct ShareView: View {
                     UploadService.shared.cancelUpload()
                     dismiss()
                 } label: {
-                    Text("CANCEL")
+                    Text("share.upload.button.cancel")
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color(hex: "FF453A"))
                         .tracking(2)
@@ -559,26 +565,28 @@ struct ShareView: View {
                 
                 VStack(spacing: 12) {
                     if failedCount > 0 {
-                        Text("\(successCount) UPLOADED, \(failedCount) FAILED")
+                        Text(verbatim: String(format: String(localized: "share.result.partial"), successCount, failedCount))
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
                             .foregroundStyle(.white)
                             .tracking(2)
                     } else {
-                        Text(successCount == 1 ? "COPIED TO CLIPBOARD" : "\(successCount) LINKS COPIED")
+                        Text(successCount == 1
+                            ? "share.result.copied_single"
+                            : String(format: String(localized: "share.result.copied_plural"), successCount) as LocalizedStringKey)
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
                             .foregroundStyle(.white)
                             .tracking(2)
                     }
                     
                     if uploadedURLs.count == 1, let url = uploadedURLs.first {
-                        Text(url)
+                        Text(verbatim: url)
                             .font(.system(size: 12, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.4))
                             .lineLimit(2)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 40)
                     } else if uploadedURLs.count > 1 {
-                        Text("\(uploadedURLs.count) LINKS")
+                        Text(verbatim: String(format: String(localized: "share.result.links_count"), uploadedURLs.count))
                             .font(.system(size: 12, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.4))
                     }
@@ -590,7 +598,7 @@ struct ShareView: View {
             Button {
                 dismiss()
             } label: {
-                Text("DONE")
+                Text("share.result.button.done")
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
                     .tracking(3)
                     .foregroundStyle(.black)
@@ -616,7 +624,7 @@ struct ShareView: View {
                     .foregroundStyle(Color(hex: "FF453A"))
                 
                 VStack(spacing: 16) {
-                    Text("UPLOAD FAILED")
+                    Text("share.failed.title")
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                         .foregroundStyle(.white)
                         .tracking(2)
@@ -648,7 +656,7 @@ struct ShareView: View {
                     }
                     state = .ready
                 } label: {
-                    Text("RETRY")
+                    Text("share.failed.button.retry")
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                         .tracking(3)
                         .foregroundStyle(.black)
@@ -660,7 +668,7 @@ struct ShareView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Text("CANCEL")
+                    Text("share.failed.button.cancel")
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
                         .foregroundStyle(.white.opacity(0.4))
                         .tracking(2)
@@ -681,12 +689,12 @@ struct ShareView: View {
                     .foregroundStyle(Color(hex: "FFD60A"))
                 
                 VStack(spacing: 12) {
-                    Text("NOT LOGGED IN")
+                    Text("share.not_logged_in.title")
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                         .foregroundStyle(.white)
                         .tracking(2)
                     
-                    Text("OPEN THE IMGHOST APP TO LOG IN")
+                    Text("share.not_logged_in.message")
                         .font(.system(size: 12, design: .monospaced))
                         .foregroundStyle(.white.opacity(0.4))
                         .multilineTextAlignment(.center)
@@ -700,7 +708,7 @@ struct ShareView: View {
                 Button {
                     openMainApp()
                 } label: {
-                    Text("OPEN APP")
+                    Text("share.not_logged_in.button.open_app")
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                         .tracking(3)
                         .foregroundStyle(.black)
@@ -712,7 +720,7 @@ struct ShareView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Text("CANCEL")
+                    Text("share.not_logged_in.button.cancel")
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
                         .foregroundStyle(.white.opacity(0.4))
                         .tracking(2)
@@ -733,12 +741,12 @@ struct ShareView: View {
                     .foregroundStyle(Color(hex: "FF9500"))
                 
                 VStack(spacing: 12) {
-                    Text("SESSION EXPIRED")
+                    Text("share.session_expired.title")
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                         .foregroundStyle(.white)
                         .tracking(2)
                     
-                    Text("PLEASE LOG IN AGAIN TO CONTINUE UPLOADING")
+                    Text("share.session_expired.message")
                         .font(.system(size: 12, design: .monospaced))
                         .foregroundStyle(.white.opacity(0.4))
                         .multilineTextAlignment(.center)
@@ -752,7 +760,7 @@ struct ShareView: View {
                 Button {
                     openMainApp()
                 } label: {
-                    Text("OPEN APP TO LOGIN")
+                    Text("share.session_expired.button.open_app")
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                         .tracking(3)
                         .foregroundStyle(.black)
@@ -764,7 +772,7 @@ struct ShareView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Text("CANCEL")
+                    Text("share.session_expired.button.cancel")
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
                         .foregroundStyle(.white.opacity(0.4))
                         .tracking(2)
@@ -785,24 +793,24 @@ struct ShareView: View {
                     .foregroundStyle(Color(hex: "FF453A"))
                 
                 VStack(spacing: 16) {
-                    Text("STORAGE FULL")
+                    Text("share.storage_full.title")
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                         .foregroundStyle(.white)
                         .tracking(2)
                     
                     if let user = currentUser {
                         VStack(spacing: 8) {
-                            Text("\(user.storageUsedFormatted) / \(user.storageLimitFormatted)")
+                            Text(verbatim: String(format: String(localized: "share.storage_full.usage_format"), user.storageUsedFormatted, user.storageLimitFormatted))
                                 .font(.system(size: 16, weight: .medium, design: .monospaced))
                                 .foregroundStyle(.white.opacity(0.6))
                             
-                            Text("NEED \(String(format: "%.1f MB", totalSizeMB)) MORE")
+                            Text(verbatim: String(format: String(localized: "share.storage_full.need_more"), totalSizeMB))
                                 .font(.system(size: 12, design: .monospaced))
                                 .foregroundStyle(.white.opacity(0.4))
                         }
                     }
                     
-                    Text("DELETE FILES OR UPGRADE YOUR PLAN")
+                    Text("share.storage_full.cta")
                         .font(.system(size: 12, design: .monospaced))
                         .foregroundStyle(.white.opacity(0.4))
                         .multilineTextAlignment(.center)
@@ -815,7 +823,7 @@ struct ShareView: View {
             Button {
                 dismiss()
             } label: {
-                Text("DONE")
+                Text("share.storage_full.button.done")
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
                     .tracking(3)
                     .foregroundStyle(.black)
@@ -936,7 +944,7 @@ struct ShareView: View {
         guard let user = currentUser else { return }
         
         wouldExceedStorage = !user.canUpload(bytes: totalSizeBytes)
-        storageWarning = wouldExceedStorage ? "EXCEEDS STORAGE (\(user.storageRemainingFormatted))" : nil
+        storageWarning = wouldExceedStorage ? String(format: String(localized: "share.preview.storage_warning"), user.storageRemainingFormatted) : nil
     }
 
     private func startUpload() {
@@ -987,7 +995,7 @@ struct ShareView: View {
             // Mark items that were too large as failed
             for item in items where item.fileSize > maxUploadSize {
                 await MainActor.run {
-                    item.status = .failed(error: "File too large")
+                    item.status = .failed(error: String(localized: "share.preview.file_too_large"))
                 }
             }
             

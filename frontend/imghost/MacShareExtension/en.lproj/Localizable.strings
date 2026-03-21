@@ -1,0 +1,103 @@
+/* =========================================================
+   imghost — macOS Share Extension
+   Localizable.strings (English)
+   ========================================================= */
+
+// MARK: - Common Buttons
+"button.cancel" = "CANCEL";
+"button.close" = "CLOSE";
+"button.continue" = "CONTINUE";
+"button.retry" = "RETRY";
+"button.done" = "DONE";
+"button.upload" = "UPLOAD";
+"button.copy_all" = "COPY ALL";
+
+// MARK: - Header
+"share.app_name" = "IMGHOST";
+
+// MARK: - Loading State
+"share.state.loading" = "Loading files...";
+"share.state.uploading" = "UPLOADING";
+"share.upload.progress_percent" = "%d%%";
+"share.upload.status.starting" = "Starting upload...";
+"share.upload.status.in_progress" = "Uploading %@ (%d/%d)";
+"share.upload.status.preparing" = "Preparing...";
+
+// MARK: - Error State
+"share.error.title" = "ERROR";
+"share.error.button.retry" = "RETRY";
+"share.error.button.close" = "CLOSE";
+"share.error.no_content" = "No content received from share sheet. The extension context had no input items.";
+"share.error.failed_to_load" = "Failed to load shared files:\n%@";
+"share.error.not_signed_in_upload" = "Not signed in. Open the imghost app and sign in first.";
+
+// MARK: - Permission Needed State
+"share.permission.title" = "PERMISSION NEEDED";
+"share.permission.prompt" = "macOS will ask imghost to \"access data from other apps.\"";
+"share.permission.explanation" = "This is required so imghost can read the files you share from Finder, Safari, and other apps. Without this permission, the share extension can't upload your files.";
+"share.permission.privacy_note" = "Your files are only used for uploading — nothing is stored locally.";
+"share.permission.button.cancel" = "CANCEL";
+"share.permission.button.continue" = "CONTINUE";
+
+// MARK: - Not Signed In State
+"share.not_signed_in.title" = "NOT SIGNED IN";
+"share.not_signed_in.message" = "Open the imghost app and sign in to enable uploads from the share sheet.";
+"share.not_signed_in.button.close" = "CLOSE";
+
+// MARK: - No Files State
+"share.no_files.title" = "NO FILES FOUND";
+"share.no_files.message" = "No compatible files were found in the shared content. Try sharing an image or file directly.";
+"share.no_files.button.close" = "CLOSE";
+
+// MARK: - Preview / Ready State
+"share.preview.quality_label" = "QUALITY";
+"share.preview.file_count_singular" = "%d file";
+"share.preview.file_count_plural" = "%d files";
+"share.preview.button.cancel" = "CANCEL";
+"share.preview.button.upload" = "UPLOAD";
+
+// MARK: - Results State
+"share.results.uploaded_count" = "%d/%d uploaded";
+"share.results.failed_count" = "%d failed";
+"share.results.button.copy_all" = "COPY ALL";
+"share.results.button.done" = "DONE";
+
+// MARK: - Error Descriptions (ImghostError — from MacShareView.errorDescription)
+"share.error.description.not_signed_in" = "Not signed in. Open imghost app to sign in.";
+"share.error.description.invalid_url" = "Invalid upload URL. Check backend configuration.";
+"share.error.description.invalid_response" = "Invalid response from server.";
+"share.error.description.upload_failed" = "Upload failed (HTTP %d): %@";
+"share.error.description.network" = "Network error: %@";
+"share.error.description.subscription_required" = "Subscription required. Upgrade in the imghost app.";
+"share.error.description.email_not_verified" = "Email verification required. Check your email.";
+"share.error.description.keychain" = "Keychain error (status %d). Try signing in again.";
+"share.error.description.file_system" = "File error: %@";
+"share.error.description.image_processing" = "Failed to process image. File may be corrupted.";
+"share.error.description.delete_failed" = "Delete failed (HTTP %d): %@";
+"share.error.description.no_details" = "No details";
+
+// MARK: - Error Messages (ImghostError — shared)
+"error.not_configured.description" = "App not configured. Please set up the backend URL and token in settings.";
+"error.invalid_url.description" = "Invalid backend URL. Please check your settings.";
+"error.invalid_url.recovery" = "Make sure the URL starts with https:// and is a valid web address.";
+"error.upload_failed.with_message" = "Upload failed (%d): %@";
+"error.upload_failed.status_only" = "Upload failed with status code %d";
+"error.network.description" = "Network error: %@";
+"error.invalid_response.description" = "Invalid response from server";
+"error.keychain.description" = "Keychain error: %d";
+"error.file_system.description" = "File system error: %@";
+"error.image_processing.description" = "Failed to process image";
+"error.delete_failed.with_message" = "Delete failed (%d): %@";
+"error.delete_failed.status_only" = "Delete failed with status code %d";
+"error.email_not_verified.description" = "Please verify your email before uploading images.";
+"error.subscription_required.description" = "An active subscription is required to upload files.";
+"error.not_configured.recovery" = "Open the imghost app and configure your backend URL and upload token.";
+"error.upload_failed.recovery" = "Check your internet connection and try again. If the problem persists, verify your upload token.";
+"error.network.recovery" = "Check your internet connection and try again.";
+"error.invalid_response.recovery" = "The server returned an unexpected response. Please try again later.";
+"error.keychain.recovery" = "Try removing and re-entering your upload token in settings.";
+"error.file_system.recovery" = "Try restarting the app. If the problem persists, reinstall the app.";
+"error.image_processing.recovery" = "The image may be corrupted or in an unsupported format.";
+"error.delete_failed.recovery" = "The image may have already been deleted, or your token may not have delete permissions.";
+"error.email_not_verified.recovery" = "Open the imghost app and verify your email address to enable uploads.";
+"error.subscription_required.recovery" = "Subscribe to imghost Pro to unlock uploads and storage.";

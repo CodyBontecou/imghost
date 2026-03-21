@@ -17,7 +17,7 @@ struct EmailVerificationView: View {
                 VStack(spacing: 0) {
                     // Hero text
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("VERIFY\nEMAIL")
+                        Text("auth.verify_email.title")
                             .font(.system(size: 56, weight: .black))
                             .foregroundStyle(.white)
                             .lineSpacing(-8)
@@ -27,7 +27,7 @@ struct EmailVerificationView: View {
                                 .fill(Color.white)
                                 .frame(width: 24, height: 1)
 
-                            Text("CHECK YOUR INBOX")
+                            Text("auth.verify_email.subtitle")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                 .tracking(2)
                         }
@@ -41,11 +41,11 @@ struct EmailVerificationView: View {
                     if let email = authState.currentUser?.email {
                         BrutalCard(backgroundColor: .brutalSurface) {
                             VStack(spacing: 12) {
-                                Text("CODE SENT TO:")
+                                Text("auth.verify_email.code_sent_to")
                                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                     .tracking(2)
 
-                                Text(email)
+                                Text(verbatim: email)
                                     .brutalTypography(.bodyLarge)
                             }
                             .frame(maxWidth: .infinity)
@@ -56,10 +56,10 @@ struct EmailVerificationView: View {
 
                     // Info box
                     HStack(spacing: 12) {
-                        Text("!")
+                        Text("auth.verify_email.warning_icon")
                             .brutalTypography(.mono, color: .brutalWarning)
 
-                        Text("You need to verify your email before you can upload images.")
+                        Text("auth.verify_email.warning_message")
                             .brutalTypography(.bodySmall, color: .brutalTextSecondary)
                     }
                     .padding(16)
@@ -73,7 +73,7 @@ struct EmailVerificationView: View {
 
                     // Form
                     BrutalTextField(
-                        label: "Verification Code",
+                        label: String(localized: "auth.verify_email.field.code"),
                         text: $verificationCode,
                         autocapitalization: .never
                     )
@@ -101,7 +101,7 @@ struct EmailVerificationView: View {
 
                     // Verify button
                     BrutalPrimaryButton(
-                        title: "Verify Email",
+                        title: String(localized: "auth.verify_email.button.verify"),
                         action: verifyEmail,
                         isLoading: isLoading,
                         isDisabled: verificationCode.isEmpty
@@ -116,14 +116,14 @@ struct EmailVerificationView: View {
                                 .tint(.white)
                                 .scaleEffect(0.8)
                         }
-                        BrutalTextButton(title: "Resend Code", action: resendCode)
+                        BrutalTextButton(title: String(localized: "auth.verify_email.button.resend"), action: resendCode)
                     }
                     .disabled(isResending)
 
                     Spacer(minLength: 48)
 
                     // Logout option
-                    BrutalTextButton(title: "Sign Out", color: .brutalError) {
+                    BrutalTextButton(title: String(localized: "auth.verify_email.button.sign_out"), color: .brutalError) {
                         logout()
                     }
                     .padding(.bottom, 32)
@@ -154,7 +154,7 @@ struct EmailVerificationView: View {
                 }
             } catch {
                 await MainActor.run {
-                    errorMessage = "An unexpected error occurred."
+                    errorMessage = String(localized: "auth.verify_email.error.unexpected")
                 }
             }
 
@@ -175,7 +175,7 @@ struct EmailVerificationView: View {
             do {
                 try await AuthService.shared.resendVerification(email: email)
                 await MainActor.run {
-                    successMessage = "Verification code sent!"
+                    successMessage = String(localized: "auth.verify_email.success.code_sent")
                 }
             } catch let error as AuthError {
                 await MainActor.run {
@@ -183,7 +183,7 @@ struct EmailVerificationView: View {
                 }
             } catch {
                 await MainActor.run {
-                    errorMessage = "An unexpected error occurred."
+                    errorMessage = String(localized: "auth.verify_email.error.unexpected")
                 }
             }
 

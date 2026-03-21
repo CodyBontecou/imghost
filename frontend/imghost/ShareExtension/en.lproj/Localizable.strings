@@ -1,0 +1,99 @@
+/* =========================================================
+   imghost — iOS Share Extension
+   Localizable.strings (English)
+   ========================================================= */
+
+// MARK: - Common Buttons
+"button.cancel" = "CANCEL";
+"button.done" = "DONE";
+"button.retry" = "RETRY";
+"button.open_app" = "OPEN APP";
+
+// MARK: - Header States
+"share.state.loading" = "LOADING...";
+"share.state.uploading" = "UPLOADING";
+
+// MARK: - Preview Screen
+"share.preview.item_count_singular" = "%d ITEM";
+"share.preview.item_count_plural" = "%d ITEMS";
+"share.preview.item_count_label_singular" = "%d ITEM";
+"share.preview.item_count_label_plural" = "%d ITEMS";
+"share.preview.total_size" = "%.1f MB TOTAL";
+"share.preview.warning.exceeds_limit" = "SOME FILES EXCEED 500MB LIMIT";
+"share.preview.item.too_large" = "TOO LARGE";
+"share.preview.item.size_format" = "%.1fMB";
+"share.preview.quality_label" = "IMAGE QUALITY";
+"share.preview.button.upload_singular" = "UPLOAD %d ITEM";
+"share.preview.button.upload_plural" = "UPLOAD %d ITEMS";
+"share.preview.storage_warning" = "EXCEEDS STORAGE (%@)";
+"share.preview.file_too_large" = "File too large";
+
+// MARK: - Quality Labels (short)
+"share.quality.original" = "Full";
+"share.quality.high" = "High";
+"share.quality.medium" = "Med";
+"share.quality.low" = "Low";
+"share.quality.very_low" = "Min";
+
+// MARK: - Upload Progress
+"share.upload.progress_count" = "%d/%d";
+"share.upload.progress_percent" = "%d%%";
+"share.upload.button.cancel" = "CANCEL";
+
+// MARK: - Upload Result
+"share.result.partial" = "%d UPLOADED, %d FAILED";
+"share.result.copied_single" = "COPIED TO CLIPBOARD";
+"share.result.copied_plural" = "%d LINKS COPIED";
+"share.result.links_count" = "%d LINKS";
+"share.result.button.done" = "DONE";
+"share.result.item.size_format" = "%.1f MB";
+
+// MARK: - Upload Failed State
+"share.failed.title" = "UPLOAD FAILED";
+"share.failed.button.retry" = "RETRY";
+"share.failed.button.cancel" = "CANCEL";
+
+// MARK: - Not Logged In State
+"share.not_logged_in.title" = "NOT LOGGED IN";
+"share.not_logged_in.message" = "OPEN THE IMGHOST APP TO LOG IN";
+"share.not_logged_in.button.open_app" = "OPEN APP";
+"share.not_logged_in.button.cancel" = "CANCEL";
+
+// MARK: - Session Expired State
+"share.session_expired.title" = "SESSION EXPIRED";
+"share.session_expired.message" = "PLEASE LOG IN AGAIN TO CONTINUE UPLOADING";
+"share.session_expired.button.open_app" = "OPEN APP TO LOGIN";
+"share.session_expired.button.cancel" = "CANCEL";
+
+// MARK: - Storage Full State
+"share.storage_full.title" = "STORAGE FULL";
+"share.storage_full.usage_format" = "%@ / %@";
+"share.storage_full.need_more" = "NEED %.1f MB MORE";
+"share.storage_full.cta" = "DELETE FILES OR UPGRADE YOUR PLAN";
+"share.storage_full.button.done" = "DONE";
+
+// MARK: - Error Messages (ImghostError — shared)
+"error.not_configured.description" = "App not configured. Please set up the backend URL and token in settings.";
+"error.invalid_url.description" = "Invalid backend URL. Please check your settings.";
+"error.invalid_url.recovery" = "Make sure the URL starts with https:// and is a valid web address.";
+"error.upload_failed.with_message" = "Upload failed (%d): %@";
+"error.upload_failed.status_only" = "Upload failed with status code %d";
+"error.network.description" = "Network error: %@";
+"error.invalid_response.description" = "Invalid response from server";
+"error.keychain.description" = "Keychain error: %d";
+"error.file_system.description" = "File system error: %@";
+"error.image_processing.description" = "Failed to process image";
+"error.delete_failed.with_message" = "Delete failed (%d): %@";
+"error.delete_failed.status_only" = "Delete failed with status code %d";
+"error.email_not_verified.description" = "Please verify your email before uploading images.";
+"error.subscription_required.description" = "An active subscription is required to upload files.";
+"error.not_configured.recovery" = "Open the imghost app and configure your backend URL and upload token.";
+"error.upload_failed.recovery" = "Check your internet connection and try again. If the problem persists, verify your upload token.";
+"error.network.recovery" = "Check your internet connection and try again.";
+"error.invalid_response.recovery" = "The server returned an unexpected response. Please try again later.";
+"error.keychain.recovery" = "Try removing and re-entering your upload token in settings.";
+"error.file_system.recovery" = "Try restarting the app. If the problem persists, reinstall the app.";
+"error.image_processing.recovery" = "The image may be corrupted or in an unsupported format.";
+"error.delete_failed.recovery" = "The image may have already been deleted, or your token may not have delete permissions.";
+"error.email_not_verified.recovery" = "Open the imghost app and verify your email address to enable uploads.";
+"error.subscription_required.recovery" = "Subscribe to imghost Pro to unlock uploads and storage.";

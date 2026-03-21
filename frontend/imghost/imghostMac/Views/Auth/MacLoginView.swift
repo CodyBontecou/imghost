@@ -27,7 +27,7 @@ struct MacLoginView: View {
                             .frame(width: 48, height: 48)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                        Text("IMG\nHOST")
+                        Text("auth.login.app_name")
                             .font(.system(size: 72, weight: .black))
                             .foregroundStyle(Color.white)
 
@@ -35,7 +35,7 @@ struct MacLoginView: View {
                             Rectangle()
                                 .fill(Color.white)
                                 .frame(width: 24, height: 1)
-                            Text("SECURE IMAGE HOSTING")
+                            Text("auth.login.tagline")
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextSecondary)
                                 .tracking(2)
@@ -56,11 +56,11 @@ struct MacLoginView: View {
                     VStack(spacing: 24) {
                         // Title
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("SIGN IN")
+                            Text("auth.login.section.sign_in")
                                 .font(.system(size: 28, weight: .black))
                                 .foregroundStyle(Color.white)
 
-                            Text("Enter your credentials")
+                            Text("auth.login.section.hint")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.brutalTextSecondary)
                         }
@@ -68,8 +68,8 @@ struct MacLoginView: View {
 
                         // Form
                         VStack(spacing: 16) {
-                            MacBrutalTextField(label: "Email", text: $email)
-                            MacBrutalTextField(label: "Password", text: $password, isSecure: true)
+                            MacBrutalTextField(label: String(localized: "auth.login.field.email"), text: $email)
+                            MacBrutalTextField(label: String(localized: "auth.login.field.password"), text: $password, isSecure: true)
                         }
 
                         // Error
@@ -88,7 +88,7 @@ struct MacLoginView: View {
                                         .progressViewStyle(CircularProgressViewStyle(tint: .black))
                                         .scaleEffect(0.7)
                                 } else {
-                                    Text("SIGN IN")
+                                    Text("auth.login.button.sign_in")
                                         .font(.system(size: 13, weight: .medium, design: .monospaced))
                                         .tracking(1)
                                 }
@@ -102,7 +102,7 @@ struct MacLoginView: View {
                         .disabled(!isFormValid || isLoading)
 
                         // Divider
-                        BrutalDivider(label: "or")
+                        BrutalDivider(label: String(localized: "auth.login.divider"))
 
                         // Apple Sign In
                         SignInWithAppleButton(.signIn) { request in
@@ -116,7 +116,7 @@ struct MacLoginView: View {
                         // Links
                         HStack(spacing: 16) {
                             Button(action: { showRegister = true }) {
-                                Text("CREATE ACCOUNT")
+                                Text("auth.login.button.create_account")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .foregroundStyle(Color.brutalTextSecondary)
                                     .tracking(1)
@@ -124,7 +124,7 @@ struct MacLoginView: View {
                             .buttonStyle(.plain)
 
                             Button(action: { showForgotPassword = true }) {
-                                Text("FORGOT PASSWORD")
+                                Text("auth.login.button.forgot_password")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .foregroundStyle(Color.brutalTextSecondary)
                                     .tracking(1)
@@ -171,7 +171,7 @@ struct MacLoginView: View {
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }
             } catch {
-                await MainActor.run { errorMessage = "An unexpected error occurred." }
+                await MainActor.run { errorMessage = String(localized: "auth.login.error.unexpected") }
             }
             await MainActor.run { isLoading = false }
         }
@@ -183,7 +183,7 @@ struct MacLoginView: View {
             guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
                   let identityTokenData = appleIDCredential.identityToken,
                   let identityToken = String(data: identityTokenData, encoding: .utf8) else {
-                errorMessage = "Failed to get Apple credentials"
+                errorMessage = String(localized: "auth.login.error.no_apple_credential")
                 return
             }
 
@@ -204,14 +204,14 @@ struct MacLoginView: View {
                 } catch let error as AuthError {
                     await MainActor.run { errorMessage = error.errorDescription }
                 } catch {
-                    await MainActor.run { errorMessage = "Apple Sign-In failed." }
+                    await MainActor.run { errorMessage = String(localized: "auth.login.error.apple_failed") }
                 }
                 await MainActor.run { isLoading = false }
             }
 
         case .failure(let error):
             if (error as NSError).code != ASAuthorizationError.canceled.rawValue {
-                errorMessage = "Apple Sign-In failed: \(error.localizedDescription)"
+                errorMessage = String(format: String(localized: "auth.login.error.apple_failed_detailed"), error.localizedDescription)
             }
         }
     }

@@ -19,7 +19,7 @@ struct MacEmailVerificationView: View {
                 VStack(spacing: 24) {
                     // Hero
                     VStack(spacing: 8) {
-                        Text("VERIFY\nEMAIL")
+                        Text("auth.verify_email.title")
                             .font(.system(size: 48, weight: .black))
                             .foregroundStyle(Color.white)
                             .multilineTextAlignment(.center)
@@ -28,7 +28,7 @@ struct MacEmailVerificationView: View {
                             Rectangle()
                                 .fill(Color.white)
                                 .frame(width: 24, height: 1)
-                            Text("CHECK YOUR INBOX")
+                            Text("auth.verify_email.subtitle")
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextSecondary)
                                 .tracking(2)
@@ -38,11 +38,11 @@ struct MacEmailVerificationView: View {
                     // Email info
                     if let email = authState.currentUser?.email {
                         VStack(spacing: 8) {
-                            Text("CODE SENT TO:")
+                            Text("auth.verify_email.code_sent_to")
                                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextSecondary)
                                 .tracking(2)
-                            Text(email)
+                            Text(verbatim: email)
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundStyle(Color.white)
                         }
@@ -53,10 +53,10 @@ struct MacEmailVerificationView: View {
 
                     // Info
                     HStack(spacing: 12) {
-                        Text("!")
+                        Text("auth.verify_email.warning_icon")
                             .font(.system(size: 13, weight: .medium, design: .monospaced))
                             .foregroundStyle(Color.brutalWarning)
-                        Text("Verify your email before uploading images.")
+                        Text("auth.verify_email.warning_message")
                             .font(.system(size: 12))
                             .foregroundStyle(Color.brutalTextSecondary)
                     }
@@ -65,7 +65,7 @@ struct MacEmailVerificationView: View {
                     .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
 
                     // Code field
-                    MacBrutalTextField(label: "Verification Code", text: $verificationCode)
+                    MacBrutalTextField(label: String(localized: "auth.verify_email.field.code"), text: $verificationCode)
                         .frame(maxWidth: 300)
 
                     // Messages
@@ -91,7 +91,7 @@ struct MacEmailVerificationView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .black))
                                     .scaleEffect(0.7)
                             } else {
-                                Text("VERIFY EMAIL")
+                                Text("auth.verify_email.button.verify")
                                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                                     .tracking(1)
                             }
@@ -111,7 +111,7 @@ struct MacEmailVerificationView: View {
                                     ProgressView()
                                         .scaleEffect(0.6)
                                 }
-                                Text("RESEND CODE")
+                                Text("auth.verify_email.button.resend")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .foregroundStyle(Color.brutalTextSecondary)
                                     .tracking(1)
@@ -121,7 +121,7 @@ struct MacEmailVerificationView: View {
                         .disabled(isResending)
 
                         Button(action: { authState.logout() }) {
-                            Text("SIGN OUT")
+                            Text("auth.verify_email.button.sign_out")
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalError)
                                 .tracking(1)
@@ -149,7 +149,7 @@ struct MacEmailVerificationView: View {
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }
             } catch {
-                await MainActor.run { errorMessage = "An unexpected error occurred." }
+                await MainActor.run { errorMessage = String(localized: "auth.verify_email.error.unexpected") }
             }
             await MainActor.run { isLoading = false }
         }
@@ -164,11 +164,11 @@ struct MacEmailVerificationView: View {
         Task {
             do {
                 try await AuthService.shared.resendVerification(email: email)
-                await MainActor.run { successMessage = "Verification code sent!" }
+                await MainActor.run { successMessage = String(localized: "auth.verify_email.success.code_sent") }
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }
             } catch {
-                await MainActor.run { errorMessage = "An unexpected error occurred." }
+                await MainActor.run { errorMessage = String(localized: "auth.verify_email.error.unexpected") }
             }
             await MainActor.run { isResending = false }
         }

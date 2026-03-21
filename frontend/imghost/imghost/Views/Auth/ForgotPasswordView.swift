@@ -17,7 +17,7 @@ struct ForgotPasswordView: View {
                 VStack(spacing: 0) {
                     // Hero text
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("RESET\nPASS-\nWORD")
+                        Text("auth.forgot_password.title")
                             .font(.system(size: 56, weight: .black))
                             .foregroundStyle(.white)
                             .lineSpacing(-8)
@@ -27,7 +27,9 @@ struct ForgotPasswordView: View {
                                 .fill(Color.white)
                                 .frame(width: 24, height: 1)
 
-                            Text(isEmailSent ? "CHECK YOUR EMAIL" : "ENTER YOUR EMAIL")
+                            Text(isEmailSent
+                                 ? "auth.forgot_password.subtitle.check_email"
+                                 : "auth.forgot_password.subtitle.enter_email")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                 .tracking(2)
                         }
@@ -42,18 +44,18 @@ struct ForgotPasswordView: View {
                         VStack(spacing: 24) {
                             BrutalCard(backgroundColor: .brutalSurface) {
                                 VStack(spacing: 16) {
-                                    Text("✓")
+                                    Text(verbatim: "✓")
                                         .font(.system(size: 48, weight: .bold, design: .monospaced))
                                         .foregroundStyle(Color.brutalSuccess)
 
-                                    Text("RESET CODE SENT TO:")
+                                    Text("auth.forgot_password.code_sent_to")
                                         .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                         .tracking(2)
 
-                                    Text(email)
+                                    Text(verbatim: email)
                                         .brutalTypography(.bodyLarge)
 
-                                    Text("Check your spam folder if you don't see it.")
+                                    Text("auth.forgot_password.spam_hint")
                                         .brutalTypography(.bodySmall, color: .brutalTextTertiary)
                                 }
                                 .frame(maxWidth: .infinity)
@@ -61,12 +63,12 @@ struct ForgotPasswordView: View {
                             .padding(.horizontal, 24)
 
                             BrutalPrimaryButton(
-                                title: "Enter Reset Code",
+                                title: String(localized: "auth.forgot_password.button.enter_code"),
                                 action: { showResetPassword = true }
                             )
                             .padding(.horizontal, 24)
 
-                            BrutalTextButton(title: "Send Again") {
+                            BrutalTextButton(title: String(localized: "auth.forgot_password.button.send_again")) {
                                 isEmailSent = false
                             }
                         }
@@ -74,7 +76,7 @@ struct ForgotPasswordView: View {
                         // Form
                         VStack(spacing: 24) {
                             BrutalTextField(
-                                label: "Email",
+                                label: String(localized: "auth.forgot_password.field.email"),
                                 text: $email,
                                 keyboardType: .emailAddress,
                                 textContentType: .emailAddress,
@@ -92,7 +94,7 @@ struct ForgotPasswordView: View {
                             }
 
                             BrutalPrimaryButton(
-                                title: "Send Reset Code",
+                                title: String(localized: "auth.forgot_password.button.send_code"),
                                 action: sendResetEmail,
                                 isLoading: isLoading,
                                 isDisabled: !isFormValid
@@ -138,7 +140,7 @@ struct ForgotPasswordView: View {
                 }
             } catch {
                 await MainActor.run {
-                    errorMessage = "An unexpected error occurred."
+                    errorMessage = String(localized: "auth.forgot_password.error.unexpected")
                 }
             }
 

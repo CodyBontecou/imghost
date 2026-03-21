@@ -61,7 +61,7 @@ struct PhotoGridView: View {
                     Button {
                         exitSelectionMode()
                     } label: {
-                        Text("CANCEL")
+                        Text("photogrid.button.cancel")
                             .brutalTypography(.monoSmall)
                     }
                 }
@@ -77,25 +77,27 @@ struct PhotoGridView: View {
             }
         }
         .confirmationDialog(
-            "Delete \(selectedIds.count) file\(selectedIds.count == 1 ? "" : "s")?",
+            selectedIds.count == 1
+                ? String(format: String(localized: "photogrid.alert.delete.title"), selectedIds.count)
+                : String(format: String(localized: "photogrid.alert.delete.title_plural"), selectedIds.count),
             isPresented: $showDeleteConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Delete", role: .destructive) {
+            Button(String(localized: "photogrid.alert.delete.button.confirm"), role: .destructive) {
                 deleteSelected()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "photogrid.alert.delete.button.cancel"), role: .cancel) {}
         } message: {
-            Text("This will permanently delete the selected files from the server.")
+            Text("photogrid.alert.delete.message")
         }
     }
 
     private func dateGroupKey(for date: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(date) {
-            return "Today"
+            return String(localized: "photogrid.date.today")
         } else if calendar.isDateInYesterday(date) {
-            return "Yesterday"
+            return String(localized: "photogrid.date.yesterday")
         } else {
             let formatter = DateFormatter()
             formatter.dateFormat = "MMMM d, yyyy"
@@ -430,7 +432,7 @@ struct BrutalSelectionActionBar: View {
             Spacer()
 
             Button(action: onDelete) {
-                Text("DELETE")
+                Text("photogrid.alert.delete.button.confirm")
                     .brutalTypography(.mono, color: .brutalError)
                     .tracking(1)
             }

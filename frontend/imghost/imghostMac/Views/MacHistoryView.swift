@@ -41,7 +41,7 @@ struct MacHistoryView: View {
             VStack(spacing: 0) {
                 // Toolbar
                 HStack(spacing: 12) {
-                    Text("HISTORY")
+                    Text("history.title")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(Color.white)
                         .tracking(2)
@@ -54,7 +54,7 @@ struct MacHistoryView: View {
                             .font(.system(size: 12))
                             .foregroundStyle(Color.brutalTextSecondary)
 
-                        TextField("Search...", text: $searchText)
+                        TextField(String(localized: "history.search.placeholder"), text: $searchText)
                             .textFieldStyle(.plain)
                             .font(.system(size: 12, design: .monospaced))
                             .frame(width: 140)
@@ -86,13 +86,13 @@ struct MacHistoryView: View {
 
                 if isLoading {
                     Spacer()
-                    BrutalLoading(text: "Loading")
+                    BrutalLoading(text: String(localized: "history.loading"))
                     Spacer()
                 } else if filteredRecords.isEmpty {
                     Spacer()
                     BrutalEmptyState(
-                        title: searchText.isEmpty ? "No uploads yet" : "No results",
-                        subtitle: searchText.isEmpty ? "Upload your first image to get started" : "Try a different search term"
+                        title: searchText.isEmpty ? String(localized: "history.empty.title") : String(localized: "history.search.empty.title"),
+                        subtitle: searchText.isEmpty ? String(localized: "history.empty.subtitle") : String(localized: "history.search.empty.subtitle")
                     )
                     Spacer()
                 } else {
@@ -145,7 +145,7 @@ struct MacHistoryView: View {
                         Image(systemName: "photo")
                             .font(.system(size: 32))
                             .foregroundStyle(Color.brutalTextTertiary)
-                        Text("SELECT AN IMAGE")
+                        Text("history.detail.placeholder")
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
                             .foregroundStyle(Color.brutalTextTertiary)
                             .tracking(2)

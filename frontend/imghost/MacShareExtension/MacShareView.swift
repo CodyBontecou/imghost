@@ -11,7 +11,7 @@ struct MacShareView: View {
     @State private var isLoading = true
     @State private var isUploading = false
     @State private var uploadProgress: Double = 0
-    @State private var uploadStatusMessage: String = "Preparing..."
+    @State private var uploadStatusMessage: String = String(localized: "share.upload.status.preparing")
     @State private var results: [ShareUploadResult] = []
     @State private var errorMessage: String?
     @State private var debugInfo: String = ""
@@ -98,7 +98,7 @@ struct MacShareView: View {
             HStack(spacing: 6) {
                 Image(systemName: "arrow.up.square")
                     .font(.system(size: 12))
-                Text("IMGHOST")
+                Text("share.app_name")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .tracking(2)
             }
@@ -140,7 +140,7 @@ struct MacShareView: View {
             Spacer()
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
-            Text("Loading files...")
+            Text("share.state.loading")
                 .font(.system(size: 11, design: .monospaced))
                 .foregroundStyle(Color.brutalTextSecondary)
             Spacer()
@@ -157,7 +157,7 @@ struct MacShareView: View {
                 .font(.system(size: 32))
                 .foregroundStyle(Color.brutalError)
 
-            Text("ERROR")
+            Text("share.error.title")
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.brutalError)
                 .tracking(2)
@@ -179,7 +179,7 @@ struct MacShareView: View {
                     isLoading = true
                     Task { await loadFiles() }
                 }) {
-                    Text("RETRY")
+                    Text("share.error.button.retry")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
                         .tracking(1)
@@ -190,7 +190,7 @@ struct MacShareView: View {
                 .buttonStyle(.plain)
 
                 Button(action: cancel) {
-                    Text("CLOSE")
+                    Text("share.error.button.close")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(.black)
                         .tracking(1)
@@ -215,18 +215,18 @@ struct MacShareView: View {
                 .font(.system(size: 36))
                 .foregroundStyle(Color.white)
 
-            Text("PERMISSION NEEDED")
+            Text("share.permission.title")
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.white)
                 .tracking(2)
 
             VStack(spacing: 12) {
-                Text("macOS will ask imghost to \"access data from other apps.\"")
+                Text("share.permission.prompt")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(Color.white.opacity(0.85))
                     .multilineTextAlignment(.center)
 
-                Text("This is required so imghost can read the files you share from Finder, Safari, and other apps. Without this permission, the share extension can't upload your files.")
+                Text("share.permission.explanation")
                     .font(.system(size: 11))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .multilineTextAlignment(.center)
@@ -236,7 +236,7 @@ struct MacShareView: View {
             HStack(spacing: 6) {
                 Image(systemName: "lock.shield")
                     .font(.system(size: 11))
-                Text("Your files are only used for uploading — nothing is stored locally.")
+                Text("share.permission.privacy_note")
                     .font(.system(size: 10))
             }
             .foregroundStyle(Color.brutalTextTertiary)
@@ -248,7 +248,7 @@ struct MacShareView: View {
                 Spacer()
 
                 Button(action: cancel) {
-                    Text("CANCEL")
+                    Text("share.permission.button.cancel")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
                         .tracking(1)
@@ -265,7 +265,7 @@ struct MacShareView: View {
                     isLoading = true
                     Task { await loadFiles() }
                 }) {
-                    Text("CONTINUE")
+                    Text("share.permission.button.continue")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(.black)
                         .tracking(1)
@@ -290,12 +290,12 @@ struct MacShareView: View {
                 .font(.system(size: 32))
                 .foregroundStyle(Color.brutalWarning)
 
-            Text("NOT SIGNED IN")
+            Text("share.not_signed_in.title")
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.brutalWarning)
                 .tracking(2)
 
-            Text("Open the imghost app and sign in to enable uploads from the share sheet.")
+            Text("share.not_signed_in.message")
                 .font(.system(size: 12))
                 .foregroundStyle(Color.brutalTextSecondary)
                 .multilineTextAlignment(.center)
@@ -306,7 +306,7 @@ struct MacShareView: View {
             HStack {
                 Spacer()
                 Button(action: cancel) {
-                    Text("CLOSE")
+                    Text("share.error.button.close")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(.black)
                         .tracking(1)
@@ -331,12 +331,12 @@ struct MacShareView: View {
                 .font(.system(size: 32))
                 .foregroundStyle(Color.brutalTextTertiary)
 
-            Text("NO FILES FOUND")
+            Text("share.no_files.title")
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.brutalTextSecondary)
                 .tracking(2)
 
-            Text("No compatible files were found in the shared content. Try sharing an image or file directly.")
+            Text("share.no_files.message")
                 .font(.system(size: 12))
                 .foregroundStyle(Color.brutalTextTertiary)
                 .multilineTextAlignment(.center)
@@ -347,7 +347,7 @@ struct MacShareView: View {
             HStack {
                 Spacer()
                 Button(action: cancel) {
-                    Text("CLOSE")
+                    Text("share.error.button.close")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(.black)
                         .tracking(1)
@@ -368,7 +368,7 @@ struct MacShareView: View {
         VStack(spacing: 0) {
             // Quality picker
             HStack {
-                Text("QUALITY")
+                Text("share.preview.quality_label")
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextTertiary)
                     .tracking(1)
@@ -444,14 +444,16 @@ struct MacShareView: View {
 
             // Upload button
             HStack {
-                Text("\(files.count) file\(files.count == 1 ? "" : "s")")
+                Text(verbatim: files.count == 1
+                    ? String(format: String(localized: "share.preview.file_count_singular"), files.count)
+                    : String(format: String(localized: "share.preview.file_count_plural"), files.count))
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
 
                 Spacer()
 
                 Button(action: cancel) {
-                    Text("CANCEL")
+                    Text("share.preview.button.cancel")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
                         .tracking(1)
@@ -462,7 +464,7 @@ struct MacShareView: View {
                 .buttonStyle(.plain)
 
                 Button(action: uploadFiles) {
-                    Text("UPLOAD")
+                    Text("share.preview.button.upload")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(.black)
                         .tracking(1)
@@ -483,7 +485,7 @@ struct MacShareView: View {
         VStack(spacing: 16) {
             Spacer()
 
-            Text("UPLOADING")
+            Text("share.state.uploading")
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(.white)
                 .tracking(2)
@@ -570,12 +572,12 @@ struct MacShareView: View {
                 let errorCount = results.filter { $0.error != nil }.count
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("\(successCount)/\(results.count) uploaded")
+                    Text(verbatim: String(format: String(localized: "share.results.uploaded_count"), successCount, results.count))
                         .font(.system(size: 11, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
 
                     if errorCount > 0 {
-                        Text("\(errorCount) failed")
+                        Text(verbatim: String(format: String(localized: "share.results.failed_count"), errorCount))
                             .font(.system(size: 10, design: .monospaced))
                             .foregroundStyle(Color.brutalError)
                     }
@@ -585,7 +587,7 @@ struct MacShareView: View {
 
                 if successCount > 0 {
                     Button(action: copyAllLinks) {
-                        Text("COPY ALL")
+                        Text("share.results.button.copy_all")
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
                             .foregroundStyle(.white)
                             .tracking(1)
@@ -597,7 +599,7 @@ struct MacShareView: View {
                 }
 
                 Button(action: done) {
-                    Text("DONE")
+                    Text("share.results.button.done")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(.black)
                         .tracking(1)
@@ -678,7 +680,7 @@ struct MacShareView: View {
         guard let items = extensionContext?.inputItems as? [NSExtensionItem] else {
             logger.error("No input items from extension context")
             await MainActor.run {
-                errorMessage = "No content received from share sheet. The extension context had no input items."
+                errorMessage = String(localized: "share.error.no_content")
                 isLoading = false
             }
             return
@@ -782,7 +784,7 @@ struct MacShareView: View {
             isLoading = false
 
             if loadedFiles.isEmpty && !loadErrors.isEmpty {
-                errorMessage = "Failed to load shared files:\n\(loadErrors.joined(separator: "\n"))"
+                errorMessage = String(format: String(localized: "share.error.failed_to_load"), loadErrors.joined(separator: "\n"))
             }
 
             logger.info("Loaded \(loadedFiles.count) files, \(loadErrors.count) errors")
@@ -794,13 +796,13 @@ struct MacShareView: View {
 
         guard KeychainService.shared.hasValidTokens else {
             logger.error("No valid tokens - cannot upload")
-            errorMessage = "Not signed in. Open the imghost app and sign in first."
+            errorMessage = String(localized: "share.error.not_signed_in_upload")
             return
         }
 
         isUploading = true
         uploadProgress = 0
-        uploadStatusMessage = "Starting upload..."
+        uploadStatusMessage = String(localized: "share.upload.status.starting")
 
         Task {
             var uploadResults: [ShareUploadResult] = []
@@ -810,7 +812,7 @@ struct MacShareView: View {
                 let baseProgress = Double(index) / Double(total)
 
                 await MainActor.run {
-                    uploadStatusMessage = "Uploading \(file.filename) (\(index + 1)/\(total))"
+                    uploadStatusMessage = String(format: String(localized: "share.upload.status.in_progress"), file.filename, index + 1, total)
                 }
 
                 logger.info("Uploading file \(index + 1)/\(total): \(file.filename) (\(file.fileSize) bytes)")
@@ -857,27 +859,27 @@ struct MacShareView: View {
         if let imghostError = error as? ImghostError {
             switch imghostError {
             case .notConfigured:
-                return "Not signed in. Open imghost app to sign in."
+                return String(localized: "share.error.description.not_signed_in")
             case .invalidURL:
-                return "Invalid upload URL. Check backend configuration."
+                return String(localized: "share.error.description.invalid_url")
             case .invalidResponse:
-                return "Invalid response from server."
+                return String(localized: "share.error.description.invalid_response")
             case .uploadFailed(let statusCode, let message):
-                return "Upload failed (HTTP \(statusCode)): \(message ?? "No details")"
+                return String(format: String(localized: "share.error.description.upload_failed"), statusCode, message ?? String(localized: "share.error.description.no_details"))
             case .networkError(let underlying):
-                return "Network error: \(underlying.localizedDescription)"
+                return String(format: String(localized: "share.error.description.network"), underlying.localizedDescription)
             case .subscriptionRequired:
-                return "Subscription required. Upgrade in the imghost app."
+                return String(localized: "share.error.description.subscription_required")
             case .emailVerificationRequired:
-                return "Email verification required. Check your email."
+                return String(localized: "share.error.description.email_not_verified")
             case .keychainError(let status):
-                return "Keychain error (status \(status)). Try signing in again."
+                return String(format: String(localized: "share.error.description.keychain"), status)
             case .fileSystemError(let underlying):
-                return "File error: \(underlying.localizedDescription)"
+                return String(format: String(localized: "share.error.description.file_system"), underlying.localizedDescription)
             case .imageProcessingFailed:
-                return "Failed to process image. File may be corrupted."
+                return String(localized: "share.error.description.image_processing")
             case .deleteFailed(let statusCode, let message):
-                return "Delete failed (HTTP \(statusCode)): \(message ?? "No details")"
+                return String(format: String(localized: "share.error.description.delete_failed"), statusCode, message ?? String(localized: "share.error.description.no_details"))
             }
         }
         return error.localizedDescription

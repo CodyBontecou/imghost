@@ -20,17 +20,17 @@ struct MacPaywallView: View {
                 VStack(spacing: 32) {
                     // Hero
                     VStack(spacing: 12) {
-                        Text("UNLOCK")
+                        Text("paywall.title.unlock")
                             .font(.system(size: 16, weight: .bold, design: .monospaced))
                             .foregroundStyle(Color.white)
                             .tracking(4)
 
-                        Text("PRO")
+                        Text("paywall.title.pro")
                             .font(.system(size: 64, weight: .black))
                             .foregroundStyle(Color.white)
                             .tracking(8)
 
-                        Text("7-DAY FREE TRIAL")
+                        Text("paywall.title.trial")
                             .font(.system(size: 13, weight: .medium, design: .monospaced))
                             .foregroundStyle(Color.brutalSuccess)
                             .tracking(2)
@@ -41,10 +41,10 @@ struct MacPaywallView: View {
 
                     // Features
                     HStack(spacing: 24) {
-                        MacFeatureItem(icon: "photo.stack", title: "500MB Files")
-                        MacFeatureItem(icon: "externaldrive.fill", title: "10GB Storage")
-                        MacFeatureItem(icon: "bolt.fill", title: "Fast Sharing")
-                        MacFeatureItem(icon: "lock.fill", title: "Private")
+                        MacFeatureItem(icon: "photo.stack", title: String(localized: "paywall.feature.file_size"))
+                        MacFeatureItem(icon: "externaldrive.fill", title: String(localized: "paywall.feature.storage"))
+                        MacFeatureItem(icon: "bolt.fill", title: String(localized: "paywall.feature.sharing"))
+                        MacFeatureItem(icon: "lock.fill", title: String(localized: "paywall.feature.private"))
                     }
 
                     // Products
@@ -53,12 +53,12 @@ struct MacPaywallView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     } else if storeKit.products.isEmpty {
                         VStack(spacing: 12) {
-                            Text("Unable to load subscription options")
+                            Text("paywall.error.loading")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.brutalError)
 
                             Button(action: { Task { await storeKit.reloadProducts() } }) {
-                                Text("RETRY")
+                                Text("paywall.button.retry")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .foregroundStyle(Color.brutalAccent)
                                     .tracking(1)
@@ -77,7 +77,7 @@ struct MacPaywallView: View {
                             }
 
                             if let annual = storeKit.annualProduct {
-                                MacProductCard(product: annual, isSelected: selectedProduct?.id == annual.id, badge: "SAVE 30%") {
+                                MacProductCard(product: annual, isSelected: selectedProduct?.id == annual.id, badge: String(localized: "paywall.badge.save")) {
                                     selectedProduct = annual
                                 }
                             }
@@ -92,7 +92,7 @@ struct MacPaywallView: View {
                                         .progressViewStyle(CircularProgressViewStyle(tint: .black))
                                         .scaleEffect(0.7)
                                 } else {
-                                    Text("START FREE TRIAL")
+                                    Text("paywall.button.start_trial")
                                         .font(.system(size: 13, weight: .bold, design: .monospaced))
                                         .tracking(1)
                                 }
@@ -106,7 +106,7 @@ struct MacPaywallView: View {
 
                         // Restore
                         Button(action: { Task { await restore() } }) {
-                            Text("RESTORE PURCHASES")
+                            Text("paywall.button.restore")
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextSecondary)
                                 .tracking(1)
@@ -117,7 +117,7 @@ struct MacPaywallView: View {
 
                     // Legal
                     VStack(spacing: 8) {
-                        Text("After your 7-day free trial, your subscription will automatically renew. Cancel anytime in Settings.")
+                        Text("paywall.legal.renewal_notice")
                             .font(.system(size: 10))
                             .foregroundStyle(Color.brutalTextTertiary)
                             .multilineTextAlignment(.center)
@@ -125,7 +125,7 @@ struct MacPaywallView: View {
 
                         HStack(spacing: 12) {
                             Button(action: { MacURLOpener.open("https://imghost.isolated.tech/terms") }) {
-                                Text("Terms")
+                                Text("paywall.legal.button.terms")
                                     .font(.system(size: 10, design: .monospaced))
                                     .foregroundStyle(Color.brutalTextSecondary)
                             }
@@ -136,7 +136,7 @@ struct MacPaywallView: View {
                                 .foregroundStyle(Color.brutalTextTertiary)
 
                             Button(action: { MacURLOpener.open("https://imghost.isolated.tech/privacy") }) {
-                                Text("Privacy")
+                                Text("paywall.legal.button.privacy")
                                     .font(.system(size: 10, design: .monospaced))
                                     .foregroundStyle(Color.brutalTextSecondary)
                             }
@@ -156,10 +156,10 @@ struct MacPaywallView: View {
                 selectedProduct = storeKit.monthlyProduct
             }
         }
-        .alert("Error", isPresented: $showError) {
-            Button("OK") { showError = false }
+        .alert(String(localized: "paywall.error.alert.title"), isPresented: $showError) {
+            Button(String(localized: "paywall.error.alert.button.ok")) { showError = false }
         } message: {
-            Text(errorMessage ?? "An error occurred")
+            Text(verbatim: errorMessage ?? String(localized: "paywall.error.alert.message_fallback"))
         }
     }
 
@@ -241,11 +241,11 @@ struct MacProductCard: View {
 
                 if product.id == StoreKitManager.annualProductID {
                     let monthlyPrice = product.price / 12
-                    Text("\(monthlyPrice.formatted(.currency(code: product.priceFormatStyle.currencyCode ?? "USD")))/mo")
+                    Text(verbatim: String(format: String(localized: "paywall.price.per_month_format"), monthlyPrice.formatted(.currency(code: product.priceFormatStyle.currencyCode ?? "USD"))))
                         .font(.system(size: 10, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
                 } else {
-                    Text("/month")
+                    Text("paywall.price.per_month_fallback")
                         .font(.system(size: 10, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
                 }

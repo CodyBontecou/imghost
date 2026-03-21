@@ -24,7 +24,7 @@ struct MacForgotPasswordView: View {
             VStack(spacing: 0) {
                 // Header
                 HStack {
-                    Text("RESET PASSWORD")
+                    Text("auth.forgot_password.sheet.title")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(Color.white)
                         .tracking(2)
@@ -63,12 +63,12 @@ struct MacForgotPasswordView: View {
 
     private var requestCodeView: some View {
         VStack(spacing: 20) {
-            Text("RESET\nPASSWORD")
+            Text("auth.forgot_password.title")
                 .font(.system(size: 40, weight: .black))
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            MacBrutalTextField(label: "Email", text: $email)
+            MacBrutalTextField(label: String(localized: "auth.forgot_password.field.email"), text: $email)
 
             if let errorMessage = errorMessage {
                 Text(errorMessage.uppercased())
@@ -84,7 +84,7 @@ struct MacForgotPasswordView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .black))
                             .scaleEffect(0.7)
                     } else {
-                        Text("SEND RESET CODE")
+                        Text("auth.forgot_password.button.send_code")
                             .font(.system(size: 13, weight: .medium, design: .monospaced))
                             .tracking(1)
                     }
@@ -103,21 +103,21 @@ struct MacForgotPasswordView: View {
 
     private var emailSentView: some View {
         VStack(spacing: 20) {
-            Text("✓")
+            Text(verbatim: "✓")
                 .font(.system(size: 48, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.brutalSuccess)
 
-            Text("RESET CODE SENT TO:")
+            Text("auth.forgot_password.code_sent_to")
                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                 .foregroundStyle(Color.brutalTextSecondary)
                 .tracking(2)
 
-            Text(email)
+            Text(verbatim: email)
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(Color.white)
 
             Button(action: { showResetPassword = true }) {
-                Text("ENTER RESET CODE")
+                Text("auth.forgot_password.button.enter_code")
                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.black)
                     .tracking(1)
@@ -128,7 +128,7 @@ struct MacForgotPasswordView: View {
             .buttonStyle(.plain)
 
             Button(action: { isEmailSent = false }) {
-                Text("SEND AGAIN")
+                Text("auth.forgot_password.button.send_again")
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .tracking(1)
@@ -141,18 +141,18 @@ struct MacForgotPasswordView: View {
 
     private var resetPasswordView: some View {
         VStack(spacing: 20) {
-            Text("NEW\nPASSWORD")
+            Text("auth.reset_password.title")
                 .font(.system(size: 40, weight: .black))
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            MacBrutalTextField(label: "Reset Code", text: $resetCode)
-            MacBrutalTextField(label: "New Password", text: $newPassword, isSecure: true)
-            MacBrutalTextField(label: "Confirm Password", text: $confirmPassword, isSecure: true)
+            MacBrutalTextField(label: String(localized: "auth.reset_password.field.code"), text: $resetCode)
+            MacBrutalTextField(label: String(localized: "auth.reset_password.field.new_password"), text: $newPassword, isSecure: true)
+            MacBrutalTextField(label: String(localized: "auth.reset_password.field.confirm_password"), text: $confirmPassword, isSecure: true)
 
             VStack(alignment: .leading, spacing: 8) {
-                MacRequirement(text: "At least 8 characters", isMet: newPassword.count >= 8)
-                MacRequirement(text: "Passwords match", isMet: !newPassword.isEmpty && newPassword == confirmPassword)
+                MacRequirement(text: String(localized: "auth.reset_password.requirement.min_chars"), isMet: newPassword.count >= 8)
+                MacRequirement(text: String(localized: "auth.reset_password.requirement.passwords_match"), isMet: !newPassword.isEmpty && newPassword == confirmPassword)
             }
             .padding(12)
             .background(Color.brutalSurface)
@@ -172,7 +172,7 @@ struct MacForgotPasswordView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .black))
                             .scaleEffect(0.7)
                     } else {
-                        Text("RESET PASSWORD")
+                        Text("auth.reset_password.button.reset")
                             .font(.system(size: 13, weight: .medium, design: .monospaced))
                             .tracking(1)
                     }
@@ -191,21 +191,21 @@ struct MacForgotPasswordView: View {
 
     private var successView: some View {
         VStack(spacing: 20) {
-            Text("✓")
+            Text("auth.reset_password.success.icon")
                 .font(.system(size: 48, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.brutalSuccess)
 
-            Text("PASSWORD UPDATED")
+            Text("auth.reset_password.success.title")
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(Color.white)
 
-            Text("You can now sign in with your new password.")
+            Text("auth.reset_password.success.message")
                 .font(.system(size: 12))
                 .foregroundStyle(Color.brutalTextSecondary)
                 .multilineTextAlignment(.center)
 
             Button(action: { dismiss() }) {
-                Text("BACK TO SIGN IN")
+                Text("auth.reset_password.success.button.sign_in")
                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.black)
                     .tracking(1)
@@ -234,7 +234,7 @@ struct MacForgotPasswordView: View {
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }
             } catch {
-                await MainActor.run { errorMessage = "An unexpected error occurred." }
+                await MainActor.run { errorMessage = String(localized: "auth.forgot_password.error.unexpected") }
             }
             await MainActor.run { isLoading = false }
         }
@@ -255,7 +255,7 @@ struct MacForgotPasswordView: View {
             } catch let error as AuthError {
                 await MainActor.run { resetError = error.errorDescription }
             } catch {
-                await MainActor.run { resetError = "An unexpected error occurred." }
+                await MainActor.run { resetError = String(localized: "auth.reset_password.error.unexpected") }
             }
             await MainActor.run { isResetting = false }
         }

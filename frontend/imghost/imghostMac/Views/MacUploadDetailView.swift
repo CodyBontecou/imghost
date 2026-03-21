@@ -81,7 +81,7 @@ struct MacUploadDetailView: View {
                     // Filename
                     if let filename = record.originalFilename {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("FILENAME")
+                            Text("detail.label.filename")
                                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextTertiary)
                                 .tracking(1.5)
@@ -93,7 +93,7 @@ struct MacUploadDetailView: View {
 
                     // Date
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("UPLOADED")
+                        Text("detail.label.uploaded")
                             .font(.system(size: 10, weight: .medium, design: .monospaced))
                             .foregroundStyle(Color.brutalTextTertiary)
                             .tracking(1.5)
@@ -106,7 +106,7 @@ struct MacUploadDetailView: View {
 
                     // Link format picker
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("LINK FORMAT")
+                        Text("detail.label.link_format")
                             .font(.system(size: 10, weight: .medium, design: .monospaced))
                             .foregroundStyle(Color.brutalTextTertiary)
                             .tracking(1.5)
@@ -136,7 +136,7 @@ struct MacUploadDetailView: View {
                             HStack(spacing: 6) {
                                 Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                                     .font(.system(size: 12))
-                                Text(isCopied ? "COPIED" : "COPY LINK")
+                                Text(isCopied ? "detail.button.copied" : "detail.button.copy_link")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .tracking(1)
                             }
@@ -153,7 +153,7 @@ struct MacUploadDetailView: View {
                                 HStack(spacing: 6) {
                                     Image(systemName: "safari")
                                         .font(.system(size: 12))
-                                    Text("OPEN")
+                                    Text("detail.button.open")
                                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                                         .tracking(1)
                                 }
@@ -169,7 +169,7 @@ struct MacUploadDetailView: View {
                                 HStack(spacing: 6) {
                                     Image(systemName: "square.and.arrow.up")
                                         .font(.system(size: 12))
-                                    Text("SHARE")
+                                    Text("detail.button.share")
                                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                                         .tracking(1)
                                 }
@@ -187,7 +187,7 @@ struct MacUploadDetailView: View {
                             HStack(spacing: 6) {
                                 Image(systemName: "trash")
                                     .font(.system(size: 12))
-                                Text("DELETE")
+                                Text("detail.button.delete")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .tracking(1)
                             }
@@ -203,11 +203,11 @@ struct MacUploadDetailView: View {
             }
         }
         .background(Color.brutalSurface.opacity(0.5))
-        .alert("Delete Image", isPresented: $showDeleteConfirm) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete", role: .destructive) { onDelete() }
+        .alert(String(localized: "detail.alert.delete.title"), isPresented: $showDeleteConfirm) {
+            Button(String(localized: "detail.alert.delete.button.cancel"), role: .cancel) {}
+            Button(String(localized: "detail.alert.delete.button.confirm"), role: .destructive) { onDelete() }
         } message: {
-            Text("This will permanently delete the image from the server.")
+            Text("detail.alert.delete.message")
         }
     }
 

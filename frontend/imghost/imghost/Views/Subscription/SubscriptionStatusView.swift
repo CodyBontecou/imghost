@@ -8,7 +8,7 @@ struct SubscriptionStatusView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text("SUBSCRIPTION")
+                Text("subscription.title")
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                     .tracking(2)
                 Spacer()
@@ -28,7 +28,7 @@ struct SubscriptionStatusView: View {
                 // Plan Badge
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("CURRENT PLAN")
+                        Text("subscription.section.current_plan")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(1)
 
@@ -63,7 +63,7 @@ struct SubscriptionStatusView: View {
 
                 // Manage Subscription Button
                 if subscriptionState.status == .subscribed || subscriptionState.status == .trialing {
-                    BrutalSecondaryButton(title: "Manage Subscription") {
+                    BrutalSecondaryButton(title: String(localized: "subscription.button.manage")) {
                         openSubscriptionManagement()
                     }
                     .padding(.top, 8)
@@ -79,13 +79,13 @@ struct SubscriptionStatusView: View {
     private var planDisplayName: String {
         switch subscriptionState.status {
         case .trialing:
-            return "PRO TRIAL"
+            return String(localized: "subscription.plan.trial")
         case .subscribed:
-            return "PRO"
+            return String(localized: "subscription.plan.active")
         case .cancelled:
-            return "PRO (CANCELLED)"
+            return String(localized: "subscription.plan.cancelled")
         default:
-            return "FREE"
+            return String(localized: "subscription.plan.free")
         }
     }
 
@@ -93,13 +93,13 @@ struct SubscriptionStatusView: View {
     private var statusBadge: some View {
         switch subscriptionState.status {
         case .trialing:
-            BrutalBadge(text: "TRIAL", style: .warning)
+            BrutalBadge(text: String(localized: "subscription.badge.trial"), style: .warning)
         case .subscribed:
-            BrutalBadge(text: "ACTIVE", style: .success)
+            BrutalBadge(text: String(localized: "subscription.badge.active"), style: .success)
         case .cancelled:
-            BrutalBadge(text: "CANCELLED", style: .warning)
+            BrutalBadge(text: String(localized: "subscription.badge.cancelled"), style: .warning)
         case .expired, .trialExpired:
-            BrutalBadge(text: "EXPIRED", style: .error)
+            BrutalBadge(text: String(localized: "subscription.badge.expired"), style: .error)
         default:
             EmptyView()
         }
@@ -109,9 +109,12 @@ struct SubscriptionStatusView: View {
         switch subscriptionState.status {
         case .trialing:
             if let days = subscriptionState.trialDaysRemaining {
+                let text = days == 1
+                    ? String(localized: "subscription.trial.ends_tomorrow")
+                    : String(format: String(localized: "subscription.trial.ends_in_days"), days)
                 return (
                     icon: "clock.fill",
-                    text: days == 1 ? "Trial ends tomorrow" : "Trial ends in \(days) days",
+                    text: text,
                     color: days <= 2 ? .brutalWarning : .brutalTextSecondary
                 )
             }
@@ -122,9 +125,12 @@ struct SubscriptionStatusView: View {
                 let formatter = DateFormatter()
                 formatter.dateStyle = .medium
                 let dateString = formatter.string(from: endDate)
+                let text = subscriptionState.willRenew
+                    ? String(format: String(localized: "subscription.renews_on"), dateString)
+                    : String(format: String(localized: "subscription.expires_on"), dateString)
                 return (
                     icon: subscriptionState.willRenew ? "arrow.triangle.2.circlepath" : "xmark.circle",
-                    text: subscriptionState.willRenew ? "Renews on \(dateString)" : "Expires on \(dateString)",
+                    text: text,
                     color: .brutalTextSecondary
                 )
             }
@@ -137,7 +143,7 @@ struct SubscriptionStatusView: View {
                 let dateString = formatter.string(from: endDate)
                 return (
                     icon: "exclamationmark.triangle",
-                    text: "Access until \(dateString)",
+                    text: String(format: String(localized: "subscription.access_until"), dateString),
                     color: .brutalWarning
                 )
             }
@@ -146,7 +152,7 @@ struct SubscriptionStatusView: View {
         case .expired, .trialExpired:
             return (
                 icon: "xmark.circle.fill",
-                text: "Your subscription has expired",
+                text: String(localized: "subscription.expired_message"),
                 color: .brutalError
             )
 

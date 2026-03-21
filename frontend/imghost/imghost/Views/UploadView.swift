@@ -72,7 +72,7 @@ struct UploadView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("UPLOAD")
+                    Text("upload.title")
                         .brutalTypography(.mono)
                         .tracking(2)
                 }
@@ -82,7 +82,7 @@ struct UploadView: View {
             .navigationBarTitleDisplayMode(.inline)
             .preferredColorScheme(.dark)
             .confirmationDialog(confirmMessage, isPresented: $showUploadConfirm, titleVisibility: .visible) {
-                Button("Upload") {
+                Button(String(localized: "upload.confirm.button.upload")) {
                     if let item = pendingPhotoItem {
                         pendingPhotoItem = nil
                         processSelectedPhotoItem(item)
@@ -91,12 +91,12 @@ struct UploadView: View {
                         processSelectedFile(url)
                     }
                 }
-                Button("Cancel", role: .cancel) {
+                Button(String(localized: "upload.confirm.button.cancel"), role: .cancel) {
                     pendingPhotoItem = nil
                     pendingFileURL = nil
                 }
             } message: {
-                Text("Resolution: \(UploadQualityService.shared.currentQuality.displayName)")
+                Text(verbatim: String(format: String(localized: "upload.confirm.resolution"), UploadQualityService.shared.currentQuality.displayName))
             }
         }
     }
@@ -112,12 +112,12 @@ struct UploadView: View {
                     .font(.system(size: 64, weight: .light))
                     .foregroundStyle(.white)
 
-                Text("UPLOAD\nFILE")
+                Text("upload.drop_zone.title")
                     .font(.system(size: 36, weight: .black))
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
 
-                Text("Images, videos, documents, and more")
+                Text("upload.drop_zone.subtitle")
                     .brutalTypography(.bodyMedium, color: .brutalTextSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -134,7 +134,7 @@ struct UploadView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "photo.on.rectangle")
                             .font(.system(size: 20, weight: .semibold))
-                        Text("Photo Library")
+                        Text("upload.source.photo_library")
                             .font(.system(size: 18, weight: .bold))
                     }
                     .foregroundStyle(.black)
@@ -156,7 +156,7 @@ struct UploadView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "doc")
                             .font(.system(size: 20, weight: .semibold))
-                        Text("Browse Files")
+                        Text("upload.source.browse_files")
                             .font(.system(size: 18, weight: .bold))
                     }
                     .foregroundStyle(.white)
@@ -185,7 +185,7 @@ struct UploadView: View {
     private var loadingView: some View {
         VStack(spacing: 24) {
             Spacer()
-            BrutalLoading(text: "Preparing")
+            BrutalLoading(text: String(localized: "state.preparing"))
             Spacer()
         }
     }
@@ -213,7 +213,7 @@ struct UploadView: View {
                         .foregroundStyle(.white)
                 }
 
-                Text("UPLOADING")
+                Text("upload.progress.title")
                     .font(.system(size: 24, weight: .black))
                     .foregroundStyle(.white)
                     .tracking(2)
@@ -224,7 +224,7 @@ struct UploadView: View {
             Button {
                 cancelUpload()
             } label: {
-                Text("Cancel")
+                Text("upload.progress.cancel")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Color.brutalTextSecondary)
             }
@@ -242,12 +242,12 @@ struct UploadView: View {
                     .font(.system(size: 64))
                     .foregroundStyle(.green)
 
-                Text("UPLOADED")
+                Text("upload.success.title")
                     .font(.system(size: 24, weight: .black))
                     .foregroundStyle(.white)
                     .tracking(2)
 
-                Text("Link copied to clipboard")
+                Text("upload.success.link_copied")
                     .brutalTypography(.bodyMedium, color: .brutalTextSecondary)
             }
 
@@ -260,7 +260,7 @@ struct UploadView: View {
                         .multilineTextAlignment(.center)
                         .animation(.easeInOut(duration: 0.2), value: showCopiedFeedback)
 
-                    Text(showCopiedFeedback ? "Copied!" : "Hold to copy")
+                    Text(showCopiedFeedback ? "upload.success.copied_feedback" : "upload.success.hold_to_copy")
                         .font(.system(.caption2, design: .default))
                         .foregroundStyle(showCopiedFeedback ? .green : Color.brutalTextTertiary.opacity(0.6))
                         .animation(.easeInOut(duration: 0.2), value: showCopiedFeedback)
@@ -282,7 +282,7 @@ struct UploadView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "plus")
                         .font(.system(size: 20, weight: .semibold))
-                    Text("Upload Another")
+                    Text("upload.success.button.upload_another")
                         .font(.system(size: 18, weight: .bold))
                 }
                 .foregroundStyle(.black)
@@ -305,7 +305,7 @@ struct UploadView: View {
                     .font(.system(size: 64))
                     .foregroundStyle(.orange)
 
-                Text("UPLOAD FAILED")
+                Text("upload.failure.title")
                     .font(.system(size: 24, weight: .black))
                     .foregroundStyle(.white)
                     .tracking(2)
@@ -330,7 +330,7 @@ struct UploadView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "arrow.clockwise")
                             .font(.system(size: 20, weight: .semibold))
-                        Text("Retry")
+                        Text("upload.failure.button.retry")
                             .font(.system(size: 18, weight: .bold))
                     }
                     .foregroundStyle(.black)
@@ -343,7 +343,7 @@ struct UploadView: View {
                 Button {
                     reset()
                 } label: {
-                    Text("Cancel")
+                    Text("upload.failure.button.cancel")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(Color.brutalTextSecondary)
                 }
@@ -404,11 +404,11 @@ struct UploadView: View {
         }
 
         if let url = fileURL {
-            confirmMessage = "Upload \"\(url.lastPathComponent)\"?"
+            confirmMessage = String(format: String(localized: "upload.confirm.file"), url.lastPathComponent)
             pendingFileURL = url
             pendingPhotoItem = nil
         } else {
-            confirmMessage = "Upload selected photo?"
+            confirmMessage = String(localized: "upload.confirm.photo")
             pendingPhotoItem = photoItem
             pendingFileURL = nil
         }

@@ -28,7 +28,7 @@ struct MacSettingsView: View {
             VStack(spacing: 0) {
                 // Header
                 HStack {
-                    Text("SETTINGS")
+                    Text("settings.title")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(Color.white)
                         .tracking(2)
@@ -66,11 +66,11 @@ struct MacSettingsView: View {
             }
         }
         .background(Color.brutalBackground)
-        .alert("Delete Account", isPresented: $showDeleteAccountConfirm) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete Account", role: .destructive) { deleteAccount() }
+        .alert(String(localized: "settings.alert.delete_account.title"), isPresented: $showDeleteAccountConfirm) {
+            Button(String(localized: "settings.alert.delete_account.button.cancel"), role: .cancel) {}
+            Button(String(localized: "settings.alert.delete_account.button.confirm"), role: .destructive) { deleteAccount() }
         } message: {
-            Text("This will permanently delete your account and all uploaded images. This cannot be undone.")
+            Text("settings.alert.delete_account.message")
         }
     }
 
@@ -78,7 +78,7 @@ struct MacSettingsView: View {
 
     private var accountSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            BrutalSectionHeader(title: "Account")
+            BrutalSectionHeader(title: String(localized: "settings.section.account"))
 
             if let user = authState.currentUser {
                 HStack(spacing: 12) {
@@ -93,7 +93,7 @@ struct MacSettingsView: View {
                             Circle()
                                 .fill(user.emailVerified ? Color.brutalSuccess : Color.brutalWarning)
                                 .frame(width: 6, height: 6)
-                            Text(user.emailVerified ? "VERIFIED" : "UNVERIFIED")
+                            Text(user.emailVerified ? String(localized: "settings.account.status.verified") : String(localized: "settings.account.status.unverified"))
                                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextSecondary)
                                 .tracking(1)
@@ -107,7 +107,7 @@ struct MacSettingsView: View {
             }
 
             Button(action: logout) {
-                Text("SIGN OUT")
+                Text("settings.account.button.sign_out")
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .tracking(1)
@@ -123,7 +123,7 @@ struct MacSettingsView: View {
 
     private var subscriptionSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            BrutalSectionHeader(title: "Subscription")
+            BrutalSectionHeader(title: String(localized: "settings.section.subscription"))
 
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
@@ -133,7 +133,7 @@ struct MacSettingsView: View {
 
                     if let days = subscriptionState.trialDaysRemaining,
                        subscriptionState.status == .trialing {
-                        Text("\(days) days remaining")
+                        Text(verbatim: String(format: String(localized: "settings.subscription.days_remaining"), days))
                             .font(.system(size: 12))
                             .foregroundStyle(Color.brutalTextSecondary)
                     }
@@ -151,7 +151,7 @@ struct MacSettingsView: View {
                 Button(action: {
                     MacURLOpener.open("https://apps.apple.com/account/subscriptions")
                 }) {
-                    Text("MANAGE SUBSCRIPTION")
+                    Text("settings.subscription.button.manage")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
                         .tracking(1)
@@ -168,13 +168,13 @@ struct MacSettingsView: View {
     private var subscriptionBadge: some View {
         switch subscriptionState.status {
         case .trialing:
-            BrutalBadge(text: "TRIAL", style: .warning)
+            BrutalBadge(text: String(localized: "settings.badge.trial"), style: .warning)
         case .subscribed:
-            BrutalBadge(text: "ACTIVE", style: .success)
+            BrutalBadge(text: String(localized: "settings.badge.active"), style: .success)
         case .cancelled:
-            BrutalBadge(text: "CANCELLED", style: .warning)
+            BrutalBadge(text: String(localized: "settings.badge.cancelled"), style: .warning)
         case .expired, .trialExpired:
-            BrutalBadge(text: "EXPIRED", style: .error)
+            BrutalBadge(text: String(localized: "settings.badge.expired"), style: .error)
         default:
             EmptyView()
         }
@@ -184,7 +184,7 @@ struct MacSettingsView: View {
 
     private var storageSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            BrutalSectionHeader(title: "Storage")
+            BrutalSectionHeader(title: String(localized: "settings.section.storage"))
 
             if let user = authState.currentUser {
                 VStack(alignment: .leading, spacing: 8) {
@@ -192,11 +192,11 @@ struct MacSettingsView: View {
                         Text(user.storageUsedFormatted)
                             .font(.system(size: 13, weight: .bold, design: .monospaced))
                             .foregroundStyle(Color.white)
-                        Text("of \(user.storageLimitFormatted)")
+                        Text(verbatim: String(format: String(localized: "settings.storage.of_limit"), user.storageLimitFormatted))
                             .font(.system(size: 13, design: .monospaced))
                             .foregroundStyle(Color.brutalTextSecondary)
                         Spacer()
-                        Text(String(format: "%.0f%%", user.storagePercentUsed))
+                        Text(verbatim: String(format: String(localized: "settings.storage.percent_format"), user.storagePercentUsed))
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
                             .foregroundStyle(Color.brutalTextTertiary)
                     }
@@ -205,7 +205,7 @@ struct MacSettingsView: View {
                         .frame(height: 4)
 
                     if let imageCount = user.imageCount {
-                        Text("\(imageCount) files")
+                        Text(verbatim: String(format: String(localized: "settings.storage.file_count"), imageCount))
                             .font(.system(size: 11, design: .monospaced))
                             .foregroundStyle(Color.brutalTextTertiary)
                     }
@@ -221,7 +221,7 @@ struct MacSettingsView: View {
 
     private var linkFormatSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            BrutalSectionHeader(title: "Link Format", subtitle: "Format used when copying links")
+            BrutalSectionHeader(title: String(localized: "settings.section.link_format"), subtitle: String(localized: "settings.section.link_format.subtitle"))
 
             VStack(spacing: 8) {
                 ForEach(LinkFormat.allCases) { format in
@@ -261,7 +261,7 @@ struct MacSettingsView: View {
                 }
 
                 if selectedLinkFormat == .custom {
-                    MacBrutalTextField(label: "Custom Template", text: $customTemplate)
+                    MacBrutalTextField(label: String(localized: "settings.link_format.custom_field"), text: $customTemplate)
                         .onChange(of: customTemplate) { _, newValue in
                             linkFormatService.customTemplate = newValue
                         }
@@ -274,11 +274,11 @@ struct MacSettingsView: View {
 
     private var uploadQualitySection: some View {
         VStack(alignment: .leading, spacing: 20) {
-            BrutalSectionHeader(title: "Upload", subtitle: "Default behavior for all uploads")
+            BrutalSectionHeader(title: String(localized: "settings.section.upload"), subtitle: String(localized: "settings.section.upload.subtitle"))
 
             // Default resolution picker
             VStack(alignment: .leading, spacing: 10) {
-                Text("DEFAULT RESOLUTION")
+                Text("settings.upload.label.resolution")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .tracking(1.5)
@@ -305,7 +305,7 @@ struct MacSettingsView: View {
                                             .font(.system(size: 13, weight: .medium))
                                             .foregroundStyle(Color.white)
                                         if quality == .original {
-                                            Text("DEFAULT")
+                                            Text("settings.upload.label.default_badge")
                                                 .font(.system(size: 9, weight: .bold, design: .monospaced))
                                                 .foregroundStyle(Color.brutalTextTertiary)
                                                 .padding(.horizontal, 5)
@@ -339,7 +339,7 @@ struct MacSettingsView: View {
 
             // Confirm before uploading toggle
             VStack(alignment: .leading, spacing: 10) {
-                Text("BEHAVIOR")
+                Text("settings.upload.label.behavior")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .tracking(1.5)
@@ -350,10 +350,10 @@ struct MacSettingsView: View {
                 }) {
                     HStack(spacing: 12) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Confirm before uploading")
+                            Text("settings.upload.toggle.confirm_label")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(Color.white)
-                            Text("Ask for confirmation before each upload starts")
+                            Text("settings.upload.toggle.confirm_hint")
                                 .font(.system(size: 10))
                                 .foregroundStyle(Color.brutalTextTertiary)
                         }
@@ -387,13 +387,13 @@ struct MacSettingsView: View {
 
     private var dataSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            BrutalSectionHeader(title: "Data")
+            BrutalSectionHeader(title: String(localized: "settings.section.data"))
 
             Button(action: { showExportView = true }) {
                 HStack(spacing: 8) {
                     Image(systemName: "arrow.down.doc")
                         .font(.system(size: 12))
-                    Text("EXPORT ALL DATA")
+                    Text("settings.data.button.export")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .tracking(1)
                 }
@@ -410,7 +410,7 @@ struct MacSettingsView: View {
 
     private var dangerZone: some View {
         VStack(alignment: .leading, spacing: 12) {
-            BrutalSectionHeader(title: "Danger Zone")
+            BrutalSectionHeader(title: String(localized: "settings.section.danger"))
 
             if let errorMessage = errorMessage {
                 Text(errorMessage)
@@ -422,7 +422,7 @@ struct MacSettingsView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "trash")
                         .font(.system(size: 12))
-                    Text(isDeleting ? "DELETING..." : "DELETE ACCOUNT")
+                    Text(isDeleting ? String(localized: "settings.danger.button.deleting") : String(localized: "settings.danger.button.delete_account"))
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .tracking(1)
                 }

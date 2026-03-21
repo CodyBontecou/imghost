@@ -18,7 +18,7 @@ struct RegisterView: View {
                 VStack(spacing: 0) {
                     // Hero text
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("CREATE\nACCOUNT")
+                        Text("auth.register.title")
                             .font(.system(size: 56, weight: .black))
                             .foregroundStyle(.white)
                             .lineSpacing(-8)
@@ -28,7 +28,7 @@ struct RegisterView: View {
                                 .fill(Color.white)
                                 .frame(width: 24, height: 1)
 
-                            Text("START UPLOADING IMAGES")
+                            Text("auth.register.subtitle")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                 .tracking(2)
                         }
@@ -41,7 +41,7 @@ struct RegisterView: View {
                     // Form
                     VStack(spacing: 16) {
                         BrutalTextField(
-                            label: "Email",
+                            label: String(localized: "auth.register.field.email"),
                             text: $email,
                             keyboardType: .emailAddress,
                             textContentType: .emailAddress,
@@ -49,14 +49,14 @@ struct RegisterView: View {
                         )
 
                         BrutalTextField(
-                            label: "Password",
+                            label: String(localized: "auth.register.field.password"),
                             text: $password,
                             isSecure: true,
                             textContentType: .newPassword
                         )
 
                         BrutalTextField(
-                            label: "Confirm Password",
+                            label: String(localized: "auth.register.field.confirm_password"),
                             text: $confirmPassword,
                             isSecure: true,
                             textContentType: .newPassword
@@ -66,11 +66,11 @@ struct RegisterView: View {
                         BrutalCard(backgroundColor: .brutalSurface) {
                             VStack(alignment: .leading, spacing: 8) {
                                 BrutalRequirement(
-                                    text: "At least 8 characters",
+                                    text: String(localized: "auth.register.requirement.min_chars"),
                                     isMet: password.count >= 8
                                 )
                                 BrutalRequirement(
-                                    text: "Passwords match",
+                                    text: String(localized: "auth.register.requirement.passwords_match"),
                                     isMet: !password.isEmpty && password == confirmPassword
                                 )
                             }
@@ -91,7 +91,7 @@ struct RegisterView: View {
 
                     // Register button
                     BrutalPrimaryButton(
-                        title: "Create Account",
+                        title: String(localized: "auth.register.button.create_account"),
                         action: register,
                         isLoading: isLoading,
                         isDisabled: !isFormValid
@@ -103,11 +103,11 @@ struct RegisterView: View {
 
                     // Back to login
                     HStack(spacing: 8) {
-                        Text("HAVE AN ACCOUNT?")
+                        Text("auth.register.prompt.have_account")
                             .brutalTypography(.monoSmall, color: .brutalTextTertiary)
                             .tracking(1)
 
-                        BrutalTextButton(title: "Sign In", color: .white) {
+                        BrutalTextButton(title: String(localized: "auth.register.button.sign_in"), color: .white) {
                             dismiss()
                         }
                     }
@@ -147,7 +147,7 @@ struct RegisterView: View {
                 }
             } catch {
                 await MainActor.run {
-                    errorMessage = "An unexpected error occurred."
+                    errorMessage = String(localized: "auth.register.error.unexpected")
                 }
             }
 
@@ -164,7 +164,7 @@ struct BrutalRequirement: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text(isMet ? "✓" : "○")
+            Text(verbatim: isMet ? "✓" : "○")
                 .brutalTypography(.mono, color: isMet ? .brutalSuccess : .brutalTextTertiary)
 
             Text(text.uppercased())

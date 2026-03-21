@@ -2,8 +2,8 @@ import SwiftUI
 
 struct OnboardingPage: Identifiable {
     let id = UUID()
-    let title: String
-    let subtitle: String
+    let titleKey: String
+    let subtitleKey: String
 }
 
 struct OnboardingView: View {
@@ -11,22 +11,10 @@ struct OnboardingView: View {
     @State private var currentPage = 0
 
     private let pages: [OnboardingPage] = [
-        OnboardingPage(
-            title: "HOST\nYOUR\nIMAGES",
-            subtitle: "Secure cloud storage"
-        ),
-        OnboardingPage(
-            title: "SHARE\nFROM\nANYWHERE",
-            subtitle: "iOS Share Sheet integration"
-        ),
-        OnboardingPage(
-            title: "GET\nDIRECT\nLINKS",
-            subtitle: "Instant shareable URLs"
-        ),
-        OnboardingPage(
-            title: "STAY\nORGAN-\nIZED",
-            subtitle: "All uploads in one place"
-        )
+        OnboardingPage(titleKey: "onboarding.page1.title", subtitleKey: "onboarding.page1.subtitle"),
+        OnboardingPage(titleKey: "onboarding.page2.title", subtitleKey: "onboarding.page2.subtitle"),
+        OnboardingPage(titleKey: "onboarding.page3.title", subtitleKey: "onboarding.page3.subtitle"),
+        OnboardingPage(titleKey: "onboarding.page4.title", subtitleKey: "onboarding.page4.subtitle"),
     ]
 
     var body: some View {
@@ -78,7 +66,7 @@ struct OnboardingView: View {
                             Button(action: {
                                 hasCompletedOnboarding = true
                             }) {
-                                Text("SKIP")
+                                Text("onboarding.button.skip")
                                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                                     .foregroundStyle(.white.opacity(0.5))
                                     .frame(maxWidth: .infinity)
@@ -99,7 +87,9 @@ struct OnboardingView: View {
                                 }
                             }
                         }) {
-                            Text(currentPage == pages.count - 1 ? "START" : "NEXT")
+                            Text(currentPage == pages.count - 1
+                                 ? "onboarding.button.start"
+                                 : "onboarding.button.next")
                                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                                 .foregroundStyle(.black)
                                 .frame(maxWidth: .infinity)
@@ -127,13 +117,13 @@ struct BrutalOnboardingPageView: View {
                 .frame(height: GoogleSpacing.xl)
 
             // Page counter
-            Text("\(pageNumber)/\(totalPages)")
+            Text(String(format: String(localized: "onboarding.page_indicator"), pageNumber, totalPages))
                 .font(.system(size: 12, weight: .medium, design: .monospaced))
                 .foregroundStyle(.white.opacity(0.4))
                 .padding(.bottom, GoogleSpacing.sm)
 
             // Giant title
-            Text(page.title)
+            Text(LocalizedStringKey(page.titleKey))
                 .font(.system(size: 72, weight: .black))
                 .foregroundStyle(.white)
                 .lineSpacing(-8)
@@ -148,10 +138,11 @@ struct BrutalOnboardingPageView: View {
                     .fill(Color.white)
                     .frame(width: 24, height: 1)
 
-                Text(page.subtitle.uppercased())
+                Text(LocalizedStringKey(page.subtitleKey))
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(.white.opacity(0.6))
                     .tracking(2)
+                    .textCase(.uppercase)
             }
             .padding(.bottom, GoogleSpacing.xxxl)
         }

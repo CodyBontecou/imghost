@@ -36,10 +36,10 @@ struct PaywallView: View {
                 selectedProduct = storeKit.monthlyProduct
             }
         }
-        .alert("Error", isPresented: $showError) {
-            Button("OK") { showError = false }
+        .alert(String(localized: "paywall.error.alert.title"), isPresented: $showError) {
+            Button(String(localized: "paywall.error.alert.button.ok")) { showError = false }
         } message: {
-            Text(errorMessage ?? "An error occurred")
+            Text(verbatim: errorMessage ?? String(localized: "paywall.error.alert.message_fallback"))
         }
     }
 
@@ -47,15 +47,15 @@ struct PaywallView: View {
 
     private var heroSection: some View {
         VStack(spacing: 16) {
-            Text("UNLOCK")
+            Text("paywall.title.unlock")
                 .brutalTypography(.displaySmall)
                 .tracking(4)
 
-            Text("PRO")
+            Text("paywall.title.pro")
                 .brutalTypography(.displayLarge)
                 .tracking(8)
 
-            Text("7-DAY FREE TRIAL")
+            Text("paywall.title.trial")
                 .brutalTypography(.mono, color: .brutalSuccess)
                 .tracking(2)
                 .padding(.horizontal, 16)
@@ -76,7 +76,7 @@ struct PaywallView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text("WHAT YOU GET")
+                Text("paywall.section.features")
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                     .tracking(2)
                 Spacer()
@@ -93,10 +93,10 @@ struct PaywallView: View {
 
             // Feature List
             VStack(spacing: 0) {
-                FeatureRow(icon: "photo.stack", title: "500MB File Size", description: "Upload large files, videos, and more")
-                FeatureRow(icon: "externaldrive.fill", title: "10GB Storage", description: "Pro storage limit during trial")
-                FeatureRow(icon: "bolt.fill", title: "Fast Sharing", description: "Instant links for your images")
-                FeatureRow(icon: "lock.fill", title: "Private by Default", description: "Secure, encrypted storage")
+                FeatureRow(icon: "photo.stack", title: String(localized: "paywall.feature.file_size.title"), description: String(localized: "paywall.feature.file_size.desc"))
+                FeatureRow(icon: "externaldrive.fill", title: String(localized: "paywall.feature.storage.title"), description: String(localized: "paywall.feature.storage.desc"))
+                FeatureRow(icon: "bolt.fill", title: String(localized: "paywall.feature.sharing.title"), description: String(localized: "paywall.feature.sharing.desc"))
+                FeatureRow(icon: "lock.fill", title: String(localized: "paywall.feature.private.title"), description: String(localized: "paywall.feature.private.desc"))
             }
         }
         .padding(.horizontal, 16)
@@ -108,7 +108,7 @@ struct PaywallView: View {
         VStack(spacing: 16) {
             // Header
             HStack {
-                Text("CHOOSE YOUR PLAN")
+                Text("paywall.section.plans")
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                     .tracking(2)
                 Spacer()
@@ -121,7 +121,7 @@ struct PaywallView: View {
                     .padding(.vertical, 32)
             } else if storeKit.products.isEmpty {
                 VStack(spacing: 16) {
-                    Text("Unable to load subscription options")
+                    Text("paywall.error.loading")
                         .brutalTypography(.bodyMedium, color: .brutalError)
 
                     if let error = storeKit.error {
@@ -140,7 +140,7 @@ struct PaywallView: View {
                     } label: {
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.clockwise")
-                            Text("Retry")
+                            Text("paywall.button.retry")
                         }
                         .brutalTypography(.mono, color: .brutalAccent)
                         .padding(.horizontal, 24)
@@ -169,7 +169,7 @@ struct PaywallView: View {
                         ProductCard(
                             product: annual,
                             isSelected: selectedProduct?.id == annual.id,
-                            badge: "SAVE 30%"
+                            badge: String(localized: "paywall.badge.save")
                         ) {
                             selectedProduct = annual
                         }
@@ -178,7 +178,7 @@ struct PaywallView: View {
 
                 // Subscribe Button
                 BrutalPrimaryButton(
-                    title: "Start Free Trial",
+                    title: String(localized: "paywall.button.start_trial"),
                     action: {
                         Task {
                             await purchase()
@@ -190,7 +190,7 @@ struct PaywallView: View {
                 .padding(.top, 8)
 
                 // Restore Purchases
-                BrutalTextButton(title: "Restore Purchases") {
+                BrutalTextButton(title: String(localized: "paywall.button.restore")) {
                     Task {
                         await restore()
                     }
@@ -206,18 +206,18 @@ struct PaywallView: View {
 
     private var legalSection: some View {
         VStack(spacing: 12) {
-            Text("After your 7-day free trial, your subscription will automatically renew at the selected price unless cancelled at least 24 hours before the end of the trial period. Payment will be charged to your Apple ID account at confirmation of purchase. Your subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. You can manage and cancel your subscriptions by going to your App Store account settings after purchase.")
+            Text("paywall.legal.renewal_notice")
                 .brutalTypography(.bodySmall, color: .brutalTextTertiary)
                 .multilineTextAlignment(.center)
 
             HStack(spacing: 16) {
-                Link("Terms of Use (EULA)", destination: URL(string: "https://imghost.isolated.tech/terms")!)
+                Link(String(localized: "paywall.legal.button.terms"), destination: URL(string: "https://imghost.isolated.tech/terms")!)
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
 
-                Text("|")
+                Text("paywall.legal.separator")
                     .brutalTypography(.monoSmall, color: .brutalTextTertiary)
 
-                Link("Privacy Policy", destination: URL(string: "https://imghost.isolated.tech/privacy")!)
+                Link(String(localized: "paywall.legal.button.privacy"), destination: URL(string: "https://imghost.isolated.tech/privacy")!)
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
             }
         }
@@ -363,9 +363,9 @@ private struct ProductCard: View {
     private func pricePerMonth(_ product: Product) -> String {
         if product.id == StoreKitManager.annualProductID {
             let monthlyPrice = product.price / 12
-            return "\(monthlyPrice.formatted(.currency(code: product.priceFormatStyle.currencyCode ?? "USD")))/mo"
+            return String(format: String(localized: "paywall.price.per_month_format"), monthlyPrice.formatted(.currency(code: product.priceFormatStyle.currencyCode ?? "USD")))
         }
-        return "/month"
+        return String(localized: "paywall.price.per_month_fallback")
     }
 }
 

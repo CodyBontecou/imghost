@@ -16,60 +16,60 @@ enum ImghostError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notConfigured:
-            return "App not configured. Please set up the backend URL and token in settings."
+            return String(localized: "error.not_configured.description")
         case .invalidURL:
-            return "Invalid backend URL. Please check your settings."
+            return String(localized: "error.invalid_url.description")
         case .uploadFailed(let statusCode, let message):
             if let message = message {
-                return "Upload failed (\(statusCode)): \(message)"
+                return String(format: String(localized: "error.upload_failed.with_message"), statusCode, message)
             }
-            return "Upload failed with status code \(statusCode)"
+            return String(format: String(localized: "error.upload_failed.status_only"), statusCode)
         case .networkError(let underlying):
-            return "Network error: \(underlying.localizedDescription)"
+            return String(format: String(localized: "error.network.description"), underlying.localizedDescription)
         case .invalidResponse:
-            return "Invalid response from server"
+            return String(localized: "error.invalid_response.description")
         case .keychainError(let status):
-            return "Keychain error: \(status)"
+            return String(format: String(localized: "error.keychain.description"), status)
         case .fileSystemError(let underlying):
-            return "File system error: \(underlying.localizedDescription)"
+            return String(format: String(localized: "error.file_system.description"), underlying.localizedDescription)
         case .imageProcessingFailed:
-            return "Failed to process image"
+            return String(localized: "error.image_processing.description")
         case .deleteFailed(let statusCode, let message):
             if let message = message {
-                return "Delete failed (\(statusCode)): \(message)"
+                return String(format: String(localized: "error.delete_failed.with_message"), statusCode, message)
             }
-            return "Delete failed with status code \(statusCode)"
+            return String(format: String(localized: "error.delete_failed.status_only"), statusCode)
         case .emailVerificationRequired:
-            return "Please verify your email before uploading images."
+            return String(localized: "error.email_not_verified.description")
         case .subscriptionRequired:
-            return "An active subscription is required to upload files."
+            return String(localized: "error.subscription_required.description")
         }
     }
 
     var recoverySuggestion: String? {
         switch self {
         case .notConfigured:
-            return "Open the imghost app and configure your backend URL and upload token."
+            return String(localized: "error.not_configured.recovery")
         case .invalidURL:
-            return "Make sure the URL starts with https:// and is a valid web address."
+            return String(localized: "error.invalid_url.recovery")
         case .uploadFailed:
-            return "Check your internet connection and try again. If the problem persists, verify your upload token."
+            return String(localized: "error.upload_failed.recovery")
         case .networkError:
-            return "Check your internet connection and try again."
+            return String(localized: "error.network.recovery")
         case .invalidResponse:
-            return "The server returned an unexpected response. Please try again later."
+            return String(localized: "error.invalid_response.recovery")
         case .keychainError:
-            return "Try removing and re-entering your upload token in settings."
+            return String(localized: "error.keychain.recovery")
         case .fileSystemError:
-            return "Try restarting the app. If the problem persists, reinstall the app."
+            return String(localized: "error.file_system.recovery")
         case .imageProcessingFailed:
-            return "The image may be corrupted or in an unsupported format."
+            return String(localized: "error.image_processing.recovery")
         case .deleteFailed:
-            return "The image may have already been deleted, or your token may not have delete permissions."
+            return String(localized: "error.delete_failed.recovery")
         case .emailVerificationRequired:
-            return "Open the imghost app and verify your email address to enable uploads."
+            return String(localized: "error.email_not_verified.recovery")
         case .subscriptionRequired:
-            return "Subscribe to imghost Pro to unlock uploads and storage."
+            return String(localized: "error.subscription_required.recovery")
         }
     }
 }

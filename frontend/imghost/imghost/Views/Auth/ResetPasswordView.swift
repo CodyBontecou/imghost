@@ -18,7 +18,9 @@ struct ResetPasswordView: View {
                 VStack(spacing: 0) {
                     // Hero text
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(isResetSuccessful ? "DONE" : "NEW\nPASS-\nWORD")
+                        Text(isResetSuccessful
+                             ? "auth.reset_password.title.done"
+                             : "auth.reset_password.title")
                             .font(.system(size: 56, weight: .black))
                             .foregroundStyle(.white)
                             .lineSpacing(-8)
@@ -28,7 +30,9 @@ struct ResetPasswordView: View {
                                 .fill(Color.white)
                                 .frame(width: 24, height: 1)
 
-                            Text(isResetSuccessful ? "PASSWORD UPDATED" : "ENTER RESET CODE")
+                            Text(isResetSuccessful
+                                 ? "auth.reset_password.subtitle.updated"
+                                 : "auth.reset_password.subtitle.enter_code")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                 .tracking(2)
                         }
@@ -43,11 +47,11 @@ struct ResetPasswordView: View {
                         VStack(spacing: 24) {
                             BrutalCard(backgroundColor: .brutalSurface) {
                                 VStack(spacing: 16) {
-                                    Text("✓")
+                                    Text("auth.reset_password.success.icon")
                                         .font(.system(size: 48, weight: .bold, design: .monospaced))
                                         .foregroundStyle(Color.brutalSuccess)
 
-                                    Text("Your password has been updated successfully.")
+                                    Text("auth.reset_password.success.message")
                                         .brutalTypography(.bodyMedium, color: .brutalTextSecondary)
                                         .multilineTextAlignment(.center)
                                 }
@@ -56,7 +60,7 @@ struct ResetPasswordView: View {
                             .padding(.horizontal, 24)
 
                             BrutalPrimaryButton(
-                                title: "Back to Sign In",
+                                title: String(localized: "auth.reset_password.button.back_to_sign_in"),
                                 action: { dismiss() }
                             )
                             .padding(.horizontal, 24)
@@ -65,20 +69,20 @@ struct ResetPasswordView: View {
                         // Form
                         VStack(spacing: 16) {
                             BrutalTextField(
-                                label: "Reset Code",
+                                label: String(localized: "auth.reset_password.field.reset_code"),
                                 text: $resetCode,
                                 autocapitalization: .never
                             )
 
                             BrutalTextField(
-                                label: "New Password",
+                                label: String(localized: "auth.reset_password.field.new_password"),
                                 text: $newPassword,
                                 isSecure: true,
                                 textContentType: .newPassword
                             )
 
                             BrutalTextField(
-                                label: "Confirm Password",
+                                label: String(localized: "auth.reset_password.field.confirm_password"),
                                 text: $confirmPassword,
                                 isSecure: true,
                                 textContentType: .newPassword
@@ -88,11 +92,11 @@ struct ResetPasswordView: View {
                             BrutalCard(backgroundColor: .brutalSurface) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     BrutalRequirement(
-                                        text: "At least 8 characters",
+                                        text: String(localized: "auth.reset_password.requirement.min_chars"),
                                         isMet: newPassword.count >= 8
                                     )
                                     BrutalRequirement(
-                                        text: "Passwords match",
+                                        text: String(localized: "auth.reset_password.requirement.passwords_match"),
                                         isMet: !newPassword.isEmpty && newPassword == confirmPassword
                                     )
                                 }
@@ -113,7 +117,7 @@ struct ResetPasswordView: View {
 
                         // Reset button
                         BrutalPrimaryButton(
-                            title: "Reset Password",
+                            title: String(localized: "auth.reset_password.button.reset"),
                             action: resetPassword,
                             isLoading: isLoading,
                             isDisabled: !isFormValid
@@ -159,7 +163,7 @@ struct ResetPasswordView: View {
                 }
             } catch {
                 await MainActor.run {
-                    errorMessage = "An unexpected error occurred."
+                    errorMessage = String(localized: "auth.reset_password.error.unexpected")
                 }
             }
 

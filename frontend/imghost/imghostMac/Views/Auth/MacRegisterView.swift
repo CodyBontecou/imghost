@@ -17,7 +17,7 @@ struct MacRegisterView: View {
             VStack(spacing: 0) {
                 // Header
                 HStack {
-                    Text("CREATE ACCOUNT")
+                    Text("auth.register.sheet.title")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(Color.white)
                         .tracking(2)
@@ -37,22 +37,22 @@ struct MacRegisterView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         // Hero
-                        Text("CREATE\nACCOUNT")
+                        Text("auth.register.title")
                             .font(.system(size: 40, weight: .black))
                             .foregroundStyle(Color.white)
                             .frame(maxWidth: .infinity, alignment: .leading)
 
                         // Form
                         VStack(spacing: 14) {
-                            MacBrutalTextField(label: "Email", text: $email)
-                            MacBrutalTextField(label: "Password", text: $password, isSecure: true)
-                            MacBrutalTextField(label: "Confirm Password", text: $confirmPassword, isSecure: true)
+                            MacBrutalTextField(label: String(localized: "auth.register.field.email"), text: $email)
+                            MacBrutalTextField(label: String(localized: "auth.register.field.password"), text: $password, isSecure: true)
+                            MacBrutalTextField(label: String(localized: "auth.register.field.confirm_password"), text: $confirmPassword, isSecure: true)
                         }
 
                         // Requirements
                         VStack(alignment: .leading, spacing: 8) {
-                            MacRequirement(text: "At least 8 characters", isMet: password.count >= 8)
-                            MacRequirement(text: "Passwords match", isMet: !password.isEmpty && password == confirmPassword)
+                            MacRequirement(text: String(localized: "auth.register.requirement.min_chars"), isMet: password.count >= 8)
+                            MacRequirement(text: String(localized: "auth.register.requirement.passwords_match"), isMet: !password.isEmpty && password == confirmPassword)
                         }
                         .padding(12)
                         .background(Color.brutalSurface)
@@ -74,7 +74,7 @@ struct MacRegisterView: View {
                                         .progressViewStyle(CircularProgressViewStyle(tint: .black))
                                         .scaleEffect(0.7)
                                 } else {
-                                    Text("CREATE ACCOUNT")
+                                    Text("auth.register.button.create_account")
                                         .font(.system(size: 13, weight: .medium, design: .monospaced))
                                         .tracking(1)
                                 }
@@ -89,7 +89,7 @@ struct MacRegisterView: View {
 
                         // Back to login
                         Button(action: { dismiss() }) {
-                            Text("ALREADY HAVE AN ACCOUNT? SIGN IN")
+                            Text("auth.register.prompt.have_account")
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextSecondary)
                                 .tracking(1)
@@ -122,7 +122,7 @@ struct MacRegisterView: View {
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }
             } catch {
-                await MainActor.run { errorMessage = "An unexpected error occurred." }
+                await MainActor.run { errorMessage = String(localized: "auth.register.error.unexpected") }
             }
             await MainActor.run { isLoading = false }
         }
@@ -135,7 +135,7 @@ struct MacRequirement: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text(isMet ? "✓" : "○")
+            Text(verbatim: isMet ? "✓" : "○")
                 .font(.system(size: 13, weight: .medium, design: .monospaced))
                 .foregroundStyle(isMet ? Color.brutalSuccess : Color.brutalTextTertiary)
 

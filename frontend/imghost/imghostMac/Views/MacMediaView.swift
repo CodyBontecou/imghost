@@ -90,7 +90,7 @@ struct MacMediaView: View {
                     if isLoading {
                         VStack {
                             Spacer()
-                            BrutalLoading(text: "Loading")
+                            BrutalLoading(text: String(localized: "media.loading"))
                             Spacer()
                         }
                     } else if filteredRecords.isEmpty && !isUploading {
@@ -143,7 +143,7 @@ struct MacMediaView: View {
 
     private var toolbar: some View {
         HStack(spacing: 8) {
-            Text("MEDIA")
+            Text("media.title")
                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.white)
                 .tracking(2)
@@ -158,7 +158,7 @@ struct MacMediaView: View {
                     .font(.system(size: 12))
                     .foregroundStyle(Color.brutalTextSecondary)
 
-                TextField("Search...", text: $searchText)
+                TextField(String(localized: "media.search.placeholder"), text: $searchText)
                     .textFieldStyle(.plain)
                     .font(.system(size: 12, design: .monospaced))
                     .frame(minWidth: 60, idealWidth: 120)
@@ -170,7 +170,7 @@ struct MacMediaView: View {
 
             // Quality picker
             HStack(spacing: 4) {
-                Text("QUALITY")
+                Text("media.label.quality")
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextTertiary)
                     .tracking(1)
@@ -198,14 +198,14 @@ struct MacMediaView: View {
                     .animation(isSyncing ? .linear(duration: 1).repeatForever(autoreverses: false) : .default, value: isSyncing)
             }
             .buttonStyle(.plain)
-            .help("Sync images from server")
+            .help(String(localized: "media.button.sync.help"))
 
             // Upload button
             Button(action: { showFileImporter = true }) {
                 HStack(spacing: 6) {
                     Image(systemName: "arrow.up")
                         .font(.system(size: 11, weight: .semibold))
-                    Text("UPLOAD")
+                    Text("media.button.upload.label")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .tracking(1)
                         .lineLimit(1)
@@ -218,7 +218,7 @@ struct MacMediaView: View {
             .buttonStyle(.plain)
             .fixedSize()
             .layoutPriority(1)
-            .help("Upload files (or drag & drop, or ⌘V to paste)")
+            .help(String(localized: "media.button.upload.help"))
 
             Text("\(filteredRecords.count)")
                 .font(.system(size: 11, weight: .medium, design: .monospaced))
@@ -238,7 +238,7 @@ struct MacMediaView: View {
                 ProgressView()
                     .controlSize(.small)
 
-                Text("UPLOADING")
+                Text("media.upload.progress.title")
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.white)
                     .tracking(1)
@@ -250,7 +250,7 @@ struct MacMediaView: View {
                     .foregroundStyle(Color.white)
 
                 Button(action: cancelUpload) {
-                    Text("CANCEL")
+                    Text("media.upload.progress.cancel")
                         .font(.system(size: 10, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalError)
                         .tracking(1)
@@ -312,17 +312,17 @@ struct MacMediaView: View {
                             .foregroundStyle(Color.brutalTextSecondary)
 
                         VStack(spacing: 4) {
-                            Text("DROP FILES HERE")
+                            Text("media.drop_zone.title")
                                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                                 .foregroundStyle(Color.white)
                                 .tracking(2)
 
-                            Text("or click Upload to browse")
+                            Text("media.drop_zone.subtitle")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.brutalTextSecondary)
                         }
 
-                        Text("Images, videos, and files up to 500MB")
+                        Text("media.drop_zone.hint")
                             .font(.system(size: 11, design: .monospaced))
                             .foregroundStyle(Color.brutalTextTertiary)
                     }
@@ -332,14 +332,14 @@ struct MacMediaView: View {
             }
 
             HStack(spacing: 4) {
-                Text("⌘V")
+                Text(verbatim: "⌘V")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
 
-                Text("to paste from clipboard")
+                Text("media.clipboard.hint")
                     .font(.system(size: 11))
                     .foregroundStyle(Color.brutalTextTertiary)
             }
@@ -394,7 +394,7 @@ struct MacMediaView: View {
                     .font(.system(size: 48))
                     .foregroundStyle(Color.white)
 
-                Text("DROP TO UPLOAD")
+                Text("media.drag_overlay.title")
                     .font(.system(size: 16, weight: .bold, design: .monospaced))
                     .foregroundStyle(Color.white)
                     .tracking(3)
@@ -600,14 +600,19 @@ struct MacMediaView: View {
                 if hasSubscriptionError {
                     // Refresh subscription state — this will trigger the paywall gate in MacContentView
                     Task { await subscriptionState.checkStatus() }
-                    showBanner(message: "Subscription required to upload", isError: true)
+                    showBanner(message: String(localized: "media.banner.subscription_required"), isError: true)
                 } else if failed.isEmpty {
-                    let fileWord = successful.count == 1 ? "file" : "files"
-                    showBanner(message: "\(successful.count) \(fileWord) uploaded — link\(successful.count == 1 ? "" : "s") copied", isError: false)
+                    let msg = successful.count == 1
+                        ? String(format: String(localized: "media.banner.upload_success_singular"), successful.count)
+                        : String(format: String(localized: "media.banner.upload_success_plural"), successful.count)
+                    showBanner(message: msg, isError: false)
                 } else if successful.isEmpty {
-                    showBanner(message: "\(failed.count) upload\(failed.count == 1 ? "" : "s") failed", isError: true)
+                    let msg = failed.count == 1
+                        ? String(format: String(localized: "media.banner.upload_failed_singular"), failed.count)
+                        : String(format: String(localized: "media.banner.upload_failed_plural"), failed.count)
+                    showBanner(message: msg, isError: true)
                 } else {
-                    showBanner(message: "\(successful.count) uploaded, \(failed.count) failed", isError: true)
+                    showBanner(message: String(format: String(localized: "media.banner.upload_partial"), successful.count, failed.count), isError: true)
                 }
             }
         }
@@ -672,14 +677,19 @@ struct MacMediaView: View {
 
                 if hasSubscriptionError {
                     Task { await subscriptionState.checkStatus() }
-                    showBanner(message: "Subscription required to upload", isError: true)
+                    showBanner(message: String(localized: "media.banner.subscription_required"), isError: true)
                 } else if failed.isEmpty {
-                    let fileWord = successful.count == 1 ? "file" : "files"
-                    showBanner(message: "\(successful.count) \(fileWord) uploaded — link\(successful.count == 1 ? "" : "s") copied", isError: false)
+                    let msg = successful.count == 1
+                        ? String(format: String(localized: "media.banner.upload_success_singular"), successful.count)
+                        : String(format: String(localized: "media.banner.upload_success_plural"), successful.count)
+                    showBanner(message: msg, isError: false)
                 } else if successful.isEmpty {
-                    showBanner(message: "\(failed.count) upload\(failed.count == 1 ? "" : "s") failed", isError: true)
+                    let msg = failed.count == 1
+                        ? String(format: String(localized: "media.banner.upload_failed_singular"), failed.count)
+                        : String(format: String(localized: "media.banner.upload_failed_plural"), failed.count)
+                    showBanner(message: msg, isError: true)
                 } else {
-                    showBanner(message: "\(successful.count) uploaded, \(failed.count) failed", isError: true)
+                    showBanner(message: String(format: String(localized: "media.banner.upload_partial"), successful.count, failed.count), isError: true)
                 }
             }
         }

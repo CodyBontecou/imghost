@@ -68,7 +68,7 @@ struct MenuBarPopoverView: View {
 
     private var headerBar: some View {
         HStack(spacing: 8) {
-            Text("IMGHOST")
+            Text("menubar.app_name")
                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                 .foregroundStyle(.white)
                 .tracking(3)
@@ -79,7 +79,7 @@ struct MenuBarPopoverView: View {
                 Circle()
                     .fill(Color(hex: "30D158"))
                     .frame(width: 6, height: 6)
-                Text("ONLINE")
+                Text("menubar.status.online")
                     .font(.system(size: 9, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color(white: 0.5))
                     .tracking(1)
@@ -97,21 +97,21 @@ struct MenuBarPopoverView: View {
             // Upload file
             MenuBarActionButton(
                 icon: "arrow.up.doc",
-                label: "UPLOAD",
+                label: String(localized: "menubar.button.upload.label"),
                 action: uploadFile
             )
 
             // Paste from clipboard
             MenuBarActionButton(
                 icon: "doc.on.clipboard",
-                label: "PASTE",
+                label: String(localized: "menubar.button.paste.label"),
                 action: pasteFromClipboard
             )
 
             // Sync
             MenuBarActionButton(
                 icon: "arrow.clockwise",
-                label: "SYNC",
+                label: String(localized: "menubar.button.sync.label"),
                 isSpinning: isSyncing,
                 action: syncImages
             )
@@ -125,7 +125,7 @@ struct MenuBarPopoverView: View {
     private var uploadProgressBar: some View {
         VStack(spacing: 4) {
             HStack {
-                Text(uploadFileName ?? "Uploading...")
+                Text(verbatim: uploadFileName ?? String(localized: "menubar.upload.filename_fallback"))
                     .font(.system(size: 10, design: .monospaced))
                     .foregroundStyle(Color(white: 0.6))
                     .lineLimit(1)
@@ -181,7 +181,7 @@ struct MenuBarPopoverView: View {
     private var recentUploadsList: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("RECENT")
+                Text("menubar.section.recent")
                     .font(.system(size: 9, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color(white: 0.35))
                     .tracking(2)
@@ -199,7 +199,7 @@ struct MenuBarPopoverView: View {
                     Image(systemName: "photo.on.rectangle.angled")
                         .font(.system(size: 20))
                         .foregroundStyle(Color(white: 0.2))
-                    Text("NO UPLOADS YET")
+                    Text("menubar.recent.empty")
                         .font(.system(size: 9, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color(white: 0.25))
                         .tracking(1.5)
@@ -227,7 +227,7 @@ struct MenuBarPopoverView: View {
 
     private var footerActions: some View {
         HStack(spacing: 0) {
-            MenuBarFooterButton(icon: "macwindow", label: "Open App") {
+            MenuBarFooterButton(icon: "macwindow", label: String(localized: "menubar.footer.open_app")) {
                 onShowMainWindow()
             }
 
@@ -235,7 +235,7 @@ struct MenuBarPopoverView: View {
                 .frame(height: 16)
                 .background(Color(white: 0.2))
 
-            MenuBarFooterButton(icon: "gearshape", label: "Settings") {
+            MenuBarFooterButton(icon: "gearshape", label: String(localized: "menubar.footer.settings")) {
                 onDismiss()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     NSApp.activate(ignoringOtherApps: true)
@@ -247,7 +247,7 @@ struct MenuBarPopoverView: View {
                 .frame(height: 16)
                 .background(Color(white: 0.2))
 
-            MenuBarFooterButton(icon: "power", label: "Quit") {
+            MenuBarFooterButton(icon: "power", label: String(localized: "menubar.footer.quit")) {
                 NSApp.terminate(nil)
             }
         }
@@ -263,16 +263,16 @@ struct MenuBarPopoverView: View {
             Image(systemName: "person.crop.circle.badge.xmark")
                 .font(.system(size: 28))
                 .foregroundStyle(Color(white: 0.25))
-            Text("NOT SIGNED IN")
+            Text("menubar.not_signed_in.title")
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color(white: 0.4))
                 .tracking(2)
-            Text("Open the app to sign in")
+            Text("menubar.not_signed_in.message")
                 .font(.system(size: 11))
                 .foregroundStyle(Color(white: 0.3))
 
             Button(action: onShowMainWindow) {
-                Text("OPEN IMGHOST")
+                Text("menubar.not_signed_in.button.open")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .foregroundStyle(.black)
                     .tracking(1)
@@ -304,7 +304,7 @@ struct MenuBarPopoverView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
         panel.allowedContentTypes = [.image, .png, .jpeg, .gif, .webP, .heic, .heif, .tiff, .bmp, .svg]
-        panel.title = "Upload Image"
+        panel.title = String(localized: "menubar.upload_panel.title")
 
         // Need to bring the panel to front since we're coming from a popover
         panel.level = .floating
@@ -314,10 +314,10 @@ struct MenuBarPopoverView: View {
 
             if UploadQualityService.shared.confirmBeforeUpload {
                 let alert = NSAlert()
-                alert.messageText = "Upload \"\(url.lastPathComponent)\"?"
-                alert.informativeText = "Resolution: \(UploadQualityService.shared.currentQuality.displayName)"
-                alert.addButton(withTitle: "Upload")
-                alert.addButton(withTitle: "Cancel")
+                alert.messageText = String(format: String(localized: "menubar.confirm.file"), url.lastPathComponent)
+                alert.informativeText = String(format: String(localized: "menubar.confirm.resolution"), UploadQualityService.shared.currentQuality.displayName)
+                alert.addButton(withTitle: String(localized: "menubar.confirm.button.upload"))
+                alert.addButton(withTitle: String(localized: "menubar.confirm.button.cancel"))
                 guard alert.runModal() == .alertFirstButtonReturn else { return }
             }
 
@@ -334,10 +334,10 @@ struct MenuBarPopoverView: View {
         if let imageData = pasteboard.data(forType: .png) ?? pasteboard.data(forType: .tiff) {
             if UploadQualityService.shared.confirmBeforeUpload {
                 let alert = NSAlert()
-                alert.messageText = "Upload clipboard image?"
-                alert.informativeText = "Resolution: \(UploadQualityService.shared.currentQuality.displayName)"
-                alert.addButton(withTitle: "Upload")
-                alert.addButton(withTitle: "Cancel")
+                alert.messageText = String(localized: "menubar.confirm.clipboard")
+                alert.informativeText = String(format: String(localized: "menubar.confirm.resolution"), UploadQualityService.shared.currentQuality.displayName)
+                alert.addButton(withTitle: String(localized: "menubar.confirm.button.upload"))
+                alert.addButton(withTitle: String(localized: "menubar.confirm.button.cancel"))
                 guard alert.runModal() == .alertFirstButtonReturn else { return }
             }
             Task { @MainActor in
@@ -347,17 +347,17 @@ struct MenuBarPopoverView: View {
                   let fileURL = fileURLs.first {
             if UploadQualityService.shared.confirmBeforeUpload {
                 let alert = NSAlert()
-                alert.messageText = "Upload \"\(fileURL.lastPathComponent)\"?"
-                alert.informativeText = "Resolution: \(UploadQualityService.shared.currentQuality.displayName)"
-                alert.addButton(withTitle: "Upload")
-                alert.addButton(withTitle: "Cancel")
+                alert.messageText = String(format: String(localized: "menubar.confirm.file"), fileURL.lastPathComponent)
+                alert.informativeText = String(format: String(localized: "menubar.confirm.resolution"), UploadQualityService.shared.currentQuality.displayName)
+                alert.addButton(withTitle: String(localized: "menubar.confirm.button.upload"))
+                alert.addButton(withTitle: String(localized: "menubar.confirm.button.cancel"))
                 guard alert.runModal() == .alertFirstButtonReturn else { return }
             }
             Task { @MainActor in
                 await performUpload(fileURL: fileURL)
             }
         } else {
-            showStatus("No image in clipboard")
+            showStatus(String(localized: "menubar.status.no_clipboard_image"))
         }
     }
 
@@ -385,7 +385,7 @@ struct MenuBarPopoverView: View {
             uploadProgress = 0
             uploadFileName = nil
             lastCopiedId = record.id
-            showStatus("Uploaded — link copied")
+            showStatus(String(localized: "menubar.status.uploaded_link_copied"))
             loadRecentUploads()
 
             // Clear copied indicator after a moment
@@ -398,7 +398,7 @@ struct MenuBarPopoverView: View {
             isUploading = false
             uploadProgress = 0
             uploadFileName = nil
-            showStatus("Upload failed")
+            showStatus(String(localized: "menubar.status.upload_failed"))
             print("[MenuBar] Upload error: \(error)")
         }
     }
@@ -426,7 +426,7 @@ struct MenuBarPopoverView: View {
             uploadProgress = 0
             uploadFileName = nil
             lastCopiedId = record.id
-            showStatus("Uploaded — link copied")
+            showStatus(String(localized: "menubar.status.uploaded_link_copied"))
             loadRecentUploads()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -438,7 +438,7 @@ struct MenuBarPopoverView: View {
             isUploading = false
             uploadProgress = 0
             uploadFileName = nil
-            showStatus("Upload failed")
+            showStatus(String(localized: "menubar.status.upload_failed"))
             print("[MenuBar] Upload error: \(error)")
         }
     }
@@ -451,7 +451,7 @@ struct MenuBarPopoverView: View {
                 try await ImageSyncService.shared.syncImages()
                 await MainActor.run {
                     loadRecentUploads()
-                    showStatus("Synced")
+                    showStatus(String(localized: "menubar.status.synced"))
                 }
             } catch {
                 print("[MenuBar] Sync error: \(error)")
@@ -549,7 +549,7 @@ private struct MenuBarUploadRow: View {
 
                 // Info
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(record.originalFilename ?? "image")
+                    Text(verbatim: record.originalFilename ?? String(localized: "menubar.recent_item.filename_fallback"))
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(isHovered ? .white : Color(white: 0.7))
                         .lineLimit(1)
@@ -622,16 +622,16 @@ private extension Date {
         let interval = now.timeIntervalSince(self)
 
         if interval < 60 {
-            return "just now"
+            return String(localized: "menubar.time.just_now")
         } else if interval < 3600 {
             let mins = Int(interval / 60)
-            return "\(mins)m ago"
+            return String(format: String(localized: "menubar.time.minutes_ago"), mins)
         } else if interval < 86400 {
             let hours = Int(interval / 3600)
-            return "\(hours)h ago"
+            return String(format: String(localized: "menubar.time.hours_ago"), hours)
         } else if interval < 604800 {
             let days = Int(interval / 86400)
-            return "\(days)d ago"
+            return String(format: String(localized: "menubar.time.days_ago"), days)
         } else {
             let formatter = DateFormatter()
             formatter.dateFormat = "MMM d"

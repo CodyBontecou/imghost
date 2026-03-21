@@ -70,7 +70,7 @@ struct ContentView: View {
                         Button(action: {
                             authState.logout()
                         }) {
-                            Text("SIGN OUT")
+                            Text("auth.verify_email.button.sign_out")
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextSecondary)
                                 .tracking(1)

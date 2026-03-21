@@ -97,7 +97,7 @@ struct UploadDetailView: View {
 
                     // Details section
                     VStack(spacing: 0) {
-                        BrutalDetailSection(title: "Image URL") {
+                        BrutalDetailSection(title: String(localized: "detail.section.image_url")) {
                             BrutalCopyableRow(
                                 text: record.url,
                                 isCopied: copiedField == .url,
@@ -112,21 +112,21 @@ struct UploadDetailView: View {
                             .fill(Color.brutalBorder)
                             .frame(height: 1)
 
-                        BrutalDetailSection(title: "Details") {
+                        BrutalDetailSection(title: String(localized: "detail.section.details")) {
                             VStack(spacing: 0) {
-                                BrutalInfoRow(label: "Uploaded", value: dateFormatter.string(from: record.createdAt))
+                                BrutalInfoRow(label: String(localized: "detail.label.uploaded"), value: dateFormatter.string(from: record.createdAt))
 
                                 if let filename = record.originalFilename {
                                     Rectangle()
                                         .fill(Color.brutalBorder.opacity(0.5))
                                         .frame(height: 1)
-                                    BrutalInfoRow(label: "Original File", value: filename)
+                                    BrutalInfoRow(label: String(localized: "detail.label.original_file"), value: filename)
                                 }
 
                                 Rectangle()
                                     .fill(Color.brutalBorder.opacity(0.5))
                                     .frame(height: 1)
-                                BrutalInfoRow(label: "ID", value: record.id)
+                                BrutalInfoRow(label: String(localized: "detail.label.id"), value: record.id)
                             }
                         }
                     }
@@ -139,16 +139,16 @@ struct UploadDetailView: View {
         .toolbarBackground(Color.brutalBackground, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .confirmationDialog(
-            "Delete Image",
+            String(localized: "detail.alert.delete.title"),
             isPresented: $showDeleteConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Delete from Server", role: .destructive) {
+            Button(String(localized: "detail.alert.delete.button.confirm"), role: .destructive) {
                 deleteFromServer()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "detail.alert.delete.button.cancel"), role: .cancel) {}
         } message: {
-            Text("This will permanently delete the image from the server. This action cannot be undone.")
+            Text("detail.alert.delete.message")
         }
         .onChange(of: copiedField) { _, newValue in
             if newValue != nil {
@@ -213,15 +213,15 @@ struct BrutalActionBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            BrutalActionButton(label: "SHARE", action: onShare)
+            BrutalActionButton(label: String(localized: "detail.button.share"), action: onShare)
             BrutalActionButton(
-                label: isCopied ? "COPIED" : "COPY",
+                label: isCopied ? String(localized: "detail.button.copied") : String(localized: "detail.button.copy"),
                 color: isCopied ? .brutalSuccess : .white,
                 action: onCopy
             )
-            BrutalActionButton(label: "OPEN", action: onOpen)
+            BrutalActionButton(label: String(localized: "detail.button.open"), action: onOpen)
             BrutalActionButton(
-                label: isDeleting ? "..." : "DELETE",
+                label: isDeleting ? String(localized: "detail.button.delete_deleting") : String(localized: "detail.button.delete"),
                 color: .brutalError,
                 action: onDelete
             )
@@ -296,7 +296,7 @@ struct BrutalCopyableRow: View {
             Spacer()
 
             Button(action: onCopy) {
-                Text(isCopied ? "✓" : "COPY")
+                Text(isCopied ? "detail.copy_button.copied" : "detail.copy_button.label")
                     .brutalTypography(.monoSmall, color: isCopied ? .brutalSuccess : .brutalTextSecondary)
                     .tracking(1)
             }

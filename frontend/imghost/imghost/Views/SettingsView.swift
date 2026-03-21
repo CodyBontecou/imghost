@@ -51,7 +51,7 @@ struct SettingsView: View {
                     // Profile Section
                     if let user = authState.currentUser {
                         VStack(spacing: 0) {
-                            BrutalSectionHeader(title: "Account")
+                            BrutalSectionHeader(title: String(localized: "settings.section.account"))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 24)
                                 .padding(.bottom, 12)
@@ -63,7 +63,7 @@ struct SettingsView: View {
                                         .lineLimit(1)
 
                                     if user.emailVerified {
-                                        Text("✓ VERIFIED")
+                                        Text("settings.account.email_verified")
                                             .brutalTypography(.monoSmall, color: .brutalSuccess)
                                             .tracking(1)
                                     }
@@ -78,7 +78,7 @@ struct SettingsView: View {
                     // Storage Section
                     if let user = authState.currentUser {
                         VStack(spacing: 0) {
-                            BrutalSectionHeader(title: "Storage")
+                            BrutalSectionHeader(title: String(localized: "settings.section.storage"))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 24)
                                 .padding(.bottom, 12)
@@ -116,7 +116,7 @@ struct SettingsView: View {
 
                     // Upgrade to Pro Button (visible during trial or when no subscription)
                     if !subscriptionState.hasAccess || subscriptionState.status == .trialing {
-                        BrutalPrimaryButton(title: subscriptionState.status == .trialing ? "Upgrade to Pro" : "Subscribe to Pro") {
+                        BrutalPrimaryButton(title: subscriptionState.status == .trialing ? String(localized: "settings.subscription.button.upgrade") : String(localized: "settings.subscription.button.subscribe")) {
                             showPaywall = true
                         }
                         .padding(.horizontal, 24)
@@ -127,12 +127,12 @@ struct SettingsView: View {
 
                     // Upload Section
                     VStack(spacing: 0) {
-                        BrutalSectionHeader(title: "Upload")
+                        BrutalSectionHeader(title: String(localized: "settings.section.upload"))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
                             .padding(.bottom, 4)
 
-                        Text("DEFAULT RESOLUTION")
+                        Text("settings.upload.label.resolution")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(1.5)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -158,7 +158,7 @@ struct SettingsView: View {
                                                     Text(quality.displayName)
                                                         .brutalTypography(.bodyMedium)
                                                     if quality == .original {
-                                                        Text("DEFAULT")
+                                                        Text("settings.upload.label.default_badge")
                                                             .brutalTypography(.monoSmall, color: .brutalTextTertiary)
                                                             .tracking(0.5)
                                                             .padding(.horizontal, 5)
@@ -195,13 +195,13 @@ struct SettingsView: View {
                         }
                         .padding(.horizontal, 24)
 
-                        Text("Lower quality = smaller files, faster uploads")
+                        Text("settings.upload.hint")
                             .brutalTypography(.monoSmall, color: .brutalTextTertiary)
                             .padding(.top, 12)
                             .padding(.bottom, 20)
 
                         // Confirm before uploading
-                        Text("BEHAVIOR")
+                        Text("settings.upload.label.behavior")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(1.5)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -215,9 +215,9 @@ struct SettingsView: View {
                             } label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text("Confirm before uploading")
+                                        Text("settings.upload.toggle.confirm_label")
                                             .brutalTypography(.bodyMedium)
-                                        Text("Ask for confirmation before each upload starts")
+                                        Text("settings.upload.toggle.confirm_hint")
                                             .brutalTypography(.monoSmall, color: .brutalTextTertiary)
                                     }
 
@@ -249,7 +249,7 @@ struct SettingsView: View {
 
                     // Link Format Section
                     VStack(spacing: 0) {
-                        BrutalSectionHeader(title: "Link Format")
+                        BrutalSectionHeader(title: String(localized: "settings.section.link_format"))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
                             .padding(.bottom, 12)
@@ -303,7 +303,7 @@ struct SettingsView: View {
                                 showCustomFormatSheet = true
                             } label: {
                                 HStack {
-                                    Text("EDIT CUSTOM FORMAT")
+                                    Text("settings.link_format.button.edit_custom")
                                         .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                         .tracking(1)
                                     Image(systemName: "pencil")
@@ -316,11 +316,11 @@ struct SettingsView: View {
 
                         // Template variables hint
                         HStack(spacing: 8) {
-                            Text("Variables:")
+                            Text("settings.link_format.variables_label")
                                 .brutalTypography(.monoSmall, color: .brutalTextTertiary)
-                            Text("{url}")
+                            Text("settings.link_format.var.url")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
-                            Text("{filename}")
+                            Text("settings.link_format.var.filename")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                         }
                         .padding(.top, 12)
@@ -329,7 +329,7 @@ struct SettingsView: View {
 
                     // Actions Section
                     VStack(spacing: 0) {
-                        BrutalSectionHeader(title: "Actions")
+                        BrutalSectionHeader(title: String(localized: "settings.section.actions"))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
                             .padding(.bottom, 12)
@@ -337,8 +337,8 @@ struct SettingsView: View {
                         BrutalCard(showBorder: true) {
                             VStack(spacing: 0) {
                                 BrutalRow(
-                                    title: "Clear Upload History",
-                                    subtitle: "Remove local history only",
+                                    title: String(localized: "settings.action.clear_history.title"),
+                                    subtitle: String(localized: "settings.action.clear_history.subtitle"),
                                     destructive: true
                                 ) {
                                     showClearConfirmation = true
@@ -349,8 +349,8 @@ struct SettingsView: View {
                                     .frame(height: 1)
 
                                 BrutalRow(
-                                    title: "Export All Images",
-                                    subtitle: "Download as ZIP archive",
+                                    title: String(localized: "settings.action.export.title"),
+                                    subtitle: String(localized: "settings.action.export.subtitle"),
                                     showChevron: true
                                 ) {
                                     showingExportSheet = true
@@ -361,8 +361,8 @@ struct SettingsView: View {
                                     .frame(height: 1)
 
                                 BrutalRow(
-                                    title: "Delete Account",
-                                    subtitle: "Permanently delete all data",
+                                    title: String(localized: "settings.action.delete_account.title"),
+                                    subtitle: String(localized: "settings.action.delete_account.subtitle"),
                                     destructive: true
                                 ) {
                                     showDeleteAccountConfirmation = true
@@ -375,7 +375,7 @@ struct SettingsView: View {
 
                     // Legal Section
                     VStack(spacing: 0) {
-                        BrutalSectionHeader(title: "Legal")
+                        BrutalSectionHeader(title: String(localized: "settings.section.legal"))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
                             .padding(.bottom, 12)
@@ -384,7 +384,7 @@ struct SettingsView: View {
                             VStack(spacing: 0) {
                                 Link(destination: URL(string: "https://imghost.isolated.tech/terms")!) {
                                     HStack {
-                                        Text("Terms of Use (EULA)")
+                                        Text("settings.legal.terms")
                                             .brutalTypography(.bodyMedium)
                                         Spacer()
                                         Image(systemName: "arrow.up.right")
@@ -403,7 +403,7 @@ struct SettingsView: View {
 
                                 Link(destination: URL(string: "https://imghost.isolated.tech/privacy")!) {
                                     HStack {
-                                        Text("Privacy Policy")
+                                        Text("settings.legal.privacy")
                                             .brutalTypography(.bodyMedium)
                                         Spacer()
                                         Image(systemName: "arrow.up.right")
@@ -432,7 +432,7 @@ struct SettingsView: View {
                     .padding(.bottom, 24)
 
                     // Sign Out
-                    BrutalSecondaryButton(title: "Sign Out") {
+                    BrutalSecondaryButton(title: String(localized: "settings.button.sign_out")) {
                         authState.logout()
                     }
                     .padding(.horizontal, 24)
@@ -449,33 +449,33 @@ struct SettingsView: View {
             }
         }
         .alert(alertTitle, isPresented: $showAlert) {
-            Button("OK", role: .cancel) {}
+            Button(String(localized: "settings.alert.ok"), role: .cancel) {}
         } message: {
-            Text(alertMessage)
+            Text(verbatim: alertMessage)
         }
         .confirmationDialog(
-            "Clear History",
+            String(localized: "settings.alert.clear_history.title"),
             isPresented: $showClearConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Clear All History", role: .destructive) {
+            Button(String(localized: "settings.alert.clear_history.button.confirm"), role: .destructive) {
                 clearHistory()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "settings.alert.clear_history.button.cancel"), role: .cancel) {}
         } message: {
-            Text("This will remove all upload history from this device. Images on the server will not be affected.")
+            Text("settings.alert.clear_history.message")
         }
         .confirmationDialog(
-            "Delete Account",
+            String(localized: "settings.alert.delete_account.title"),
             isPresented: $showDeleteAccountConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Delete Account", role: .destructive) {
+            Button(String(localized: "settings.alert.delete_account.button.confirm"), role: .destructive) {
                 deleteAccount()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "settings.alert.delete_account.button.cancel"), role: .cancel) {}
         } message: {
-            Text("This will permanently delete your account and all your uploaded images. This action cannot be undone.")
+            Text("settings.alert.delete_account.message")
         }
         .sheet(isPresented: $showCustomFormatSheet) {
             CustomLinkFormatSheet(
@@ -554,7 +554,7 @@ struct SettingsView: View {
                 }
             } catch {
                 await MainActor.run {
-                    showError(title: "Error", message: "Failed to load account info: \(error.localizedDescription)")
+                    showError(title: String(localized: "settings.error.title"), message: String(format: String(localized: "settings.error.load_account"), error.localizedDescription))
                     isLoadingUser = false
                 }
             }
@@ -564,9 +564,9 @@ struct SettingsView: View {
     private func clearHistory() {
         do {
             try HistoryService.shared.clear()
-            showError(title: "History Cleared", message: "All upload history has been removed.")
+            showError(title: String(localized: "settings.success.history_cleared.title"), message: String(localized: "settings.success.history_cleared.message"))
         } catch {
-            showError(title: "Error", message: "Failed to clear history: \(error.localizedDescription)")
+            showError(title: String(localized: "settings.error.title"), message: String(format: String(localized: "settings.error.clear_history"), error.localizedDescription))
         }
     }
 
@@ -586,7 +586,7 @@ struct SettingsView: View {
             } catch {
                 await MainActor.run {
                     isDeletingAccount = false
-                    showError(title: "Error", message: "Failed to delete account: \(error.localizedDescription)")
+                    showError(title: String(localized: "settings.error.title"), message: String(format: String(localized: "settings.error.delete_account"), error.localizedDescription))
                 }
             }
         }
@@ -731,7 +731,7 @@ struct SettingsView: View {
     @ViewBuilder
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("SETTINGS")
+            Text("settings.title")
                 .font(.system(size: 56, weight: .black))
                 .foregroundStyle(.white)
                 .lineLimit(1)
@@ -742,7 +742,7 @@ struct SettingsView: View {
                     .fill(Color.white)
                     .frame(width: 24, height: 1)
 
-                Text("ACCOUNT & PREFERENCES")
+                Text("settings.subtitle")
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                     .tracking(2)
             }
@@ -770,12 +770,12 @@ struct CustomLinkFormatSheet: View {
                 VStack(spacing: 24) {
                     // Header
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("CUSTOM\nFORMAT")
+                        Text("settings.custom_format.title")
                             .font(.system(size: 40, weight: .black))
                             .foregroundStyle(.white)
                             .lineSpacing(-4)
 
-                        Text("Define your own link template")
+                        Text("settings.custom_format.description")
                             .brutalTypography(.bodyMedium, color: .brutalTextSecondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -783,11 +783,11 @@ struct CustomLinkFormatSheet: View {
 
                     // Template input
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("TEMPLATE")
+                        Text("settings.custom_format.label.template")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(2)
 
-                        TextField("Enter template...", text: $editingTemplate, axis: .vertical)
+                        TextField(String(localized: "settings.custom_format.placeholder"), text: $editingTemplate, axis: .vertical)
                             .textFieldStyle(.plain)
                             .brutalTypography(.mono)
                             .padding(16)
@@ -802,21 +802,21 @@ struct CustomLinkFormatSheet: View {
 
                     // Variables reference
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("AVAILABLE VARIABLES")
+                        Text("settings.custom_format.label.variables")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(2)
 
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("{url}")
+                                Text("settings.custom_format.var.url")
                                     .brutalTypography(.mono, color: .brutalSuccess)
-                                Text("- The image URL")
+                                Text("settings.custom_format.var.url.desc")
                                     .brutalTypography(.bodySmall, color: .brutalTextTertiary)
                             }
                             HStack {
-                                Text("{filename}")
+                                Text("settings.custom_format.var.filename")
                                     .brutalTypography(.mono, color: .brutalSuccess)
-                                Text("- Original filename")
+                                Text("settings.custom_format.var.filename.desc")
                                     .brutalTypography(.bodySmall, color: .brutalTextTertiary)
                             }
                         }
@@ -828,7 +828,7 @@ struct CustomLinkFormatSheet: View {
 
                     // Preview
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("PREVIEW")
+                        Text("settings.custom_format.label.preview")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(2)
 
@@ -844,7 +844,7 @@ struct CustomLinkFormatSheet: View {
                     Spacer()
 
                     // Save button
-                    BrutalPrimaryButton(title: "Save Format") {
+                    BrutalPrimaryButton(title: String(localized: "settings.custom_format.button.save")) {
                         template = editingTemplate
                         onSave()
                         dismiss()
@@ -861,7 +861,7 @@ struct CustomLinkFormatSheet: View {
                     Button {
                         dismiss()
                     } label: {
-                        Text("CANCEL")
+                        Text("settings.custom_format.button.cancel")
                             .brutalTypography(.mono)
                     }
                 }
@@ -897,39 +897,39 @@ struct BrutalExportSheetView: View {
                 switch exportState {
                 case .idle:
                     VStack(spacing: 24) {
-                        Text("EXPORT")
+                        Text("settings.export.title")
                             .font(.system(size: 40, weight: .black))
                             .foregroundStyle(.white)
 
-                        Text("Create a ZIP archive of all your uploaded images.")
+                        Text("settings.export.description")
                             .brutalTypography(.bodyMedium, color: .brutalTextSecondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 24)
 
                         BrutalPrimaryButton(
-                            title: "Start Export",
+                            title: String(localized: "settings.export.button.start"),
                             action: onStartExport
                         )
                         .padding(.horizontal, 24)
                     }
 
                 case .starting:
-                    BrutalLoading(text: "Starting")
+                    BrutalLoading(text: String(localized: "settings.export.state.starting"))
 
                 case .exporting(let progress):
                     VStack(spacing: 24) {
-                        Text("\(Int(progress * 100))%")
+                        Text(verbatim: String(format: String(localized: "settings.export.progress_format"), Int(progress * 100)))
                             .font(.system(size: 56, weight: .black, design: .monospaced))
                             .foregroundStyle(.white)
 
                         BrutalProgressBar(progress: progress)
                             .padding(.horizontal, 48)
 
-                        Text("EXPORTING IMAGES")
+                        Text("settings.export.state.exporting")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(2)
 
-                        BrutalSecondaryButton(title: "Cancel") {
+                        BrutalSecondaryButton(title: String(localized: "settings.export.button.cancel")) {
                             onCancelExport()
                             dismiss()
                         }
@@ -938,43 +938,43 @@ struct BrutalExportSheetView: View {
 
                 case .downloading(let progress):
                     VStack(spacing: 24) {
-                        Text("\(Int(progress * 100))%")
+                        Text(verbatim: String(format: String(localized: "settings.export.progress_format"), Int(progress * 100)))
                             .font(.system(size: 56, weight: .black, design: .monospaced))
                             .foregroundStyle(.white)
 
                         BrutalProgressBar(progress: progress)
                             .padding(.horizontal, 48)
 
-                        Text("DOWNLOADING ARCHIVE")
+                        Text("settings.export.state.downloading")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(2)
                     }
 
                 case .complete:
                     VStack(spacing: 24) {
-                        Text("✓")
+                        Text("settings.export.state.complete.icon")
                             .font(.system(size: 64, weight: .bold, design: .monospaced))
                             .foregroundStyle(Color.brutalSuccess)
 
-                        Text("EXPORT COMPLETE")
+                        Text("settings.export.state.complete.title")
                             .brutalTypography(.titleMedium)
 
                         VStack(spacing: 12) {
                             BrutalPrimaryButton(
-                                title: "Save to Photos",
+                                title: String(localized: "settings.export.state.complete.button.save_photos"),
                                 action: onSaveToPhotos
                             )
                             .padding(.horizontal, 24)
 
                             if exportedFileURL != nil {
-                                BrutalSecondaryButton(title: "Save to Files") {
+                                BrutalSecondaryButton(title: String(localized: "settings.export.state.complete.button.save_files")) {
                                     onSaveToFiles()
                                 }
                                 .padding(.horizontal, 24)
                             }
                         }
 
-                        BrutalTextButton(title: "Done") {
+                        BrutalTextButton(title: String(localized: "settings.export.state.complete.button.done")) {
                             onDismiss()
                             dismiss()
                         }
@@ -982,31 +982,31 @@ struct BrutalExportSheetView: View {
 
                 case .savingToPhotos(let progress):
                     VStack(spacing: 24) {
-                        Text("\(Int(progress * 100))%")
+                        Text(verbatim: String(format: String(localized: "settings.export.progress_format"), Int(progress * 100)))
                             .font(.system(size: 56, weight: .black, design: .monospaced))
                             .foregroundStyle(.white)
 
                         BrutalProgressBar(progress: progress)
                             .padding(.horizontal, 48)
 
-                        Text("SAVING TO PHOTOS")
+                        Text("settings.export.state.saving_photos")
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             .tracking(2)
                     }
 
                 case .savedToPhotos(let count):
                     VStack(spacing: 24) {
-                        Text("✓")
+                        Text("settings.export.state.saved_photos.icon")
                             .font(.system(size: 64, weight: .bold, design: .monospaced))
                             .foregroundStyle(Color.brutalSuccess)
 
-                        Text("SAVED TO PHOTOS")
+                        Text("settings.export.state.saved_photos.title")
                             .brutalTypography(.titleMedium)
 
-                        Text("\(count) images saved to your photo library")
+                        Text(verbatim: String(format: String(localized: "settings.export.state.saved_photos.message"), count))
                             .brutalTypography(.bodySmall, color: .brutalTextSecondary)
 
-                        BrutalPrimaryButton(title: "Done") {
+                        BrutalPrimaryButton(title: String(localized: "settings.export.state.saved_photos.button.done")) {
                             onDismiss()
                             dismiss()
                         }
@@ -1015,22 +1015,22 @@ struct BrutalExportSheetView: View {
 
                 case .error(let message):
                     VStack(spacing: 24) {
-                        Text("✕")
+                        Text("settings.export.state.failed.icon")
                             .font(.system(size: 64, weight: .bold, design: .monospaced))
                             .foregroundStyle(Color.brutalError)
 
-                        Text("EXPORT FAILED")
+                        Text("settings.export.state.failed.title")
                             .brutalTypography(.titleMedium)
 
-                        Text(message)
+                        Text(verbatim: message)
                             .brutalTypography(.bodySmall, color: .brutalTextSecondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 24)
 
-                        BrutalPrimaryButton(title: "Try Again", action: onStartExport)
+                        BrutalPrimaryButton(title: String(localized: "settings.export.state.failed.button.retry"), action: onStartExport)
                             .frame(width: 160)
 
-                        BrutalTextButton(title: "Cancel") {
+                        BrutalTextButton(title: String(localized: "settings.export.state.failed.button.cancel")) {
                             onDismiss()
                             dismiss()
                         }
