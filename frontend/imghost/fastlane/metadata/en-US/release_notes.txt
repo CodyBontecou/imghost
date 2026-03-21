@@ -1,8 +1,5 @@
-• New menu bar icon with quick-upload popover on macOS
-• Share extension reliability improvements — fixed auth token sharing and keychain access
-• Improved dark mode support — fixed invisible text in link formats and share sheet buttons
-• Auto-sizing detail sidebar to match image aspect ratio
-• Fixed thumbnail grid overlap and layout issues on small windows
-• Fixed share sheet anchoring on macOS
-• Pre-permission explainer for macOS share extension file access
-• Bug fixes and performance improvements
+• Instant share: tap imghost in the share sheet and it uploads immediately — no extra taps required
+• Full resolution by default: images now upload at original quality with no compression
+• New Upload settings: choose your default resolution (Original, High, Medium, Low)
+• New Upload settings: optional "Confirm before uploading" toggle for when you want to review before sending
+• macOS: upload quality is now properly applied when dragging, pasting, or browsing files

@@ -1,91 +1,23 @@
 default_platform(:ios)
 
 APP_ID = "com.codybontecou.imghost"
-APPLE_ID = "bontecouc@gmail.com"
-TEAM_ID = "67KC823C9A"
+KEY_ID = "T7KGDK4Y4V"
+ISSUER_ID = "6c3b3640-c6bf-40a9-b6e5-57cda2c7776e"
+KEY_PATH = "/Users/codybontecou/dev/AuthKey_T7KGDK4Y4V.p8"
 
 platform :ios do
-  desc "Show current app info on App Store Connect"
-  lane :info do
-    deliver(
-      app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
-      skip_binary_upload: true,
-      skip_screenshots: true,
-      skip_metadata: true,
-      run_precheck_before_submit: false,
-      force: true,
-      platform: "ios"
-    )
-  end
-
-  desc "Upload metadata only"
-  lane :upload_metadata do
-    deliver(
-      app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
-      skip_binary_upload: true,
-      skip_screenshots: true,
-      run_precheck_before_submit: false,
-      force: true,
-      platform: "ios"
-    )
-  end
-
-  desc "Upload screenshots only"
-  lane :upload_screenshots do
-    deliver(
-      app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
-      skip_binary_upload: true,
-      skip_metadata: true,
-      overwrite_screenshots: true,
-      run_precheck_before_submit: false,
-      force: true,
-      platform: "ios"
-    )
-  end
-
-  desc "Upload metadata + screenshots"
-  lane :upload_all do
-    deliver(
-      app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
-      skip_binary_upload: true,
-      overwrite_screenshots: true,
-      run_precheck_before_submit: false,
-      force: true,
-      platform: "ios"
-    )
-  end
-
-  desc "Build, archive, and upload iOS binary"
-  lane :upload_binary do
-    gym(
-      scheme: "imghost",
-      configuration: "Release",
-      archive_path: "build/imghost.xcarchive",
-      export_method: "app-store",
-      export_team_id: TEAM_ID,
-      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID} CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates"
-    )
-  end
-
   desc "Submit for review"
   lane :submit do
+    k = app_store_connect_api_key(
+      key_id: KEY_ID,
+      issuer_id: ISSUER_ID,
+      key_filepath: KEY_PATH,
+      in_house: false
+    )
     deliver(
+      api_key: k,
       app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
+      app_version: "1.2",
       skip_binary_upload: true,
       skip_screenshots: true,
       run_precheck_before_submit: false,
@@ -99,76 +31,41 @@ platform :ios do
       }
     )
   end
-end
 
-platform :mac do
-  desc "Upload metadata only"
+  desc "Upload metadata"
   lane :upload_metadata do
+    k = app_store_connect_api_key(
+      key_id: KEY_ID,
+      issuer_id: ISSUER_ID,
+      key_filepath: KEY_PATH,
+      in_house: false
+    )
     deliver(
+      api_key: k,
       app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
+      app_version: "1.2",
       skip_binary_upload: true,
       skip_screenshots: true,
       run_precheck_before_submit: false,
       force: true,
-      platform: "osx",
-      app_review_information: nil
+      platform: "ios"
     )
   end
+end
 
-  desc "Upload screenshots only"
-  lane :upload_screenshots do
-    deliver(
-      app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
-      skip_binary_upload: true,
-      skip_metadata: true,
-      overwrite_screenshots: true,
-      run_precheck_before_submit: false,
-      force: true,
-      platform: "osx"
-    )
-  end
-
-  desc "Upload metadata + screenshots"
-  lane :upload_all do
-    deliver(
-      app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
-      skip_binary_upload: true,
-      overwrite_screenshots: true,
-      run_precheck_before_submit: false,
-      force: true,
-      platform: "osx"
-    )
-  end
-
-  desc "Build, archive, and upload macOS binary"
-  lane :upload_binary do
-    gym(
-      scheme: "imghostMac",
-      configuration: "Release",
-      sdk: "macosx",
-      archive_path: "build/imghostMac.xcarchive",
-      export_method: "app-store",
-      export_team_id: TEAM_ID,
-      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID} CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates"
-    )
-  end
-
+platform :mac do
   desc "Submit for review"
   lane :submit do
+    k = app_store_connect_api_key(
+      key_id: KEY_ID,
+      issuer_id: ISSUER_ID,
+      key_filepath: KEY_PATH,
+      in_house: false
+    )
     deliver(
+      api_key: k,
       app_identifier: APP_ID,
-      username: APPLE_ID,
-      team_id: TEAM_ID,
-      app_version: "1.1",
+      app_version: "1.2",
       skip_binary_upload: true,
       skip_screenshots: true,
       run_precheck_before_submit: false,
@@ -180,6 +77,26 @@ platform :mac do
         add_id_info_uses_idfa: false,
         export_compliance_uses_encryption: false
       }
+    )
+  end
+
+  desc "Upload metadata"
+  lane :upload_metadata do
+    k = app_store_connect_api_key(
+      key_id: KEY_ID,
+      issuer_id: ISSUER_ID,
+      key_filepath: KEY_PATH,
+      in_house: false
+    )
+    deliver(
+      api_key: k,
+      app_identifier: APP_ID,
+      app_version: "1.2",
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      run_precheck_before_submit: false,
+      force: true,
+      platform: "osx"
     )
   end
 end
