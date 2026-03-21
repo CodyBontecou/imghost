@@ -1,0 +1,333 @@
+/* =========================================================
+   imghost — iOS App
+   Localizable.strings (Spanish)
+   ========================================================= */
+
+// MARK: - Common Buttons
+"button.ok" = "OK";
+"button.cancel" = "Cancelar";
+"button.done" = "Listo";
+"button.retry" = "Reintentar";
+"button.close" = "Cerrar";
+"button.save" = "Guardar";
+"button.delete" = "Eliminar";
+"button.sign_in" = "Iniciar sesión";
+"button.sign_out" = "Cerrar sesión";
+"button.upload" = "Subir";
+"button.next" = "SIGUIENTE";
+"button.skip" = "OMITIR";
+"button.start" = "COMENZAR";
+
+// MARK: - Common States
+"state.loading" = "Cargando";
+"state.uploading" = "SUBIENDO";
+"state.preparing" = "Preparando";
+
+// MARK: - Common Labels
+"label.verified" = "✓ VERIFICADO";
+"label.default" = "PREDETERMINADO";
+"label.required_marker" = "*";
+"label.copied" = "✓";
+
+// MARK: - Auth — Login
+"auth.login.title" = "INICIAR\nSESIÓN";
+"auth.login.subtitle" = "ACCEDE A TUS IMÁGENES";
+"auth.login.field.email" = "Correo electrónico";
+"auth.login.field.password" = "Contraseña";
+"auth.login.button.sign_in" = "Iniciar sesión";
+"auth.login.button.forgot_password" = "¿Olvidaste tu contraseña?";
+"auth.login.button.view_pro_plans" = "Ver planes Pro";
+"auth.login.prompt.no_account" = "¿SIN CUENTA?";
+"auth.login.button.create_account" = "Crear una";
+"auth.login.divider" = "o";
+"auth.login.error.unexpected" = "Ocurrió un error inesperado.";
+"auth.login.error.invalid_apple_credential" = "Credencial de Apple ID inválida.";
+"auth.login.error.no_identity_token" = "No se pudo obtener el token de identidad.";
+"auth.login.error.apple_failed" = "Inicio de sesión con Apple fallido: %@";
+"auth.login.error.apple_failed_generic" = "Inicio de sesión con Apple fallido. Inténtalo de nuevo.";
+"auth.login.error.apple_failed_simple" = "Inicio de sesión con Apple fallido.";
+
+// MARK: - Auth — Register
+"auth.register.title" = "CREAR\nCUENTA";
+"auth.register.subtitle" = "EMPIEZA A SUBIR IMÁGENES";
+"auth.register.field.email" = "Correo electrónico";
+"auth.register.field.password" = "Contraseña";
+"auth.register.field.confirm_password" = "Confirmar contraseña";
+"auth.register.requirement.min_chars" = "Al menos 8 caracteres";
+"auth.register.requirement.passwords_match" = "Las contraseñas coinciden";
+"auth.register.button.create_account" = "Crear cuenta";
+"auth.register.prompt.have_account" = "¿YA TIENES CUENTA?";
+"auth.register.button.sign_in" = "Iniciar sesión";
+"auth.register.error.unexpected" = "Ocurrió un error inesperado.";
+
+// MARK: - Auth — Email Verification
+"auth.verify_email.title" = "VERIFICAR\nEMAIL";
+"auth.verify_email.subtitle" = "REVISA TU BANDEJA DE ENTRADA";
+"auth.verify_email.code_sent_to" = "CÓDIGO ENVIADO A:";
+"auth.verify_email.warning_icon" = "!";
+"auth.verify_email.warning_message" = "Debes verificar tu correo antes de subir imágenes.";
+"auth.verify_email.field.code" = "Código de verificación";
+"auth.verify_email.button.verify" = "Verificar email";
+"auth.verify_email.button.resend" = "Reenviar código";
+"auth.verify_email.button.sign_out" = "Cerrar sesión";
+"auth.verify_email.success.code_sent" = "¡Código de verificación enviado!";
+"auth.verify_email.error.unexpected" = "Ocurrió un error inesperado.";
+
+// MARK: - Auth — Forgot Password
+"auth.forgot_password.title" = "RESTABLECER\nCONTRASEÑA";
+"auth.forgot_password.subtitle.check_email" = "REVISA TU EMAIL";
+"auth.forgot_password.subtitle.enter_email" = "INGRESA TU EMAIL";
+"auth.forgot_password.field.email" = "Correo electrónico";
+"auth.forgot_password.code_sent_to" = "CÓDIGO DE RESTABLECIMIENTO ENVIADO A:";
+"auth.forgot_password.spam_hint" = "Revisa tu carpeta de spam si no lo ves.";
+"auth.forgot_password.button.enter_code" = "Ingresar código de restablecimiento";
+"auth.forgot_password.button.send_again" = "Enviar de nuevo";
+"auth.forgot_password.button.send_code" = "Enviar código de restablecimiento";
+"auth.forgot_password.error.unexpected" = "Ocurrió un error inesperado.";
+
+// MARK: - Auth — Reset Password
+"auth.reset_password.title" = "NUEVA\nCONTRASEÑA";
+"auth.reset_password.title.done" = "LISTO";
+"auth.reset_password.subtitle.enter_code" = "INGRESA EL CÓDIGO DE RESTABLECIMIENTO";
+"auth.reset_password.subtitle.updated" = "CONTRASEÑA ACTUALIZADA";
+"auth.reset_password.success.icon" = "✓";
+"auth.reset_password.success.message" = "Tu contraseña se actualizó correctamente.";
+"auth.reset_password.field.reset_code" = "Código de restablecimiento";
+"auth.reset_password.field.new_password" = "Nueva contraseña";
+"auth.reset_password.field.confirm_password" = "Confirmar contraseña";
+"auth.reset_password.requirement.min_chars" = "Al menos 8 caracteres";
+"auth.reset_password.requirement.passwords_match" = "Las contraseñas coinciden";
+"auth.reset_password.button.reset" = "Restablecer contraseña";
+"auth.reset_password.button.back_to_sign_in" = "Volver al inicio de sesión";
+"auth.reset_password.error.unexpected" = "Ocurrió un error inesperado.";
+
+// MARK: - Onboarding
+"onboarding.page1.title" = "ALOJA TUS\nIMÁGENES";
+"onboarding.page1.subtitle" = "Almacenamiento en la nube seguro";
+"onboarding.page2.title" = "COMPARTE\nDESDECUALQUIER LUGAR";
+"onboarding.page2.subtitle" = "Integración con iOS Share Sheet";
+"onboarding.page3.title" = "OBTÉN\nENLACES DIRECTOS";
+"onboarding.page3.subtitle" = "URLs compartibles al instante";
+"onboarding.page4.title" = "MANTENTE\nORGANIZADO";
+"onboarding.page4.subtitle" = "Todas tus subidas en un solo lugar";
+"onboarding.button.skip" = "OMITIR";
+"onboarding.button.next" = "SIGUIENTE";
+"onboarding.button.start" = "COMENZAR";
+"onboarding.page_indicator" = "%d/%d";
+
+// MARK: - Upload View
+"upload.title" = "SUBIR";
+"upload.drop_zone.title" = "SUBIR\nARCHIVO";
+"upload.drop_zone.subtitle" = "Imágenes, videos, documentos y más";
+"upload.source.photo_library" = "Biblioteca de fotos";
+"upload.source.browse_files" = "Explorar archivos";
+"upload.confirm.file" = "¿Subir \"%@\"?";
+"upload.confirm.photo" = "¿Subir la foto seleccionada?";
+"upload.confirm.resolution" = "Resolución: %@";
+"upload.confirm.button.upload" = "Subir";
+"upload.confirm.button.cancel" = "Cancelar";
+"upload.progress.title" = "SUBIENDO";
+"upload.progress.cancel" = "Cancelar";
+"upload.success.title" = "SUBIDO";
+"upload.success.link_copied" = "Enlace copiado al portapapeles";
+"upload.success.hold_to_copy" = "Mantén pulsado para copiar";
+"upload.success.copied_feedback" = "¡Copiado!";
+"upload.success.button.upload_another" = "Subir otro";
+"upload.failure.title" = "ERROR AL SUBIR";
+"upload.failure.button.retry" = "Reintentar";
+"upload.failure.button.cancel" = "Cancelar";
+
+// MARK: - History View
+"history.title" = "MEDIOS";
+"history.empty.title" = "SIN\nMEDIOS\nAÚN";
+"history.empty.subtitle.upload" = "Sube archivos para empezar.";
+"history.empty.subtitle.sync" = "Tus subidas aparecerán aquí.";
+"history.error.title" = "Algo salió mal";
+"history.error.button.retry" = "Reintentar";
+
+// MARK: - Upload Detail View
+"detail.section.image_url" = "URL de imagen";
+"detail.section.details" = "Detalles";
+"detail.label.uploaded" = "Subido";
+"detail.label.original_file" = "Archivo original";
+"detail.label.id" = "ID";
+"detail.alert.delete.title" = "Eliminar imagen";
+"detail.alert.delete.button.confirm" = "Eliminar del servidor";
+"detail.alert.delete.button.cancel" = "Cancelar";
+"detail.alert.delete.message" = "Esto eliminará permanentemente la imagen del servidor. Esta acción no se puede deshacer.";
+"detail.button.share" = "COMPARTIR";
+"detail.button.copy" = "COPIAR";
+"detail.button.copied" = "COPIADO";
+"detail.button.open" = "ABRIR";
+"detail.button.delete" = "ELIMINAR";
+"detail.button.delete_deleting" = "...";
+"detail.copy_button.label" = "COPIAR";
+"detail.copy_button.copied" = "✓";
+
+// MARK: - Photo Grid
+"photogrid.button.cancel" = "CANCELAR";
+"photogrid.alert.delete.title" = "¿Eliminar %d archivo?";
+"photogrid.alert.delete.title_plural" = "¿Eliminar %d archivos?";
+"photogrid.alert.delete.button.confirm" = "Eliminar";
+"photogrid.alert.delete.button.cancel" = "Cancelar";
+"photogrid.alert.delete.message" = "Esto eliminará permanentemente los archivos seleccionados del servidor.";
+"photogrid.date.today" = "Hoy";
+"photogrid.date.yesterday" = "Ayer";
+"photogrid.select_indicator" = "✓";
+
+// MARK: - Settings View
+"settings.title" = "AJUSTES";
+"settings.subtitle" = "CUENTA Y PREFERENCIAS";
+"settings.section.account" = "Cuenta";
+"settings.account.email_verified" = "✓ VERIFICADO";
+"settings.section.storage" = "Almacenamiento";
+"settings.storage.separator" = "/";
+"settings.storage.percent_format" = "%.2f%%";
+"settings.subscription.button.upgrade" = "Actualizar a Pro";
+"settings.subscription.button.subscribe" = "Suscribirse a Pro";
+"settings.section.upload" = "Subida";
+"settings.upload.label.resolution" = "RESOLUCIÓN PREDETERMINADA";
+"settings.upload.label.default_badge" = "PREDETERMINADO";
+"settings.upload.hint" = "Menor calidad = archivos más pequeños, subidas más rápidas";
+"settings.upload.label.behavior" = "COMPORTAMIENTO";
+"settings.upload.toggle.confirm_label" = "Confirmar antes de subir";
+"settings.upload.toggle.confirm_hint" = "Pedir confirmación antes de comenzar cada subida";
+"settings.section.link_format" = "Formato de enlace";
+"settings.link_format.variables_label" = "Variables:";
+"settings.link_format.var.url" = "{url}";
+"settings.link_format.var.filename" = "{filename}";
+"settings.link_format.button.edit_custom" = "EDITAR FORMATO PERSONALIZADO";
+"settings.section.actions" = "Acciones";
+"settings.action.clear_history.title" = "Borrar historial de subidas";
+"settings.action.clear_history.subtitle" = "Eliminar solo el historial local";
+"settings.action.export.title" = "Exportar todas las imágenes";
+"settings.action.export.subtitle" = "Descargar como archivo ZIP";
+"settings.action.delete_account.title" = "Eliminar cuenta";
+"settings.action.delete_account.subtitle" = "Eliminar permanentemente todos los datos";
+"settings.section.legal" = "Legal";
+"settings.legal.terms" = "Términos de uso (CLUF)";
+"settings.legal.privacy" = "Política de privacidad";
+"settings.button.sign_out" = "Cerrar sesión";
+"settings.alert.ok" = "OK";
+"settings.alert.clear_history.title" = "Borrar historial";
+"settings.alert.clear_history.button.confirm" = "Borrar todo el historial";
+"settings.alert.clear_history.button.cancel" = "Cancelar";
+"settings.alert.clear_history.message" = "Esto eliminará todo el historial de subidas de este dispositivo. Las imágenes en el servidor no se verán afectadas.";
+"settings.alert.delete_account.title" = "Eliminar cuenta";
+"settings.alert.delete_account.button.confirm" = "Eliminar cuenta";
+"settings.alert.delete_account.button.cancel" = "Cancelar";
+"settings.alert.delete_account.message" = "Esto eliminará permanentemente tu cuenta y todas tus imágenes subidas. Esta acción no se puede deshacer.";
+"settings.success.history_cleared.title" = "Historial borrado";
+"settings.success.history_cleared.message" = "Todo el historial de subidas ha sido eliminado.";
+"settings.error.title" = "Error";
+"settings.error.load_account" = "Error al cargar la info de cuenta: %@";
+"settings.error.clear_history" = "Error al borrar el historial: %@";
+"settings.error.delete_account" = "Error al eliminar la cuenta: %@";
+"settings.custom_format.title" = "FORMATO\nPERSONALIZADO";
+"settings.custom_format.description" = "Define tu propia plantilla de enlace";
+"settings.custom_format.label.template" = "PLANTILLA";
+"settings.custom_format.placeholder" = "Ingresa una plantilla...";
+"settings.custom_format.label.variables" = "VARIABLES DISPONIBLES";
+"settings.custom_format.var.url" = "{url}";
+"settings.custom_format.var.url.desc" = "- La URL de la imagen";
+"settings.custom_format.var.filename" = "{filename}";
+"settings.custom_format.var.filename.desc" = "- Nombre del archivo original";
+"settings.custom_format.label.preview" = "VISTA PREVIA";
+"settings.custom_format.button.save" = "Guardar formato";
+"settings.custom_format.button.cancel" = "CANCELAR";
+"settings.export.title" = "EXPORTAR";
+"settings.export.description" = "Crea un archivo ZIP de todas tus imágenes subidas.";
+"settings.export.button.start" = "Iniciar exportación";
+"settings.export.state.starting" = "Iniciando";
+"settings.export.state.exporting" = "EXPORTANDO IMÁGENES";
+"settings.export.state.downloading" = "DESCARGANDO ARCHIVO";
+"settings.export.state.complete.icon" = "✓";
+"settings.export.state.complete.title" = "EXPORTACIÓN COMPLETA";
+"settings.export.state.complete.button.save_photos" = "Guardar en Fotos";
+"settings.export.state.complete.button.save_files" = "Guardar en Archivos";
+"settings.export.state.complete.button.done" = "Listo";
+"settings.export.state.saving_photos" = "GUARDANDO EN FOTOS";
+"settings.export.state.saved_photos.icon" = "✓";
+"settings.export.state.saved_photos.title" = "GUARDADO EN FOTOS";
+"settings.export.state.saved_photos.message" = "%d imágenes guardadas en tu fototeca";
+"settings.export.state.saved_photos.button.done" = "Listo";
+"settings.export.state.failed.icon" = "✕";
+"settings.export.state.failed.title" = "ERROR DE EXPORTACIÓN";
+"settings.export.state.failed.button.retry" = "Intentar de nuevo";
+"settings.export.state.failed.button.cancel" = "Cancelar";
+"settings.export.button.cancel" = "Cancelar";
+"settings.export.progress_format" = "%d%%";
+
+// MARK: - Paywall / Subscription
+"paywall.title.unlock" = "DESBLOQUEAR";
+"paywall.title.pro" = "PRO";
+"paywall.title.trial" = "7 DÍAS DE PRUEBA GRATIS";
+"paywall.section.features" = "QUÉ INCLUYE";
+"paywall.feature.file_size.title" = "Archivos de 500MB";
+"paywall.feature.file_size.desc" = "Sube archivos grandes, videos y más";
+"paywall.feature.storage.title" = "10GB de almacenamiento";
+"paywall.feature.storage.desc" = "Límite de almacenamiento Pro durante la prueba";
+"paywall.feature.sharing.title" = "Compartir rápido";
+"paywall.feature.sharing.desc" = "Enlaces instantáneos para tus imágenes";
+"paywall.feature.private.title" = "Privado por defecto";
+"paywall.feature.private.desc" = "Almacenamiento seguro y cifrado";
+"paywall.section.plans" = "ELIGE TU PLAN";
+"paywall.error.loading" = "No se pueden cargar las opciones de suscripción";
+"paywall.button.retry" = "Reintentar";
+"paywall.badge.save" = "AHORRA 30%";
+"paywall.button.start_trial" = "Iniciar prueba gratis";
+"paywall.button.restore" = "Restaurar compras";
+"paywall.price.per_month_format" = "%@/mes";
+"paywall.price.per_month_fallback" = "/mes";
+"paywall.error.alert.title" = "Error";
+"paywall.error.alert.button.ok" = "OK";
+"paywall.error.alert.message_fallback" = "Ocurrió un error";
+"paywall.legal.renewal_notice" = "Después de tu prueba gratuita de 7 días, tu suscripción se renovará automáticamente al precio seleccionado, a menos que canceles al menos 24 horas antes de que finalice el período de prueba. El pago se cargará a tu cuenta de Apple ID al confirmar la compra. Tu suscripción se renueva automáticamente a menos que desactives la renovación automática al menos 24 horas antes del final del período actual. Puedes gestionar y cancelar tus suscripciones en la configuración de tu cuenta de App Store.";
+"paywall.legal.separator" = "|";
+"paywall.legal.button.terms" = "Términos";
+"paywall.legal.button.privacy" = "Privacidad";
+
+// MARK: - Subscription Status
+"subscription.title" = "SUSCRIPCIÓN";
+"subscription.section.current_plan" = "PLAN ACTUAL";
+"subscription.button.manage" = "Administrar suscripción";
+"subscription.plan.trial" = "PRUEBA PRO";
+"subscription.plan.active" = "PRO";
+"subscription.plan.cancelled" = "PRO (CANCELADO)";
+"subscription.plan.free" = "GRATUITO";
+"subscription.badge.trial" = "PRUEBA";
+"subscription.badge.active" = "ACTIVO";
+"subscription.badge.cancelled" = "CANCELADO";
+"subscription.badge.expired" = "EXPIRADO";
+"subscription.trial.ends_tomorrow" = "La prueba termina mañana";
+"subscription.trial.ends_in_days" = "La prueba termina en %d días";
+"subscription.renews_on" = "Se renueva el %@";
+"subscription.expires_on" = "Expira el %@";
+"subscription.access_until" = "Acceso hasta el %@";
+"subscription.expired_message" = "Tu suscripción ha expirado";
+
+// MARK: - Error Messages
+"error.not_configured.description" = "La app no está configurada. Configura la URL del servidor y el token en los ajustes.";
+"error.invalid_url.description" = "URL del servidor inválida. Verifica tus ajustes.";
+"error.invalid_url.recovery" = "Asegúrate de que la URL comience con https:// y sea una dirección web válida.";
+"error.upload_failed.with_message" = "Subida fallida (%d): %@";
+"error.upload_failed.status_only" = "Subida fallida con código de estado %d";
+"error.network.description" = "Error de red: %@";
+"error.invalid_response.description" = "Respuesta inválida del servidor";
+"error.keychain.description" = "Error de llavero: %d";
+"error.file_system.description" = "Error del sistema de archivos: %@";
+"error.image_processing.description" = "No se pudo procesar la imagen";
+"error.delete_failed.with_message" = "Eliminación fallida (%d): %@";
+"error.delete_failed.status_only" = "Eliminación fallida con código de estado %d";
+"error.email_not_verified.description" = "Verifica tu correo antes de subir imágenes.";
+"error.subscription_required.description" = "Se requiere una suscripción activa para subir archivos.";
+"error.not_configured.recovery" = "Abre la app imghost y configura tu URL del servidor y token de subida.";
+"error.upload_failed.recovery" = "Verifica tu conexión a internet e inténtalo de nuevo. Si el problema persiste, verifica tu token de subida.";
+"error.network.recovery" = "Verifica tu conexión a internet e inténtalo de nuevo.";
+"error.invalid_response.recovery" = "El servidor devolvió una respuesta inesperada. Inténtalo más tarde.";
+"error.keychain.recovery" = "Intenta eliminar y volver a ingresar tu token de subida en los ajustes.";
+"error.file_system.recovery" = "Intenta reiniciar la app. Si el problema persiste, reinstala la app.";
+"error.image_processing.recovery" = "La imagen puede estar corrupta o en un formato no compatible.";
+"error.delete_failed.recovery" = "La imagen puede haber sido eliminada ya, o tu token puede no tener permisos de eliminación.";
+"error.email_not_verified.recovery" = "Abre la app imghost y verifica tu dirección de correo para habilitar las subidas.";
+"error.subscription_required.recovery" = "Suscríbete a imghost Pro para desbloquear subidas y almacenamiento.";

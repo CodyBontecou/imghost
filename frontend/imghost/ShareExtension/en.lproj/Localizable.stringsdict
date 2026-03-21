@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- "UPLOAD %d ITEM" / "UPLOAD %d ITEMS" -->
+	<key>share.preview.button.upload_plural</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@items@</string>
+		<key>items</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>UPLOAD %d ITEM</string>
+			<key>other</key>
+			<string>UPLOAD %d ITEMS</string>
+		</dict>
+	</dict>
+
+	<!-- "%d LINKS COPIED" / "COPIED TO CLIPBOARD" (handled as singular) -->
+	<key>share.result.copied_plural</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@links@</string>
+		<key>links</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>COPIED TO CLIPBOARD</string>
+			<key>other</key>
+			<string>%d LINKS COPIED</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

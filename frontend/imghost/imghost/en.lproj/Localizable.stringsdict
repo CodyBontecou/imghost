@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- "Delete %d file?" / "Delete %d files?" -->
+	<key>photogrid.alert.delete.title</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Delete %d file?</string>
+			<key>other</key>
+			<string>Delete %d files?</string>
+		</dict>
+	</dict>
+
+	<!-- "Trial ends tomorrow" / "Trial ends in %d days" -->
+	<key>subscription.trial.ends_in_days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Trial ends tomorrow</string>
+			<key>other</key>
+			<string>Trial ends in %d days</string>
+		</dict>
+	</dict>
+
+	<!-- "%d images saved to your photo library" -->
+	<key>settings.export.state.saved_photos.message</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@images@</string>
+		<key>images</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d image saved to your photo library</string>
+			<key>other</key>
+			<string>%d images saved to your photo library</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

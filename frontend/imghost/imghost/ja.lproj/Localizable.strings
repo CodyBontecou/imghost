@@ -1,0 +1,333 @@
+/* =========================================================
+   imghost — iOS App
+   Localizable.strings (Japanese)
+   ========================================================= */
+
+// MARK: - Common Buttons
+"button.ok" = "OK";
+"button.cancel" = "キャンセル";
+"button.done" = "完了";
+"button.retry" = "再試行";
+"button.close" = "閉じる";
+"button.save" = "保存";
+"button.delete" = "削除";
+"button.sign_in" = "サインイン";
+"button.sign_out" = "サインアウト";
+"button.upload" = "アップロード";
+"button.next" = "次へ";
+"button.skip" = "スキップ";
+"button.start" = "開始";
+
+// MARK: - Common States
+"state.loading" = "読み込み中";
+"state.uploading" = "アップロード中";
+"state.preparing" = "準備中";
+
+// MARK: - Common Labels
+"label.verified" = "✓ 確認済み";
+"label.default" = "デフォルト";
+"label.required_marker" = "*";
+"label.copied" = "✓";
+
+// MARK: - Auth — Login
+"auth.login.title" = "サイン\nイン";
+"auth.login.subtitle" = "画像にアクセス";
+"auth.login.field.email" = "メールアドレス";
+"auth.login.field.password" = "パスワード";
+"auth.login.button.sign_in" = "サインイン";
+"auth.login.button.forgot_password" = "パスワードを忘れた場合";
+"auth.login.button.view_pro_plans" = "Proプランを見る";
+"auth.login.prompt.no_account" = "アカウントがない場合";
+"auth.login.button.create_account" = "作成する";
+"auth.login.divider" = "または";
+"auth.login.error.unexpected" = "予期しないエラーが発生しました。";
+"auth.login.error.invalid_apple_credential" = "Apple IDの認証情報が無効です。";
+"auth.login.error.no_identity_token" = "IDトークンを取得できませんでした。";
+"auth.login.error.apple_failed" = "Appleサインインに失敗しました: %@";
+"auth.login.error.apple_failed_generic" = "Appleサインインに失敗しました。もう一度お試しください。";
+"auth.login.error.apple_failed_simple" = "Appleサインインに失敗しました。";
+
+// MARK: - Auth — Register
+"auth.register.title" = "アカウント\n作成";
+"auth.register.subtitle" = "画像のアップロードを開始";
+"auth.register.field.email" = "メールアドレス";
+"auth.register.field.password" = "パスワード";
+"auth.register.field.confirm_password" = "パスワードの確認";
+"auth.register.requirement.min_chars" = "8文字以上";
+"auth.register.requirement.passwords_match" = "パスワードが一致している";
+"auth.register.button.create_account" = "アカウントを作成";
+"auth.register.prompt.have_account" = "アカウントをお持ちの場合";
+"auth.register.button.sign_in" = "サインイン";
+"auth.register.error.unexpected" = "予期しないエラーが発生しました。";
+
+// MARK: - Auth — Email Verification
+"auth.verify_email.title" = "メール\n確認";
+"auth.verify_email.subtitle" = "受信トレイを確認";
+"auth.verify_email.code_sent_to" = "コード送信先:";
+"auth.verify_email.warning_icon" = "!";
+"auth.verify_email.warning_message" = "画像をアップロードする前にメールを確認してください。";
+"auth.verify_email.field.code" = "確認コード";
+"auth.verify_email.button.verify" = "メールを確認";
+"auth.verify_email.button.resend" = "コードを再送信";
+"auth.verify_email.button.sign_out" = "サインアウト";
+"auth.verify_email.success.code_sent" = "確認コードを送信しました！";
+"auth.verify_email.error.unexpected" = "予期しないエラーが発生しました。";
+
+// MARK: - Auth — Forgot Password
+"auth.forgot_password.title" = "パスワード\nリセット";
+"auth.forgot_password.subtitle.check_email" = "メールを確認してください";
+"auth.forgot_password.subtitle.enter_email" = "メールアドレスを入力";
+"auth.forgot_password.field.email" = "メールアドレス";
+"auth.forgot_password.code_sent_to" = "リセットコード送信先:";
+"auth.forgot_password.spam_hint" = "見当たらない場合はスパムフォルダをご確認ください。";
+"auth.forgot_password.button.enter_code" = "リセットコードを入力";
+"auth.forgot_password.button.send_again" = "再送信";
+"auth.forgot_password.button.send_code" = "リセットコードを送信";
+"auth.forgot_password.error.unexpected" = "予期しないエラーが発生しました。";
+
+// MARK: - Auth — Reset Password
+"auth.reset_password.title" = "新しい\nパスワード";
+"auth.reset_password.title.done" = "完了";
+"auth.reset_password.subtitle.enter_code" = "リセットコードを入力";
+"auth.reset_password.subtitle.updated" = "パスワードを更新しました";
+"auth.reset_password.success.icon" = "✓";
+"auth.reset_password.success.message" = "パスワードが正常に更新されました。";
+"auth.reset_password.field.reset_code" = "リセットコード";
+"auth.reset_password.field.new_password" = "新しいパスワード";
+"auth.reset_password.field.confirm_password" = "パスワードの確認";
+"auth.reset_password.requirement.min_chars" = "8文字以上";
+"auth.reset_password.requirement.passwords_match" = "パスワードが一致している";
+"auth.reset_password.button.reset" = "パスワードをリセット";
+"auth.reset_password.button.back_to_sign_in" = "サインインに戻る";
+"auth.reset_password.error.unexpected" = "予期しないエラーが発生しました。";
+
+// MARK: - Onboarding
+"onboarding.page1.title" = "画像を\nホスト";
+"onboarding.page1.subtitle" = "安全なクラウドストレージ";
+"onboarding.page2.title" = "どこからでも\nシェア";
+"onboarding.page2.subtitle" = "iOS共有シート連携";
+"onboarding.page3.title" = "直接\nリンク取得";
+"onboarding.page3.subtitle" = "即時共有可能なURL";
+"onboarding.page4.title" = "整理\n整頓";
+"onboarding.page4.subtitle" = "全アップロードを一箇所で";
+"onboarding.button.skip" = "スキップ";
+"onboarding.button.next" = "次へ";
+"onboarding.button.start" = "開始";
+"onboarding.page_indicator" = "%d/%d";
+
+// MARK: - Upload View
+"upload.title" = "アップロード";
+"upload.drop_zone.title" = "ファイルを\nアップロード";
+"upload.drop_zone.subtitle" = "画像、動画、ドキュメントなど";
+"upload.source.photo_library" = "フォトライブラリ";
+"upload.source.browse_files" = "ファイルを参照";
+"upload.confirm.file" = "\"%@\"をアップロードしますか？";
+"upload.confirm.photo" = "選択した写真をアップロードしますか？";
+"upload.confirm.resolution" = "解像度: %@";
+"upload.confirm.button.upload" = "アップロード";
+"upload.confirm.button.cancel" = "キャンセル";
+"upload.progress.title" = "アップロード中";
+"upload.progress.cancel" = "キャンセル";
+"upload.success.title" = "アップロード完了";
+"upload.success.link_copied" = "リンクをクリップボードにコピーしました";
+"upload.success.hold_to_copy" = "長押しでコピー";
+"upload.success.copied_feedback" = "コピーしました！";
+"upload.success.button.upload_another" = "別のファイルをアップロード";
+"upload.failure.title" = "アップロード失敗";
+"upload.failure.button.retry" = "再試行";
+"upload.failure.button.cancel" = "キャンセル";
+
+// MARK: - History View
+"history.title" = "メディア";
+"history.empty.title" = "メディアが\nありません";
+"history.empty.subtitle.upload" = "ファイルをアップロードして始めましょう。";
+"history.empty.subtitle.sync" = "アップロードはここに表示されます。";
+"history.error.title" = "エラーが発生しました";
+"history.error.button.retry" = "再試行";
+
+// MARK: - Upload Detail View
+"detail.section.image_url" = "画像URL";
+"detail.section.details" = "詳細";
+"detail.label.uploaded" = "アップロード日時";
+"detail.label.original_file" = "元のファイル";
+"detail.label.id" = "ID";
+"detail.alert.delete.title" = "画像を削除";
+"detail.alert.delete.button.confirm" = "サーバーから削除";
+"detail.alert.delete.button.cancel" = "キャンセル";
+"detail.alert.delete.message" = "この画像はサーバーから完全に削除されます。この操作は元に戻せません。";
+"detail.button.share" = "シェア";
+"detail.button.copy" = "コピー";
+"detail.button.copied" = "コピー済み";
+"detail.button.open" = "開く";
+"detail.button.delete" = "削除";
+"detail.button.delete_deleting" = "...";
+"detail.copy_button.label" = "コピー";
+"detail.copy_button.copied" = "✓";
+
+// MARK: - Photo Grid
+"photogrid.button.cancel" = "キャンセル";
+"photogrid.alert.delete.title" = "%dファイルを削除しますか？";
+"photogrid.alert.delete.title_plural" = "%dファイルを削除しますか？";
+"photogrid.alert.delete.button.confirm" = "削除";
+"photogrid.alert.delete.button.cancel" = "キャンセル";
+"photogrid.alert.delete.message" = "選択したファイルはサーバーから完全に削除されます。";
+"photogrid.date.today" = "今日";
+"photogrid.date.yesterday" = "昨日";
+"photogrid.select_indicator" = "✓";
+
+// MARK: - Settings View
+"settings.title" = "設定";
+"settings.subtitle" = "アカウントと設定";
+"settings.section.account" = "アカウント";
+"settings.account.email_verified" = "✓ 確認済み";
+"settings.section.storage" = "ストレージ";
+"settings.storage.separator" = "/";
+"settings.storage.percent_format" = "%.2f%%";
+"settings.subscription.button.upgrade" = "Proにアップグレード";
+"settings.subscription.button.subscribe" = "Proに登録";
+"settings.section.upload" = "アップロード";
+"settings.upload.label.resolution" = "デフォルト解像度";
+"settings.upload.label.default_badge" = "デフォルト";
+"settings.upload.hint" = "低品質 = 小さいファイル、高速アップロード";
+"settings.upload.label.behavior" = "動作";
+"settings.upload.toggle.confirm_label" = "アップロード前に確認";
+"settings.upload.toggle.confirm_hint" = "アップロード開始前に確認を求める";
+"settings.section.link_format" = "リンク形式";
+"settings.link_format.variables_label" = "変数:";
+"settings.link_format.var.url" = "{url}";
+"settings.link_format.var.filename" = "{filename}";
+"settings.link_format.button.edit_custom" = "カスタム形式を編集";
+"settings.section.actions" = "操作";
+"settings.action.clear_history.title" = "アップロード履歴をクリア";
+"settings.action.clear_history.subtitle" = "ローカル履歴のみ削除";
+"settings.action.export.title" = "全画像をエクスポート";
+"settings.action.export.subtitle" = "ZIPアーカイブとしてダウンロード";
+"settings.action.delete_account.title" = "アカウントを削除";
+"settings.action.delete_account.subtitle" = "全データを完全に削除";
+"settings.section.legal" = "法的情報";
+"settings.legal.terms" = "利用規約 (EULA)";
+"settings.legal.privacy" = "プライバシーポリシー";
+"settings.button.sign_out" = "サインアウト";
+"settings.alert.ok" = "OK";
+"settings.alert.clear_history.title" = "履歴をクリア";
+"settings.alert.clear_history.button.confirm" = "全履歴をクリア";
+"settings.alert.clear_history.button.cancel" = "キャンセル";
+"settings.alert.clear_history.message" = "このデバイスからアップロード履歴が削除されます。サーバー上の画像には影響しません。";
+"settings.alert.delete_account.title" = "アカウントを削除";
+"settings.alert.delete_account.button.confirm" = "アカウントを削除";
+"settings.alert.delete_account.button.cancel" = "キャンセル";
+"settings.alert.delete_account.message" = "アカウントとアップロードした全画像が完全に削除されます。この操作は元に戻せません。";
+"settings.success.history_cleared.title" = "履歴をクリアしました";
+"settings.success.history_cleared.message" = "全アップロード履歴が削除されました。";
+"settings.error.title" = "エラー";
+"settings.error.load_account" = "アカウント情報の読み込みに失敗しました: %@";
+"settings.error.clear_history" = "履歴のクリアに失敗しました: %@";
+"settings.error.delete_account" = "アカウントの削除に失敗しました: %@";
+"settings.custom_format.title" = "カスタム\n形式";
+"settings.custom_format.description" = "独自のリンクテンプレートを定義";
+"settings.custom_format.label.template" = "テンプレート";
+"settings.custom_format.placeholder" = "テンプレートを入力...";
+"settings.custom_format.label.variables" = "使用可能な変数";
+"settings.custom_format.var.url" = "{url}";
+"settings.custom_format.var.url.desc" = "- 画像URL";
+"settings.custom_format.var.filename" = "{filename}";
+"settings.custom_format.var.filename.desc" = "- 元のファイル名";
+"settings.custom_format.label.preview" = "プレビュー";
+"settings.custom_format.button.save" = "形式を保存";
+"settings.custom_format.button.cancel" = "キャンセル";
+"settings.export.title" = "エクスポート";
+"settings.export.description" = "アップロードした全画像のZIPアーカイブを作成します。";
+"settings.export.button.start" = "エクスポートを開始";
+"settings.export.state.starting" = "開始中";
+"settings.export.state.exporting" = "画像をエクスポート中";
+"settings.export.state.downloading" = "アーカイブをダウンロード中";
+"settings.export.state.complete.icon" = "✓";
+"settings.export.state.complete.title" = "エクスポート完了";
+"settings.export.state.complete.button.save_photos" = "写真に保存";
+"settings.export.state.complete.button.save_files" = "ファイルに保存";
+"settings.export.state.complete.button.done" = "完了";
+"settings.export.state.saving_photos" = "写真に保存中";
+"settings.export.state.saved_photos.icon" = "✓";
+"settings.export.state.saved_photos.title" = "写真に保存しました";
+"settings.export.state.saved_photos.message" = "%d枚の画像をフォトライブラリに保存しました";
+"settings.export.state.saved_photos.button.done" = "完了";
+"settings.export.state.failed.icon" = "✕";
+"settings.export.state.failed.title" = "エクスポート失敗";
+"settings.export.state.failed.button.retry" = "再試行";
+"settings.export.state.failed.button.cancel" = "キャンセル";
+"settings.export.button.cancel" = "キャンセル";
+"settings.export.progress_format" = "%d%%";
+
+// MARK: - Paywall / Subscription
+"paywall.title.unlock" = "アンロック";
+"paywall.title.pro" = "PRO";
+"paywall.title.trial" = "7日間無料トライアル";
+"paywall.section.features" = "機能";
+"paywall.feature.file_size.title" = "500MBファイルサイズ";
+"paywall.feature.file_size.desc" = "大容量ファイル、動画などをアップロード";
+"paywall.feature.storage.title" = "10GBストレージ";
+"paywall.feature.storage.desc" = "トライアル中はProのストレージ制限";
+"paywall.feature.sharing.title" = "高速シェア";
+"paywall.feature.sharing.desc" = "画像の即時リンク";
+"paywall.feature.private.title" = "デフォルトでプライベート";
+"paywall.feature.private.desc" = "安全な暗号化ストレージ";
+"paywall.section.plans" = "プランを選択";
+"paywall.error.loading" = "サブスクリプションオプションを読み込めません";
+"paywall.button.retry" = "再試行";
+"paywall.badge.save" = "30%お得";
+"paywall.button.start_trial" = "無料トライアルを開始";
+"paywall.button.restore" = "購入を復元";
+"paywall.price.per_month_format" = "%@/月";
+"paywall.price.per_month_fallback" = "/月";
+"paywall.error.alert.title" = "エラー";
+"paywall.error.alert.button.ok" = "OK";
+"paywall.error.alert.message_fallback" = "エラーが発生しました";
+"paywall.legal.renewal_notice" = "7日間の無料トライアル終了後、選択した価格で自動的に更新されます（トライアル期間終了の24時間前までにキャンセルしない限り）。購入確認時にApple IDアカウントに課金されます。自動更新は現在の期間終了の24時間前までにオフにしない限り自動的に更新されます。App Storeのアカウント設定でサブスクリプションを管理・キャンセルできます。";
+"paywall.legal.separator" = "|";
+"paywall.legal.button.terms" = "利用規約";
+"paywall.legal.button.privacy" = "プライバシー";
+
+// MARK: - Subscription Status
+"subscription.title" = "サブスクリプション";
+"subscription.section.current_plan" = "現在のプラン";
+"subscription.button.manage" = "サブスクリプションを管理";
+"subscription.plan.trial" = "Proトライアル";
+"subscription.plan.active" = "PRO";
+"subscription.plan.cancelled" = "Pro（キャンセル済み）";
+"subscription.plan.free" = "無料";
+"subscription.badge.trial" = "トライアル";
+"subscription.badge.active" = "有効";
+"subscription.badge.cancelled" = "キャンセル済み";
+"subscription.badge.expired" = "期限切れ";
+"subscription.trial.ends_tomorrow" = "明日トライアル終了";
+"subscription.trial.ends_in_days" = "%d日後にトライアル終了";
+"subscription.renews_on" = "%@に更新";
+"subscription.expires_on" = "%@に期限切れ";
+"subscription.access_until" = "%@まで利用可能";
+"subscription.expired_message" = "サブスクリプションの有効期限が切れました";
+
+// MARK: - Error Messages
+"error.not_configured.description" = "アプリが設定されていません。設定でバックエンドURLとトークンを設定してください。";
+"error.invalid_url.description" = "バックエンドURLが無効です。設定を確認してください。";
+"error.invalid_url.recovery" = "URLがhttps://で始まる有効なウェブアドレスであることを確認してください。";
+"error.upload_failed.with_message" = "アップロード失敗 (%d): %@";
+"error.upload_failed.status_only" = "ステータスコード %d でアップロードに失敗しました";
+"error.network.description" = "ネットワークエラー: %@";
+"error.invalid_response.description" = "サーバーからの無効なレスポンス";
+"error.keychain.description" = "キーチェーンエラー: %d";
+"error.file_system.description" = "ファイルシステムエラー: %@";
+"error.image_processing.description" = "画像の処理に失敗しました";
+"error.delete_failed.with_message" = "削除失敗 (%d): %@";
+"error.delete_failed.status_only" = "ステータスコード %d で削除に失敗しました";
+"error.email_not_verified.description" = "画像をアップロードする前にメールを確認してください。";
+"error.subscription_required.description" = "ファイルをアップロードするにはアクティブなサブスクリプションが必要です。";
+"error.not_configured.recovery" = "imghostアプリを開き、バックエンドURLとアップロードトークンを設定してください。";
+"error.upload_failed.recovery" = "インターネット接続を確認して再試行してください。問題が続く場合はアップロードトークンを確認してください。";
+"error.network.recovery" = "インターネット接続を確認して再試行してください。";
+"error.invalid_response.recovery" = "サーバーから予期しないレスポンスが返されました。後でもう一度お試しください。";
+"error.keychain.recovery" = "設定でアップロードトークンを削除して再入力してください。";
+"error.file_system.recovery" = "アプリを再起動してください。問題が続く場合はアプリを再インストールしてください。";
+"error.image_processing.recovery" = "画像が破損しているか、サポートされていない形式の可能性があります。";
+"error.delete_failed.recovery" = "画像が既に削除されているか、トークンに削除権限がない可能性があります。";
+"error.email_not_verified.recovery" = "imghostアプリを開き、メールアドレスを確認してアップロードを有効にしてください。";
+"error.subscription_required.recovery" = "imghostProに登録してアップロードとストレージのロックを解除してください。";
