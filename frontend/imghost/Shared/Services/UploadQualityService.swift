@@ -78,6 +78,16 @@ final class UploadQualityService {
         }
     }
 
+    /// Whether to show a confirmation prompt before each upload starts
+    var confirmBeforeUpload: Bool {
+        get {
+            Config.sharedDefaults?.bool(forKey: Config.confirmBeforeUploadKey) ?? false
+        }
+        set {
+            Config.sharedDefaults?.set(newValue, forKey: Config.confirmBeforeUploadKey)
+        }
+    }
+
     /// Process image data according to quality settings
     /// - Parameters:
     ///   - data: Original image data

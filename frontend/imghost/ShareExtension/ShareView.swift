@@ -148,12 +148,7 @@ struct ShareView: View {
                 .padding(.vertical, 16)
                 .overlay(Rectangle().frame(height: 1).foregroundStyle(.white.opacity(0.1)), alignment: .top)
                 
-                // Quality picker for images
-                if hasImageItems && !isAnyItemTooLarge {
-                    qualitySection
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 16)
-                }
+                // Quality is set in the app's Settings — no per-upload picker shown here
                 
                 // Large file warning
                 if isAnyItemTooLarge {

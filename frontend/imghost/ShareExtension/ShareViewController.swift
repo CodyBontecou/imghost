@@ -19,31 +19,39 @@ struct SharedItem: Identifiable {
 }
 
 class ShareViewController: UIViewController {
-    private var hostingController: UIHostingController<ShareView>?
+    private var hostingController: UIViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let shareView = ShareView(
-            extensionContext: extensionContext,
-            loadAllItems: loadAllFileURLs
-        )
+        let vc: UIViewController
+        if UploadQualityService.shared.confirmBeforeUpload {
+            // Full UI — user wants to confirm before every upload
+            vc = UIHostingController(rootView: ShareView(
+                extensionContext: extensionContext,
+                loadAllItems: loadAllFileURLs
+            ))
+        } else {
+            // Skip UI — upload immediately and auto-dismiss
+            vc = UIHostingController(rootView: AutoUploadView(
+                extensionContext: extensionContext,
+                loadAllItems: loadAllFileURLs
+            ))
+        }
 
-        let hostingController = UIHostingController(rootView: shareView)
-        self.hostingController = hostingController
-
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        hostingController = vc
+        addChild(vc)
+        view.addSubview(vc.view)
+        vc.view.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            vc.view.topAnchor.constraint(equalTo: view.topAnchor),
+            vc.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            vc.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            vc.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
 
-        hostingController.didMove(toParent: self)
+        vc.didMove(toParent: self)
     }
 
     /// Load all shared items as file URLs
@@ -238,5 +246,160 @@ class ShareViewController: UIViewController {
         
         // Default
         return "file_\(timestamp).bin"
+    }
+}
+
+// MARK: - Auto Upload View
+
+/// Shown when confirmBeforeUpload is OFF. Uploads immediately and auto-dismisses.
+struct AutoUploadView: View {
+    let extensionContext: NSExtensionContext?
+    let loadAllItems: () async throws -> [SharedItem]
+
+    @State private var phase: Phase = .uploading
+    @State private var loadedItems: [SharedItem] = []
+
+    enum Phase {
+        case uploading
+        case success(urls: [String])
+        case failed(error: String)
+    }
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            VStack(spacing: 24) {
+                switch phase {
+                case .uploading:
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.4)
+
+                    Text("UPLOADING")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.35))
+                        .tracking(3)
+
+                case .success(let urls):
+                    Text("✓")
+                        .font(.system(size: 72, weight: .light))
+                        .foregroundStyle(Color(red: 0.19, green: 0.82, blue: 0.35))
+
+                    VStack(spacing: 8) {
+                        Text(urls.count == 1 ? "LINK COPIED" : "\(urls.count) LINKS COPIED")
+                            .font(.system(size: 13, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.white)
+                            .tracking(2)
+
+                        if let first = urls.first {
+                            Text(first)
+                                .font(.system(size: 10, design: .monospaced))
+                                .foregroundStyle(.white.opacity(0.35))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .padding(.horizontal, 40)
+                        }
+                    }
+
+                case .failed(let error):
+                    Text("!")
+                        .font(.system(size: 72, weight: .bold, design: .monospaced))
+                        .foregroundStyle(Color(red: 1, green: 0.27, blue: 0.23))
+
+                    VStack(spacing: 10) {
+                        Text("UPLOAD FAILED")
+                            .font(.system(size: 13, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.white)
+                            .tracking(2)
+
+                        Text(error)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.white.opacity(0.5))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                    }
+
+                    Button("Close") { dismiss() }
+                        .font(.system(size: 12, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.45))
+                        .padding(.top, 4)
+                }
+            }
+        }
+        .onAppear { startUpload() }
+    }
+
+    private func startUpload() {
+        Task {
+            do {
+                let items = try await loadAllItems()
+                loadedItems = items
+
+                var uploadedURLs: [String] = []
+                let quality = UploadQualityService.shared.currentQuality
+
+                for item in items {
+                    let filename = item.filename
+                    let lowercased = filename.lowercased()
+                    let isCompressibleImage = !item.isVideo &&
+                        !lowercased.hasSuffix(".gif") && (
+                            lowercased.hasSuffix(".jpg") || lowercased.hasSuffix(".jpeg") ||
+                            lowercased.hasSuffix(".png") || lowercased.hasSuffix(".heic") ||
+                            lowercased.hasSuffix(".webp") || lowercased.hasSuffix(".bmp") ||
+                            lowercased.hasSuffix(".tiff")
+                        )
+
+                    let record: UploadRecord
+                    if isCompressibleImage && quality != .original && item.fileSize < 50 * 1024 * 1024 {
+                        let data = try Data(contentsOf: item.fileURL)
+                        let (processedData, processedFilename) = UploadQualityService.shared.processForUpload(
+                            data: data, filename: filename, quality: quality
+                        )
+                        record = try await UploadService.shared.upload(
+                            imageData: processedData,
+                            filename: processedFilename
+                        )
+                    } else {
+                        record = try await UploadService.shared.uploadFromFile(
+                            fileURL: item.fileURL,
+                            filename: filename
+                        )
+                    }
+
+                    try? HistoryService.shared.save(record)
+                    let formatted = LinkFormatService.shared.format(
+                        url: record.url,
+                        filename: record.originalFilename
+                    )
+                    uploadedURLs.append(formatted)
+                }
+
+                let clipboardText = uploadedURLs.joined(separator: "\n")
+
+                await MainActor.run {
+                    UIPasteboard.general.string = clipboardText
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    phase = .success(urls: uploadedURLs)
+                }
+
+                // Auto-dismiss after brief success flash
+                try await Task.sleep(nanoseconds: 1_400_000_000)
+                dismiss()
+
+            } catch {
+                await MainActor.run {
+                    UINotificationFeedbackGenerator().notificationOccurred(.error)
+                    phase = .failed(error: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func dismiss() {
+        for item in loadedItems {
+            try? FileManager.default.removeItem(at: item.fileURL)
+        }
+        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
     }
 }

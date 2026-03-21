@@ -13,6 +13,12 @@ struct UploadView: View {
     @State private var uploadedRecord: UploadRecord?
     @State private var showCopiedFeedback = false
 
+    // Confirm before upload
+    @State private var showUploadConfirm = false
+    @State private var confirmMessage = ""
+    @State private var pendingPhotoItem: PhotosPickerItem? = nil
+    @State private var pendingFileURL: URL? = nil
+
     // Supported file types
     private static let supportedTypes: [UTType] = [
         // Images
@@ -75,6 +81,23 @@ struct UploadView: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .preferredColorScheme(.dark)
+            .confirmationDialog(confirmMessage, isPresented: $showUploadConfirm, titleVisibility: .visible) {
+                Button("Upload") {
+                    if let item = pendingPhotoItem {
+                        pendingPhotoItem = nil
+                        processSelectedPhotoItem(item)
+                    } else if let url = pendingFileURL {
+                        pendingFileURL = nil
+                        processSelectedFile(url)
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    pendingPhotoItem = nil
+                    pendingFileURL = nil
+                }
+            } message: {
+                Text("Resolution: \(UploadQualityService.shared.currentQuality.displayName)")
+            }
         }
     }
 
@@ -122,7 +145,7 @@ struct UploadView: View {
                 }
                 .onChange(of: selectedItem) { _, newItem in
                     if let item = newItem {
-                        processSelectedPhotoItem(item)
+                        requestUploadConfirmation(photoItem: item)
                     }
                 }
 
@@ -366,11 +389,30 @@ struct UploadView: View {
         switch result {
         case .success(let urls):
             guard let url = urls.first else { return }
-            processSelectedFile(url)
+            requestUploadConfirmation(fileURL: url)
         case .failure(let error):
             errorMessage = error.localizedDescription
             uploadState = .error
         }
+    }
+
+    private func requestUploadConfirmation(photoItem: PhotosPickerItem? = nil, fileURL: URL? = nil) {
+        guard UploadQualityService.shared.confirmBeforeUpload else {
+            if let item = photoItem { processSelectedPhotoItem(item) }
+            else if let url = fileURL { processSelectedFile(url) }
+            return
+        }
+
+        if let url = fileURL {
+            confirmMessage = "Upload \"\(url.lastPathComponent)\"?"
+            pendingFileURL = url
+            pendingPhotoItem = nil
+        } else {
+            confirmMessage = "Upload selected photo?"
+            pendingPhotoItem = photoItem
+            pendingFileURL = nil
+        }
+        showUploadConfirm = true
     }
 
     private func processSelectedFile(_ url: URL) {

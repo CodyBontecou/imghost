@@ -10,6 +10,7 @@ struct MacSettingsView: View {
     @State private var selectedLinkFormat: LinkFormat
     @State private var customTemplate: String
     @State private var selectedQuality: UploadQuality
+    @State private var confirmBeforeUpload: Bool
     @State private var showExportView = false
 
     private let linkFormatService = LinkFormatService.shared
@@ -19,6 +20,7 @@ struct MacSettingsView: View {
         _selectedLinkFormat = State(initialValue: LinkFormatService.shared.currentFormat)
         _customTemplate = State(initialValue: LinkFormatService.shared.customTemplate)
         _selectedQuality = State(initialValue: UploadQualityService.shared.currentQuality)
+        _confirmBeforeUpload = State(initialValue: UploadQualityService.shared.confirmBeforeUpload)
     }
 
     var body: some View {
@@ -268,52 +270,115 @@ struct MacSettingsView: View {
         }
     }
 
-    // MARK: - Upload Quality Section
+    // MARK: - Upload Section
 
     private var uploadQualitySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            BrutalSectionHeader(title: "Upload Quality", subtitle: "Quality preset for image uploads")
+        VStack(alignment: .leading, spacing: 20) {
+            BrutalSectionHeader(title: "Upload", subtitle: "Default behavior for all uploads")
 
-            VStack(spacing: 8) {
-                ForEach(UploadQuality.allCases) { quality in
-                    Button(action: {
-                        selectedQuality = quality
-                        qualityService.currentQuality = quality
-                    }) {
-                        HStack(spacing: 10) {
-                            Circle()
-                                .stroke(selectedQuality == quality ? Color.white : Color.brutalBorder, lineWidth: 2)
-                                .frame(width: 16, height: 16)
-                                .overlay(
-                                    Circle()
-                                        .fill(selectedQuality == quality ? Color.white : Color.clear)
-                                        .frame(width: 8, height: 8)
-                                )
+            // Default resolution picker
+            VStack(alignment: .leading, spacing: 10) {
+                Text("DEFAULT RESOLUTION")
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundStyle(Color.brutalTextSecondary)
+                    .tracking(1.5)
 
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(quality.displayName)
-                                    .font(.system(size: 13, weight: .medium))
-                                    .foregroundStyle(Color.white)
-                                Text(quality.description)
-                                    .font(.system(size: 10))
-                                    .foregroundStyle(Color.brutalTextTertiary)
+                VStack(spacing: 8) {
+                    ForEach(UploadQuality.allCases) { quality in
+                        Button(action: {
+                            selectedQuality = quality
+                            qualityService.currentQuality = quality
+                        }) {
+                            HStack(spacing: 10) {
+                                Circle()
+                                    .stroke(selectedQuality == quality ? Color.white : Color.brutalBorder, lineWidth: 2)
+                                    .frame(width: 16, height: 16)
+                                    .overlay(
+                                        Circle()
+                                            .fill(selectedQuality == quality ? Color.white : Color.clear)
+                                            .frame(width: 8, height: 8)
+                                    )
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    HStack(spacing: 6) {
+                                        Text(quality.displayName)
+                                            .font(.system(size: 13, weight: .medium))
+                                            .foregroundStyle(Color.white)
+                                        if quality == .original {
+                                            Text("DEFAULT")
+                                                .font(.system(size: 9, weight: .bold, design: .monospaced))
+                                                .foregroundStyle(Color.brutalTextTertiary)
+                                                .padding(.horizontal, 5)
+                                                .padding(.vertical, 2)
+                                                .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
+                                                .tracking(0.5)
+                                        }
+                                    }
+                                    Text(quality.description)
+                                        .font(.system(size: 10))
+                                        .foregroundStyle(Color.brutalTextTertiary)
+                                }
+
+                                Spacer()
+
+                                Text(quality.estimatedReduction)
+                                    .font(.system(size: 10, design: .monospaced))
+                                    .foregroundStyle(Color.brutalTextSecondary)
                             }
-
-                            Spacer()
-
-                            Text(quality.estimatedReduction)
-                                .font(.system(size: 10, design: .monospaced))
-                                .foregroundStyle(Color.brutalTextSecondary)
+                            .padding(10)
+                            .background(selectedQuality == quality ? Color.brutalSurfaceElevated : Color.brutalSurface)
+                            .overlay(
+                                Rectangle()
+                                    .stroke(selectedQuality == quality ? Color.white : Color.brutalBorder, lineWidth: selectedQuality == quality ? 2 : 1)
+                            )
                         }
-                        .padding(10)
-                        .background(selectedQuality == quality ? Color.brutalSurfaceElevated : Color.brutalSurface)
-                        .overlay(
-                            Rectangle()
-                                .stroke(selectedQuality == quality ? Color.white : Color.brutalBorder, lineWidth: selectedQuality == quality ? 2 : 1)
-                        )
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
+            }
+
+            // Confirm before uploading toggle
+            VStack(alignment: .leading, spacing: 10) {
+                Text("BEHAVIOR")
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundStyle(Color.brutalTextSecondary)
+                    .tracking(1.5)
+
+                Button(action: {
+                    confirmBeforeUpload.toggle()
+                    qualityService.confirmBeforeUpload = confirmBeforeUpload
+                }) {
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Confirm before uploading")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color.white)
+                            Text("Ask for confirmation before each upload starts")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.brutalTextTertiary)
+                        }
+
+                        Spacer()
+
+                        // Toggle pill
+                        ZStack {
+                            Capsule()
+                                .fill(confirmBeforeUpload ? Color.white : Color.brutalSurface)
+                                .frame(width: 36, height: 20)
+                                .overlay(Capsule().stroke(Color.brutalBorder, lineWidth: 1))
+
+                            Circle()
+                                .fill(confirmBeforeUpload ? Color.black : Color.brutalTextTertiary)
+                                .frame(width: 14, height: 14)
+                                .offset(x: confirmBeforeUpload ? 8 : -8)
+                                .animation(.easeInOut(duration: 0.15), value: confirmBeforeUpload)
+                        }
+                    }
+                    .padding(10)
+                    .background(Color.brutalSurface)
+                    .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
             }
         }
     }

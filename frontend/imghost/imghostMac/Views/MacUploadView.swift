@@ -8,14 +8,15 @@ struct MacUploadView: View {
     @State private var errorMessage: String?
     @State private var isDragOver = false
     @State private var showFileImporter = false
-    @State private var selectedQuality: UploadQuality
+
+    // Pending upload state (used when confirmBeforeUpload is enabled)
+    @State private var pendingFileURLs: [URL]? = nil
+    @State private var pendingImageData: [(Data, String)]? = nil
+    @State private var showUploadConfirm = false
+    @State private var confirmMessage = ""
 
     private let uploadService = MacUploadService.shared
     private let qualityService = UploadQualityService.shared
-
-    init() {
-        _selectedQuality = State(initialValue: UploadQualityService.shared.currentQuality)
-    }
 
     struct UploadResult: Identifiable {
         let id = UUID()
@@ -35,23 +36,16 @@ struct MacUploadView: View {
 
                 Spacer()
 
-                // Quality picker
-                HStack(spacing: 8) {
-                    Text("QUALITY")
+                // Quality indicator (read-only, set in Settings)
+                HStack(spacing: 4) {
+                    Text("RESOLUTION")
                         .font(.system(size: 10, weight: .medium, design: .monospaced))
                         .foregroundStyle(Color.brutalTextTertiary)
                         .tracking(1)
-
-                    Picker("", selection: $selectedQuality) {
-                        ForEach(UploadQuality.allCases) { quality in
-                            Text(quality.displayName).tag(quality)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .frame(width: 120)
-                    .onChange(of: selectedQuality) { _, newValue in
-                        qualityService.currentQuality = newValue
-                    }
+                    Text(qualityService.currentQuality.displayName.uppercased())
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(Color.brutalTextSecondary)
+                        .tracking(1)
                 }
             }
             .padding(.horizontal, 16)
@@ -76,6 +70,21 @@ struct MacUploadView: View {
             allowsMultipleSelection: true
         ) { result in
             handleFileImport(result)
+        }
+        .alert(confirmMessage, isPresented: $showUploadConfirm) {
+            Button("Upload", role: .none) {
+                if let urls = pendingFileURLs {
+                    pendingFileURLs = nil
+                    uploadFiles(urls)
+                } else if let data = pendingImageData {
+                    pendingImageData = nil
+                    uploadImageData(data)
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                pendingFileURLs = nil
+                pendingImageData = nil
+            }
         }
     }
 
@@ -252,16 +261,15 @@ struct MacUploadView: View {
         }
 
         group.notify(queue: .main) {
-            if !fileURLs.isEmpty {
-                uploadFiles(fileURLs)
-            }
+            guard !fileURLs.isEmpty else { return }
+            self.requestUploadConfirmation(fileURLs: fileURLs)
         }
     }
 
     private func handleFileImport(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):
-            uploadFiles(urls)
+            requestUploadConfirmation(fileURLs: urls)
         case .failure(let error):
             errorMessage = error.localizedDescription
         }
@@ -275,7 +283,7 @@ struct MacUploadView: View {
             for item in pasteboardItems {
                 if let fileURL = item.string(forType: .fileURL),
                    let url = URL(string: fileURL) {
-                    uploadFiles([url])
+                    requestUploadConfirmation(fileURLs: [url])
                     return
                 }
 
@@ -288,9 +296,33 @@ struct MacUploadView: View {
             }
 
             if !imageDataList.isEmpty {
-                uploadImageData(imageDataList)
+                requestUploadConfirmation(imageData: imageDataList)
             }
         }
+    }
+
+    /// Gate uploads through the confirmation dialog when the setting is enabled.
+    private func requestUploadConfirmation(fileURLs: [URL]? = nil, imageData: [(Data, String)]? = nil) {
+        guard qualityService.confirmBeforeUpload else {
+            if let urls = fileURLs { uploadFiles(urls) }
+            else if let data = imageData { uploadImageData(data) }
+            return
+        }
+
+        if let urls = fileURLs {
+            let count = urls.count
+            confirmMessage = count == 1
+                ? "Upload "\(urls[0].lastPathComponent)"?"
+                : "Upload \(count) files?"
+            pendingFileURLs = urls
+            pendingImageData = nil
+        } else if let data = imageData {
+            let count = data.count
+            confirmMessage = count == 1 ? "Upload clipboard image?" : "Upload \(count) items from clipboard?"
+            pendingImageData = data
+            pendingFileURLs = nil
+        }
+        showUploadConfirm = true
     }
 
     private func uploadFiles(_ urls: [URL]) {
@@ -302,23 +334,37 @@ struct MacUploadView: View {
         Task {
             var results: [UploadResult] = []
             let totalFiles = urls.count
+            let quality = qualityService.currentQuality
 
             for (index, url) in urls.enumerated() {
                 let filename = url.lastPathComponent
                 let baseProgress = Double(index) / Double(totalFiles)
 
                 do {
-                    // Access security-scoped resource
                     let accessing = url.startAccessingSecurityScopedResource()
                     defer { if accessing { url.stopAccessingSecurityScopedResource() } }
 
-                    let record = try await uploadService.uploadFromFile(
-                        fileURL: url,
-                        filename: filename
-                    ) { fileProgress in
-                        let totalProgress = baseProgress + (fileProgress / Double(totalFiles))
-                        Task { @MainActor in
-                            uploadProgress = totalProgress
+                    let record: UploadRecord
+                    if quality != .original {
+                        // Apply quality processing for non-original settings
+                        let data = try Data(contentsOf: url)
+                        let (processedData, processedFilename) = qualityService.processForUpload(
+                            data: data, filename: filename, quality: quality
+                        )
+                        record = try await uploadService.upload(
+                            imageData: processedData,
+                            filename: processedFilename
+                        ) { fileProgress in
+                            let totalProgress = baseProgress + (fileProgress / Double(totalFiles))
+                            Task { @MainActor in self.uploadProgress = totalProgress }
+                        }
+                    } else {
+                        record = try await uploadService.uploadFromFile(
+                            fileURL: url,
+                            filename: filename
+                        ) { fileProgress in
+                            let totalProgress = baseProgress + (fileProgress / Double(totalFiles))
+                            Task { @MainActor in self.uploadProgress = totalProgress }
                         }
                     }
 
@@ -351,14 +397,16 @@ struct MacUploadView: View {
                 let baseProgress = Double(index) / Double(totalFiles)
 
                 do {
+                    // Apply quality processing (processForUpload returns original data for .original quality)
+                    let (processedData, processedFilename) = qualityService.processForUpload(
+                        data: data, filename: filename
+                    )
                     let record = try await uploadService.upload(
-                        imageData: data,
-                        filename: filename
+                        imageData: processedData,
+                        filename: processedFilename
                     ) { fileProgress in
                         let totalProgress = baseProgress + (fileProgress / Double(totalFiles))
-                        Task { @MainActor in
-                            uploadProgress = totalProgress
-                        }
+                        Task { @MainActor in self.uploadProgress = totalProgress }
                     }
                     try? HistoryService.shared.save(record)
                     results.append(UploadResult(record: record, filename: filename, error: nil))

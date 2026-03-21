@@ -75,6 +75,15 @@ final class UploadQualityService {
         }
     }
 
+    var confirmBeforeUpload: Bool {
+        get {
+            Config.sharedDefaults?.bool(forKey: Config.confirmBeforeUploadKey) ?? false
+        }
+        set {
+            Config.sharedDefaults?.set(newValue, forKey: Config.confirmBeforeUploadKey)
+        }
+    }
+
     /// Process image data according to quality settings (macOS)
     func processForUpload(data: Data, filename: String, quality: UploadQuality? = nil) -> (Data, String) {
         let effectiveQuality = quality ?? currentQuality

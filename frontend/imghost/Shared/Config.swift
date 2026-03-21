@@ -40,6 +40,7 @@ struct Config {
 
     // Upload Quality Settings
     static let uploadQualityKey = "uploadQuality"
+    static let confirmBeforeUploadKey = "confirmBeforeUpload"
 
     // Shared UserDefaults
     static var sharedDefaults: UserDefaults? {

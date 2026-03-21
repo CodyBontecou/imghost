@@ -311,6 +311,16 @@ struct MenuBarPopoverView: View {
 
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }
+
+            if UploadQualityService.shared.confirmBeforeUpload {
+                let alert = NSAlert()
+                alert.messageText = "Upload \"\(url.lastPathComponent)\"?"
+                alert.informativeText = "Resolution: \(UploadQualityService.shared.currentQuality.displayName)"
+                alert.addButton(withTitle: "Upload")
+                alert.addButton(withTitle: "Cancel")
+                guard alert.runModal() == .alertFirstButtonReturn else { return }
+            }
+
             Task { @MainActor in
                 await self.performUpload(fileURL: url)
             }
@@ -322,11 +332,27 @@ struct MenuBarPopoverView: View {
 
         // Check for image data on pasteboard
         if let imageData = pasteboard.data(forType: .png) ?? pasteboard.data(forType: .tiff) {
+            if UploadQualityService.shared.confirmBeforeUpload {
+                let alert = NSAlert()
+                alert.messageText = "Upload clipboard image?"
+                alert.informativeText = "Resolution: \(UploadQualityService.shared.currentQuality.displayName)"
+                alert.addButton(withTitle: "Upload")
+                alert.addButton(withTitle: "Cancel")
+                guard alert.runModal() == .alertFirstButtonReturn else { return }
+            }
             Task { @MainActor in
                 await performUploadFromData(imageData, filename: "clipboard-\(Int(Date().timeIntervalSince1970)).png")
             }
         } else if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL],
                   let fileURL = fileURLs.first {
+            if UploadQualityService.shared.confirmBeforeUpload {
+                let alert = NSAlert()
+                alert.messageText = "Upload \"\(fileURL.lastPathComponent)\"?"
+                alert.informativeText = "Resolution: \(UploadQualityService.shared.currentQuality.displayName)"
+                alert.addButton(withTitle: "Upload")
+                alert.addButton(withTitle: "Cancel")
+                guard alert.runModal() == .alertFirstButtonReturn else { return }
+            }
             Task { @MainActor in
                 await performUpload(fileURL: fileURL)
             }

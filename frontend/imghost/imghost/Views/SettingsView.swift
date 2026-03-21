@@ -15,6 +15,7 @@ struct SettingsView: View {
     @State private var customLinkTemplate: String = LinkFormatService.shared.customTemplate
     @State private var showCustomFormatSheet = false
     @State private var selectedUploadQuality: UploadQuality = UploadQualityService.shared.currentQuality
+    @State private var confirmBeforeUpload: Bool = UploadQualityService.shared.confirmBeforeUpload
 
     // Paywall state
     @State private var showPaywall = false
@@ -124,9 +125,16 @@ struct SettingsView: View {
                         Spacer().frame(height: 12)
                     }
 
-                    // Upload Quality Section
+                    // Upload Section
                     VStack(spacing: 0) {
-                        BrutalSectionHeader(title: "Upload Quality")
+                        BrutalSectionHeader(title: "Upload")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 4)
+
+                        Text("DEFAULT RESOLUTION")
+                            .brutalTypography(.monoSmall, color: .brutalTextSecondary)
+                            .tracking(1.5)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
                             .padding(.bottom, 12)
@@ -146,8 +154,21 @@ struct SettingsView: View {
                                     } label: {
                                         HStack {
                                             VStack(alignment: .leading, spacing: 4) {
-                                                Text(quality.displayName)
-                                                    .brutalTypography(.bodyMedium)
+                                                HStack(spacing: 8) {
+                                                    Text(quality.displayName)
+                                                        .brutalTypography(.bodyMedium)
+                                                    if quality == .original {
+                                                        Text("DEFAULT")
+                                                            .brutalTypography(.monoSmall, color: .brutalTextTertiary)
+                                                            .tracking(0.5)
+                                                            .padding(.horizontal, 5)
+                                                            .padding(.vertical, 2)
+                                                            .overlay(
+                                                                Rectangle()
+                                                                    .stroke(Color.brutalBorder, lineWidth: 1)
+                                                            )
+                                                    }
+                                                }
 
                                                 Text(quality.description)
                                                     .brutalTypography(.monoSmall, color: .brutalTextTertiary)
@@ -174,10 +195,55 @@ struct SettingsView: View {
                         }
                         .padding(.horizontal, 24)
 
-                        // Quality info hint
                         Text("Lower quality = smaller files, faster uploads")
                             .brutalTypography(.monoSmall, color: .brutalTextTertiary)
                             .padding(.top, 12)
+                            .padding(.bottom, 20)
+
+                        // Confirm before uploading
+                        Text("BEHAVIOR")
+                            .brutalTypography(.monoSmall, color: .brutalTextSecondary)
+                            .tracking(1.5)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 12)
+
+                        BrutalCard(showBorder: true) {
+                            Button {
+                                confirmBeforeUpload.toggle()
+                                UploadQualityService.shared.confirmBeforeUpload = confirmBeforeUpload
+                            } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Confirm before uploading")
+                                            .brutalTypography(.bodyMedium)
+                                        Text("Ask for confirmation before each upload starts")
+                                            .brutalTypography(.monoSmall, color: .brutalTextTertiary)
+                                    }
+
+                                    Spacer()
+
+                                    // Toggle pill
+                                    ZStack {
+                                        Capsule()
+                                            .fill(confirmBeforeUpload ? Color.white : Color.brutalSurface)
+                                            .frame(width: 44, height: 26)
+                                            .overlay(Capsule().stroke(Color.brutalBorder, lineWidth: 1))
+
+                                        Circle()
+                                            .fill(confirmBeforeUpload ? Color.black : Color.brutalTextTertiary)
+                                            .frame(width: 18, height: 18)
+                                            .offset(x: confirmBeforeUpload ? 9 : -9)
+                                            .animation(.easeInOut(duration: 0.15), value: confirmBeforeUpload)
+                                    }
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 14)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.horizontal, 24)
                     }
                     .padding(.bottom, 24)
 
