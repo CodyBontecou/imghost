@@ -28,6 +28,7 @@ struct SettingsView: View {
     @State private var exportError: String?
     @State private var exportedFileURL: URL?
     @State private var showingFileMover = false
+    @State private var showMailCompose = false
 
     enum ExportState {
         case idle
@@ -373,6 +374,30 @@ struct SettingsView: View {
                     }
                     .padding(.bottom, 24)
 
+                    // Feedback Section
+                    VStack(spacing: 0) {
+                        BrutalSectionHeader(title: String(localized: "settings.section.feedback"))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 12)
+
+                        BrutalCard(showBorder: true) {
+                            BrutalRow(
+                                title: String(localized: "settings.feedback.button.send"),
+                                subtitle: String(localized: "settings.feedback.button.send.subtitle"),
+                                showChevron: true
+                            ) {
+                                if FeedbackHelper.canSendMail {
+                                    showMailCompose = true
+                                } else if let url = FeedbackHelper.mailtoURL() {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                    }
+                    .padding(.bottom, 24)
+
                     // Legal Section
                     VStack(spacing: 0) {
                         BrutalSectionHeader(title: String(localized: "settings.section.legal"))
@@ -501,6 +526,9 @@ struct SettingsView: View {
                     }
             }
             .preferredColorScheme(.dark)
+        }
+        .sheet(isPresented: $showMailCompose) {
+            MailComposeView()
         }
         .sheet(isPresented: $showingExportSheet) {
             BrutalExportSheetView(

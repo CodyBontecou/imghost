@@ -479,3 +479,10 @@
 "auth.forgot_password.button.enter_code" = "リセットコードを入力";
 "auth.forgot_password.button.send_again" = "再送信";
 "auth.reset_password.button.reset" = "パスワードをリセット";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";
+"settings.feedback.diagnostics.title" = "Diagnostics";
+"settings.feedback.diagnostics.description" = "The following info will be included automatically:";

@@ -480,3 +480,10 @@
 "menubar.time.hours_ago" = "vor %d Std.";
 "menubar.time.days_ago" = "vor %d T.";
 "menubar.recent_item.filename_fallback" = "Bild";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";
+"settings.feedback.diagnostics.title" = "Diagnostics";
+"settings.feedback.diagnostics.description" = "The following info will be included automatically:";

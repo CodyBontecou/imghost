@@ -331,3 +331,8 @@
 "error.delete_failed.recovery" = "이미지가 이미 삭제되었거나 토큰에 삭제 권한이 없을 수 있습니다.";
 "error.email_not_verified.recovery" = "imghost 앱을 열고 이메일 주소를 인증하여 업로드를 활성화해 주세요.";
 "error.subscription_required.recovery" = "imghost Pro에 구독하여 업로드와 저장소를 잠금 해제하세요.";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";

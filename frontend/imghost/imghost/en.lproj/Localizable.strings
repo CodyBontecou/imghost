@@ -337,3 +337,8 @@
 "error.delete_failed.recovery" = "The image may have already been deleted, or your token may not have delete permissions.";
 "error.email_not_verified.recovery" = "Open the imghost app and verify your email address to enable uploads.";
 "error.subscription_required.recovery" = "Subscribe to imghost Pro to unlock uploads and storage.";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";

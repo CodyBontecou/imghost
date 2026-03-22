@@ -331,3 +331,8 @@
 "error.delete_failed.recovery" = "图片可能已被删除，或你的令牌没有删除权限。";
 "error.email_not_verified.recovery" = "打开 imghost 应用验证你的邮箱地址以启用上传。";
 "error.subscription_required.recovery" = "订阅 imghost Pro 以解锁上传和存储功能。";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";

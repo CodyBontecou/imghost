@@ -331,3 +331,8 @@
 "error.delete_failed.recovery" = "L'image a peut-être déjà été supprimée, ou votre jeton n'a peut-être pas les permissions de suppression.";
 "error.email_not_verified.recovery" = "Ouvrez l'application imghost et vérifiez votre adresse e-mail pour activer les envois.";
 "error.subscription_required.recovery" = "Abonnez-vous à imghost Pro pour débloquer les envois et le stockage.";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";

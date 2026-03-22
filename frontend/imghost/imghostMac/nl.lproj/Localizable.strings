@@ -480,3 +480,10 @@
 "menubar.time.hours_ago" = "%du geleden";
 "menubar.time.days_ago" = "%dd geleden";
 "menubar.recent_item.filename_fallback" = "afbeelding";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";
+"settings.feedback.diagnostics.title" = "Diagnostics";
+"settings.feedback.diagnostics.description" = "The following info will be included automatically:";

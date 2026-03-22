@@ -331,3 +331,8 @@
 "error.delete_failed.recovery" = "De afbeelding is mogelijk al verwijderd, of je token heeft geen verwijdermachtigingen.";
 "error.email_not_verified.recovery" = "Open de imghost-app en verifieer je e-mailadres om uploads in te schakelen.";
 "error.subscription_required.recovery" = "Abonneer je op imghost Pro om uploads en opslag te ontgrendelen.";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";

@@ -331,3 +331,8 @@
 "error.delete_failed.recovery" = "La imagen puede haber sido eliminada ya, o tu token puede no tener permisos de eliminación.";
 "error.email_not_verified.recovery" = "Abre la app imghost y verifica tu dirección de correo para habilitar las subidas.";
 "error.subscription_required.recovery" = "Suscríbete a imghost Pro para desbloquear subidas y almacenamiento.";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";

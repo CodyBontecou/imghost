@@ -479,3 +479,10 @@
 "auth.forgot_password.button.enter_code" = "INGRESAR CÓDIGO DE RESTABLECIMIENTO";
 "auth.forgot_password.button.send_again" = "ENVIAR DE NUEVO";
 "auth.reset_password.button.reset" = "RESTABLECER CONTRASEÑA";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";
+"settings.feedback.diagnostics.title" = "Diagnostics";
+"settings.feedback.diagnostics.description" = "The following info will be included automatically:";

@@ -41,11 +41,21 @@ struct ImghostMacApp: App {
         }
 
         Settings {
-            MacSettingsView()
-                .environmentObject(authState)
-                .environmentObject(subscriptionState)
-                .environmentObject(storeKit)
-                .frame(width: 480, height: 560)
+            TabView {
+                MacSettingsView()
+                    .environmentObject(authState)
+                    .environmentObject(subscriptionState)
+                    .environmentObject(storeKit)
+                    .tabItem {
+                        Label("Settings", systemImage: "gearshape")
+                    }
+
+                MacFeedbackSettingsView()
+                    .tabItem {
+                        Label("Feedback", systemImage: "envelope")
+                    }
+            }
+            .frame(width: 480, height: 560)
         }
     }
 }

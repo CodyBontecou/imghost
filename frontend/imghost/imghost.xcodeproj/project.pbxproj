@@ -113,6 +113,9 @@
 		E1000003001 /* StoreKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1000003000 /* StoreKitManager.swift */; };
 		EB28A416D0DD6725EA47970C /* MacUploadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */; };
 		EF4E0702692B2A1ED065A0D1 /* MacSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */; };
+		FB000001001 /* FeedbackHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB000001000 /* FeedbackHelper.swift */; };
+		FB000001002 /* FeedbackHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB000001000 /* FeedbackHelper.swift */; };
+		FB000002001 /* MacFeedbackSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB000002000 /* MacFeedbackSettingsView.swift */; };
 		F055DAA3B8912E717C93BF3C /* MacShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 33C12964A312DC16C820B724 /* MacShareExtension.appex */; };
 		F1000001001 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000001000 /* PaywallView.swift */; };
 		F1000002001 /* SubscriptionStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000002000 /* SubscriptionStatusView.swift */; };
@@ -176,6 +179,8 @@
 		0809D2F576A4B26F39DAD8A8 /* nl */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		08D21B78F5D1767B6C0EE441 /* nl */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacSettingsView.swift; sourceTree = "<group>"; };
+		FB000001000 /* FeedbackHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackHelper.swift; sourceTree = "<group>"; };
+		FB000002000 /* MacFeedbackSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacFeedbackSettingsView.swift; sourceTree = "<group>"; };
 		0AFA45314C0672F2ABA6C23B /* en */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacUploadService.swift; sourceTree = "<group>"; };
 		0F8915CA80904ADBA74F2AB9 /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
@@ -427,6 +432,14 @@
 			path = imghostMac;
 			sourceTree = "<group>";
 		};
+		FB000003000 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				FB000001000 /* FeedbackHelper.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		9F6D3CAB8C102D2686F948F2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -435,6 +448,7 @@
 				5B4CA97A2C8A52DDB7773830 /* MacMediaView.swift */,
 				C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */,
 				0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */,
+				FB000002000 /* MacFeedbackSettingsView.swift */,
 				1040C9A1CA69D632C30E4554 /* MacUploadDetailView.swift */,
 				14F2AC8D68F29B962385ECC7 /* MacUploadView.swift */,
 				871C181611D0B0A1DEE5060E /* Subscription */,
@@ -519,6 +533,7 @@
 				A1000010000 /* Config.swift */,
 				A10000D1000 /* Models */,
 				A10000D2000 /* Services */,
+				FB000003000 /* Utilities */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -784,6 +799,8 @@
 				B49E7B51BF8DB84A1296BAB0 /* MacMediaView.swift in Sources */,
 				85E1DD5379CF38E4F8F4FEA9 /* MacOnboardingView.swift in Sources */,
 				EF4E0702692B2A1ED065A0D1 /* MacSettingsView.swift in Sources */,
+				FB000001002 /* FeedbackHelper.swift in Sources */,
+				FB000002001 /* MacFeedbackSettingsView.swift in Sources */,
 				7997CF8DB66E8AAC9D130E62 /* MacUploadDetailView.swift in Sources */,
 				0537A006BB7933FD04D2154D /* MacUploadView.swift in Sources */,
 				D89459C2B9F6ABDCAAF4B363 /* MacPaywallView.swift in Sources */,
@@ -875,6 +892,7 @@
 				F1000001001 /* PaywallView.swift in Sources */,
 				F1000002001 /* SubscriptionStatusView.swift in Sources */,
 				J1000001001 /* UploadQualityService.swift in Sources */,
+				FB000001001 /* FeedbackHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

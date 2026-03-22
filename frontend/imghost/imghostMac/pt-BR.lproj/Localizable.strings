@@ -480,3 +480,10 @@
 "auth.reset_password.success.title" = "SENHA ATUALIZADA";
 "auth.reset_password.success.message" = "Agora você pode fazer login com sua nova senha.";
 "auth.reset_password.success.button.sign_in" = "VOLTAR AO LOGIN";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";
+"settings.feedback.diagnostics.title" = "Diagnostics";
+"settings.feedback.diagnostics.description" = "The following info will be included automatically:";

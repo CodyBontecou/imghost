@@ -331,3 +331,8 @@
 "error.delete_failed.recovery" = "画像が既に削除されているか、トークンに削除権限がない可能性があります。";
 "error.email_not_verified.recovery" = "imghostアプリを開き、メールアドレスを確認してアップロードを有効にしてください。";
 "error.subscription_required.recovery" = "imghostProに登録してアップロードとストレージのロックを解除してください。";
+
+// Feedback
+"settings.section.feedback" = "Feedback";
+"settings.feedback.button.send" = "Send Feedback";
+"settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";
