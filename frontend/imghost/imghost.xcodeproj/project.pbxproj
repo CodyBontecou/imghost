@@ -115,6 +115,8 @@
 		EF4E0702692B2A1ED065A0D1 /* MacSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */; };
 		FB000001001 /* FeedbackHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB000001000 /* FeedbackHelper.swift */; };
 		FB000001002 /* FeedbackHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB000001000 /* FeedbackHelper.swift */; };
+		RR000001001 /* ReviewRequestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = RR000001000 /* ReviewRequestService.swift */; };
+		RR000001002 /* ReviewRequestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = RR000001000 /* ReviewRequestService.swift */; };
 		FB000002001 /* MacFeedbackSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB000002000 /* MacFeedbackSettingsView.swift */; };
 		F055DAA3B8912E717C93BF3C /* MacShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 33C12964A312DC16C820B724 /* MacShareExtension.appex */; };
 		F1000001001 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000001000 /* PaywallView.swift */; };
@@ -180,6 +182,7 @@
 		08D21B78F5D1767B6C0EE441 /* nl */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacSettingsView.swift; sourceTree = "<group>"; };
 		FB000001000 /* FeedbackHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackHelper.swift; sourceTree = "<group>"; };
+		RR000001000 /* ReviewRequestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRequestService.swift; sourceTree = "<group>"; };
 		FB000002000 /* MacFeedbackSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacFeedbackSettingsView.swift; sourceTree = "<group>"; };
 		0AFA45314C0672F2ABA6C23B /* en */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacUploadService.swift; sourceTree = "<group>"; };
@@ -566,6 +569,7 @@
 				E1000002000 /* SubscriptionService.swift */,
 				E1000003000 /* StoreKitManager.swift */,
 				J1000001000 /* UploadQualityService.swift */,
+				RR000001000 /* ReviewRequestService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -893,6 +897,7 @@
 				F1000002001 /* SubscriptionStatusView.swift in Sources */,
 				J1000001001 /* UploadQualityService.swift in Sources */,
 				FB000001001 /* FeedbackHelper.swift in Sources */,
+				RR000001001 /* ReviewRequestService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1030,7 +1035,7 @@
 				CODE_SIGN_ENTITLEMENTS = imghostMac/imghostMac.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 67KC823C9A;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -1178,7 +1183,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = imghost/imghost.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = imghost/Info.plist;
@@ -1208,7 +1213,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = imghost/imghost.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = imghost/Info.plist;
@@ -1236,7 +1241,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = imghost;
@@ -1263,7 +1268,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = imghost;
@@ -1290,7 +1295,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MacShareExtension/MacShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 67KC823C9A;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MacShareExtension/Info.plist;
@@ -1313,7 +1318,7 @@
 				CODE_SIGN_ENTITLEMENTS = imghostMac/imghostMac.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 67KC823C9A;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -1338,7 +1343,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MacShareExtension/MacShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 67KC823C9A;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MacShareExtension/Info.plist;

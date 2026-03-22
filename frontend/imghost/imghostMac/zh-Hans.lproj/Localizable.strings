@@ -3,7 +3,7 @@
    Localizable.strings (Mandarin Chinese, Simplified)
    ========================================================= */
 
-// MARK: - Common Buttons
+
 "button.ok" = "好";
 "button.cancel" = "取消";
 "button.done" = "完成";
@@ -18,18 +18,18 @@
 "button.skip" = "跳过";
 "button.start" = "开始";
 
-// MARK: - Common States
+
 "state.loading" = "加载中";
 "state.uploading" = "上传中";
 "state.preparing" = "准备中";
 
-// MARK: - Common Labels
+
 "label.verified" = "✓ 已验证";
 "label.default" = "默认";
 "label.required_marker" = "*";
 "label.copied" = "✓";
 
-// MARK: - Auth — Login
+
 "auth.login.title" = "登录";
 "auth.login.subtitle" = "访问你的图片";
 "auth.login.field.email" = "邮箱";
@@ -47,7 +47,7 @@
 "auth.login.error.apple_failed_generic" = "Apple 登录失败，请重试。";
 "auth.login.error.apple_failed_simple" = "Apple 登录失败。";
 
-// MARK: - Auth — Register
+
 "auth.register.title" = "创建\n账户";
 "auth.register.subtitle" = "开始上传图片";
 "auth.register.field.email" = "邮箱";
@@ -60,7 +60,7 @@
 "auth.register.button.sign_in" = "登录";
 "auth.register.error.unexpected" = "发生了意外错误。";
 
-// MARK: - Auth — Email Verification
+
 "auth.verify_email.title" = "验证\n邮箱";
 "auth.verify_email.subtitle" = "请查收邮件";
 "auth.verify_email.code_sent_to" = "验证码已发送至：";
@@ -73,7 +73,7 @@
 "auth.verify_email.success.code_sent" = "验证码已发送！";
 "auth.verify_email.error.unexpected" = "发生了意外错误。";
 
-// MARK: - Auth — Forgot Password
+
 "auth.forgot_password.title" = "重置\n密码";
 "auth.forgot_password.subtitle.check_email" = "请查收邮件";
 "auth.forgot_password.subtitle.enter_email" = "输入你的邮箱";
@@ -85,7 +85,7 @@
 "auth.forgot_password.button.send_code" = "发送重置码";
 "auth.forgot_password.error.unexpected" = "发生了意外错误。";
 
-// MARK: - Auth — Reset Password
+
 "auth.reset_password.title" = "新\n密码";
 "auth.reset_password.title.done" = "完成";
 "auth.reset_password.subtitle.enter_code" = "输入重置码";
@@ -101,7 +101,7 @@
 "auth.reset_password.button.back_to_sign_in" = "返回登录";
 "auth.reset_password.error.unexpected" = "发生了意外错误。";
 
-// MARK: - Onboarding
+
 "onboarding.page1.title" = "托管\n你的\n图片";
 "onboarding.page1.subtitle" = "安全的云存储";
 "onboarding.page2.title" = "随时\n随地\n分享";
@@ -115,13 +115,13 @@
 "onboarding.button.start" = "开始";
 "onboarding.page_indicator" = "%d/%d";
 
-// MARK: - Upload View
+
 "upload.title" = "上传";
 "upload.drop_zone.title" = "上传\n文件";
 "upload.drop_zone.subtitle" = "图片、视频、文档等";
 "upload.source.photo_library" = "照片图库";
 "upload.source.browse_files" = "浏览文件";
-"upload.confirm.file" = "上传"%@"？";
+"upload.confirm.file" = "上传\"%@\"？";
 "upload.confirm.photo" = "上传选中的照片？";
 "upload.confirm.resolution" = "分辨率：%@";
 "upload.confirm.button.upload" = "上传";
@@ -137,7 +137,7 @@
 "upload.failure.button.retry" = "重试";
 "upload.failure.button.cancel" = "取消";
 
-// MARK: - History View
+
 "history.title" = "媒体";
 "history.empty.title" = "暂无\n媒体\n文件";
 "history.empty.subtitle.upload" = "上传文件以开始使用。";
@@ -145,7 +145,7 @@
 "history.error.title" = "出了点问题";
 "history.error.button.retry" = "重试";
 
-// MARK: - Upload Detail View
+
 "detail.section.image_url" = "图片 URL";
 "detail.section.details" = "详情";
 "detail.label.uploaded" = "上传时间";
@@ -164,7 +164,7 @@
 "detail.copy_button.label" = "复制";
 "detail.copy_button.copied" = "✓";
 
-// MARK: - Photo Grid
+
 "photogrid.button.cancel" = "取消";
 "photogrid.alert.delete.title" = "删除 %d 个文件？";
 "photogrid.alert.delete.title_plural" = "删除 %d 个文件？";
@@ -175,7 +175,7 @@
 "photogrid.date.yesterday" = "昨天";
 "photogrid.select_indicator" = "✓";
 
-// MARK: - Settings View
+
 "settings.title" = "设置";
 "settings.subtitle" = "账户与偏好设置";
 "settings.section.account" = "账户";
@@ -258,7 +258,7 @@
 "settings.export.button.cancel" = "取消";
 "settings.export.progress_format" = "%d%%";
 
-// MARK: - Paywall / Subscription
+
 "paywall.title.unlock" = "解锁";
 "paywall.title.pro" = "PRO";
 "paywall.title.trial" = "7 天免费试用";
@@ -287,7 +287,7 @@
 "paywall.legal.button.terms" = "条款";
 "paywall.legal.button.privacy" = "隐私";
 
-// MARK: - Subscription Status
+
 "subscription.title" = "订阅";
 "subscription.section.current_plan" = "当前方案";
 "subscription.button.manage" = "管理订阅";
@@ -306,7 +306,7 @@
 "subscription.access_until" = "可使用至 %@";
 "subscription.expired_message" = "你的订阅已过期";
 
-// MARK: - Error Messages
+
 "error.not_configured.description" = "应用未配置。请在设置中配置后端 URL 和令牌。";
 "error.invalid_url.description" = "后端 URL 无效。请检查设置。";
 "error.invalid_url.recovery" = "请确保 URL 以 https:// 开头且为有效的网址。";
@@ -332,7 +332,7 @@
 "error.email_not_verified.recovery" = "打开 imghost 应用验证你的邮箱地址以启用上传。";
 "error.subscription_required.recovery" = "订阅 imghost Pro 以解锁上传和存储功能。";
 
-// MARK: - Mac Auth Login
+
 "auth.login.app_name" = "IMG\nHOST";
 "auth.login.tagline" = "安全的图片托管";
 "auth.login.section.sign_in" = "登录";
@@ -341,16 +341,16 @@
 "auth.login.button.forgot_password" = "忘记密码";
 "auth.login.error.no_apple_credential" = "获取 Apple 凭证失败";
 
-// MARK: - Mac Auth Register
+
 "auth.register.sheet.title" = "创建账户";
 "auth.register.prompt.have_account" = "已有账户？登录";
 
-// MARK: - Mac Auth Email Verification
+
 "auth.verify_email.button.verify" = "验证邮箱";
 "auth.verify_email.button.resend" = "重新发送";
 "auth.verify_email.button.sign_out" = "退出登录";
 
-// MARK: - Mac Auth Reset Password
+
 "auth.forgot_password.sheet.title" = "重置密码";
 "auth.forgot_password.button.send_code" = "发送重置码";
 "auth.forgot_password.button.enter_code" = "输入重置码";
@@ -360,7 +360,7 @@
 "auth.reset_password.success.message" = "你现在可以使用新密码登录了。";
 "auth.reset_password.success.button.sign_in" = "返回登录";
 
-// MARK: - Mac Onboarding (5 pages, replaces iOS page 3+4)
+
 "onboarding.page3.title" = "允许\n访问";
 "onboarding.page3.subtitle" = "macOS 将请求访问共享文件的权限——这使 imghost 能读取你从 Finder 或 Safari 等应用共享的文件";
 "onboarding.page4.title" = "获取\n直链";
@@ -368,7 +368,7 @@
 "onboarding.page5.title" = "拖放\n上传";
 "onboarding.page5.subtitle" = "轻松上传文件";
 
-// MARK: - Mac Settings
+
 "settings.section.subscription" = "订阅";
 "settings.subscription.days_remaining" = "剩余 %d 天";
 "settings.subscription.button.manage" = "管理订阅";
@@ -391,7 +391,7 @@
 "settings.account.status.unverified" = "未验证";
 "settings.account.button.sign_out" = "退出登录";
 
-// MARK: - Mac Media View
+
 "media.title" = "媒体";
 "media.search.placeholder" = "搜索...";
 "media.label.quality" = "质量";
@@ -415,7 +415,7 @@
 "media.banner.upload_failed_plural" = "%d 个上传失败";
 "media.banner.upload_partial" = "%d 个已上传，%d 个失败";
 
-// MARK: - Mac History View
+
 "history.title" = "历史";
 "history.search.placeholder" = "搜索...";
 "history.loading" = "加载中";
@@ -426,7 +426,7 @@
 "history.file_count" = "%d";
 "history.detail.placeholder" = "选择一张图片";
 
-// MARK: - Mac Upload View
+
 "upload.confirm.files_plural" = "上传 %d 个文件？";
 "upload.confirm.clipboard_single" = "上传剪贴板图片？";
 "upload.confirm.clipboard_plural" = "上传剪贴板中的 %d 个项目？";
@@ -436,20 +436,20 @@
 "upload.success.button.upload_more" = "继续上传";
 "upload.success.button.copy_all" = "复制所有链接";
 
-// MARK: - Mac Upload Detail View
+
 "detail.label.filename" = "文件名";
 "detail.label.link_format" = "链接格式";
 "detail.button.copy_link" = "复制链接";
 "detail.button.copied" = "已复制";
 "detail.button.share" = "分享";
 
-// MARK: - Mac Paywall
+
 "paywall.feature.file_size" = "500MB 文件";
 "paywall.feature.storage" = "10GB 存储";
 "paywall.feature.sharing" = "快速分享";
 "paywall.feature.private" = "私密";
 
-// MARK: - Menu Bar
+
 "menubar.app_name" = "IMGHOST";
 "menubar.status.online" = "在线";
 "menubar.button.upload.label" = "上传";
@@ -466,7 +466,7 @@
 "menubar.not_signed_in.message" = "打开应用以登录";
 "menubar.not_signed_in.button.open" = "打开 IMGHOST";
 "menubar.upload_panel.title" = "上传图片";
-"menubar.confirm.file" = "上传"%@"？";
+"menubar.confirm.file" = "上传\"%@\"？";
 "menubar.confirm.clipboard" = "上传剪贴板图片？";
 "menubar.confirm.resolution" = "分辨率：%@";
 "menubar.confirm.button.upload" = "上传";
@@ -481,7 +481,7 @@
 "menubar.time.days_ago" = "%d天前";
 "menubar.recent_item.filename_fallback" = "图片";
 
-// Feedback
+
 "settings.section.feedback" = "Feedback";
 "settings.feedback.button.send" = "Send Feedback";
 "settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";

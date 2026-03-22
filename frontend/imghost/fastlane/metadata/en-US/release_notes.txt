@@ -1,5 +1,1 @@
-• Instant share: tap imghost in the share sheet and it uploads immediately — no extra taps required
-• Full resolution by default: images now upload at original quality with no compression
-• New Upload settings: choose your default resolution (Original, High, Medium, Low)
-• New Upload settings: optional "Confirm before uploading" toggle for when you want to review before sending
-• macOS: upload quality is now properly applied when dragging, pasting, or browsing files
+• App Store review prompts: imghost now asks for a review after your 3rd successful upload — when you've had a chance to form a real opinion. No spam, no interruptions during onboarding.

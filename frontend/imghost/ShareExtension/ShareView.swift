@@ -571,8 +571,8 @@ struct ShareView: View {
                             .tracking(2)
                     } else {
                         Text(successCount == 1
-                            ? "share.result.copied_single"
-                            : String(format: String(localized: "share.result.copied_plural"), successCount) as LocalizedStringKey)
+                            ? LocalizedStringKey("share.result.copied_single")
+                            : LocalizedStringKey(String(format: String(localized: "share.result.copied_plural"), successCount)))
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
                             .foregroundStyle(.white)
                             .tracking(2)
