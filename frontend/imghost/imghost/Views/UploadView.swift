@@ -1,8 +1,11 @@
 import SwiftUI
 import PhotosUI
 import UniformTypeIdentifiers
+import StoreKit
 
 struct UploadView: View {
+    @Environment(\.requestReview) private var requestReview
+
     @State private var selectedItem: PhotosPickerItem?
     @State private var showFilePicker = false
     @State private var selectedFileURL: URL?
@@ -480,9 +483,15 @@ struct UploadView: View {
             // Save to history
             try? HistoryService.shared.save(record)
 
+            let shouldReview = ReviewRequestService.shared.recordSuccessfulUpload()
+
             await MainActor.run {
                 uploadedRecord = record
                 uploadState = .success
+
+                if shouldReview {
+                    requestReview()
+                }
             }
 
         } catch {
