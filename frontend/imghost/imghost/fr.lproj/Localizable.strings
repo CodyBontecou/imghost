@@ -1,0 +1,333 @@
+/* =========================================================
+   imghost — iOS App
+   Localizable.strings (French)
+   ========================================================= */
+
+// MARK: - Common Buttons
+"button.ok" = "OK";
+"button.cancel" = "Annuler";
+"button.done" = "Terminé";
+"button.retry" = "Réessayer";
+"button.close" = "Fermer";
+"button.save" = "Enregistrer";
+"button.delete" = "Supprimer";
+"button.sign_in" = "Se connecter";
+"button.sign_out" = "Se déconnecter";
+"button.upload" = "Envoyer";
+"button.next" = "SUIVANT";
+"button.skip" = "PASSER";
+"button.start" = "COMMENCER";
+
+// MARK: - Common States
+"state.loading" = "Chargement";
+"state.uploading" = "ENVOI EN COURS";
+"state.preparing" = "Préparation";
+
+// MARK: - Common Labels
+"label.verified" = "✓ VÉRIFIÉ";
+"label.default" = "PAR DÉFAUT";
+"label.required_marker" = "*";
+"label.copied" = "✓";
+
+// MARK: - Auth — Login
+"auth.login.title" = "SE\nCONNECTER";
+"auth.login.subtitle" = "ACCÉDEZ À VOS IMAGES";
+"auth.login.field.email" = "Adresse e-mail";
+"auth.login.field.password" = "Mot de passe";
+"auth.login.button.sign_in" = "Se connecter";
+"auth.login.button.forgot_password" = "Mot de passe oublié ?";
+"auth.login.button.view_pro_plans" = "Voir les offres Pro";
+"auth.login.prompt.no_account" = "PAS DE COMPTE ?";
+"auth.login.button.create_account" = "En créer un";
+"auth.login.divider" = "ou";
+"auth.login.error.unexpected" = "Une erreur inattendue s'est produite.";
+"auth.login.error.invalid_apple_credential" = "Identifiant Apple invalide.";
+"auth.login.error.no_identity_token" = "Impossible de récupérer le jeton d'identité.";
+"auth.login.error.apple_failed" = "Connexion avec Apple échouée : %@";
+"auth.login.error.apple_failed_generic" = "Connexion avec Apple échouée. Veuillez réessayer.";
+"auth.login.error.apple_failed_simple" = "Connexion avec Apple échouée.";
+
+// MARK: - Auth — Register
+"auth.register.title" = "CRÉER\nUN COMPTE";
+"auth.register.subtitle" = "COMMENCEZ À ENVOYER DES IMAGES";
+"auth.register.field.email" = "Adresse e-mail";
+"auth.register.field.password" = "Mot de passe";
+"auth.register.field.confirm_password" = "Confirmer le mot de passe";
+"auth.register.requirement.min_chars" = "Au moins 8 caractères";
+"auth.register.requirement.passwords_match" = "Les mots de passe correspondent";
+"auth.register.button.create_account" = "Créer un compte";
+"auth.register.prompt.have_account" = "DÉJÀ UN COMPTE ?";
+"auth.register.button.sign_in" = "Se connecter";
+"auth.register.error.unexpected" = "Une erreur inattendue s'est produite.";
+
+// MARK: - Auth — Email Verification
+"auth.verify_email.title" = "VÉRIFIER\nL'E-MAIL";
+"auth.verify_email.subtitle" = "VÉRIFIEZ VOTRE BOÎTE DE RÉCEPTION";
+"auth.verify_email.code_sent_to" = "CODE ENVOYÉ À :";
+"auth.verify_email.warning_icon" = "!";
+"auth.verify_email.warning_message" = "Vous devez vérifier votre e-mail avant d'envoyer des images.";
+"auth.verify_email.field.code" = "Code de vérification";
+"auth.verify_email.button.verify" = "Vérifier l'e-mail";
+"auth.verify_email.button.resend" = "Renvoyer le code";
+"auth.verify_email.button.sign_out" = "Se déconnecter";
+"auth.verify_email.success.code_sent" = "Code de vérification envoyé !";
+"auth.verify_email.error.unexpected" = "Une erreur inattendue s'est produite.";
+
+// MARK: - Auth — Forgot Password
+"auth.forgot_password.title" = "RÉINITIALISER\nLE MOT\nDE PASSE";
+"auth.forgot_password.subtitle.check_email" = "VÉRIFIEZ VOTRE E-MAIL";
+"auth.forgot_password.subtitle.enter_email" = "ENTREZ VOTRE E-MAIL";
+"auth.forgot_password.field.email" = "Adresse e-mail";
+"auth.forgot_password.code_sent_to" = "CODE DE RÉINITIALISATION ENVOYÉ À :";
+"auth.forgot_password.spam_hint" = "Vérifiez votre dossier spam si vous ne le voyez pas.";
+"auth.forgot_password.button.enter_code" = "Entrer le code de réinitialisation";
+"auth.forgot_password.button.send_again" = "Renvoyer";
+"auth.forgot_password.button.send_code" = "Envoyer le code de réinitialisation";
+"auth.forgot_password.error.unexpected" = "Une erreur inattendue s'est produite.";
+
+// MARK: - Auth — Reset Password
+"auth.reset_password.title" = "NOUVEAU\nMOT DE\nPASSE";
+"auth.reset_password.title.done" = "TERMINÉ";
+"auth.reset_password.subtitle.enter_code" = "ENTREZ LE CODE DE RÉINITIALISATION";
+"auth.reset_password.subtitle.updated" = "MOT DE PASSE MIS À JOUR";
+"auth.reset_password.success.icon" = "✓";
+"auth.reset_password.success.message" = "Votre mot de passe a été mis à jour avec succès.";
+"auth.reset_password.field.reset_code" = "Code de réinitialisation";
+"auth.reset_password.field.new_password" = "Nouveau mot de passe";
+"auth.reset_password.field.confirm_password" = "Confirmer le mot de passe";
+"auth.reset_password.requirement.min_chars" = "Au moins 8 caractères";
+"auth.reset_password.requirement.passwords_match" = "Les mots de passe correspondent";
+"auth.reset_password.button.reset" = "Réinitialiser le mot de passe";
+"auth.reset_password.button.back_to_sign_in" = "Retour à la connexion";
+"auth.reset_password.error.unexpected" = "Une erreur inattendue s'est produite.";
+
+// MARK: - Onboarding
+"onboarding.page1.title" = "HÉBERGEZ\nVOS\nIMAGES";
+"onboarding.page1.subtitle" = "Stockage cloud sécurisé";
+"onboarding.page2.title" = "PARTAGEZ\nDEPUIS\nN'IMPORTE OÙ";
+"onboarding.page2.subtitle" = "Intégration avec le partage iOS";
+"onboarding.page3.title" = "OBTENEZ\nDES LIENS\nDIRECTS";
+"onboarding.page3.subtitle" = "URLs partageables instantanément";
+"onboarding.page4.title" = "RESTEZ\nORGAN-\nISÉ";
+"onboarding.page4.subtitle" = "Tous vos envois au même endroit";
+"onboarding.button.skip" = "PASSER";
+"onboarding.button.next" = "SUIVANT";
+"onboarding.button.start" = "COMMENCER";
+"onboarding.page_indicator" = "%d/%d";
+
+// MARK: - Upload View
+"upload.title" = "ENVOYER";
+"upload.drop_zone.title" = "ENVOYER\nUN FICHIER";
+"upload.drop_zone.subtitle" = "Images, vidéos, documents et plus";
+"upload.source.photo_library" = "Photothèque";
+"upload.source.browse_files" = "Parcourir les fichiers";
+"upload.confirm.file" = "Envoyer « %@ » ?";
+"upload.confirm.photo" = "Envoyer la photo sélectionnée ?";
+"upload.confirm.resolution" = "Résolution : %@";
+"upload.confirm.button.upload" = "Envoyer";
+"upload.confirm.button.cancel" = "Annuler";
+"upload.progress.title" = "ENVOI EN COURS";
+"upload.progress.cancel" = "Annuler";
+"upload.success.title" = "ENVOYÉ";
+"upload.success.link_copied" = "Lien copié dans le presse-papiers";
+"upload.success.hold_to_copy" = "Maintenez pour copier";
+"upload.success.copied_feedback" = "Copié !";
+"upload.success.button.upload_another" = "Envoyer un autre";
+"upload.failure.title" = "ÉCHEC DE L'ENVOI";
+"upload.failure.button.retry" = "Réessayer";
+"upload.failure.button.cancel" = "Annuler";
+
+// MARK: - History View
+"history.title" = "MÉDIAS";
+"history.empty.title" = "AUCUN\nMÉDIA\nPOUR L'INSTANT";
+"history.empty.subtitle.upload" = "Envoyez des fichiers pour commencer.";
+"history.empty.subtitle.sync" = "Vos envois apparaîtront ici.";
+"history.error.title" = "Une erreur est survenue";
+"history.error.button.retry" = "Réessayer";
+
+// MARK: - Upload Detail View
+"detail.section.image_url" = "URL de l'image";
+"detail.section.details" = "Détails";
+"detail.label.uploaded" = "Envoyé";
+"detail.label.original_file" = "Fichier original";
+"detail.label.id" = "ID";
+"detail.alert.delete.title" = "Supprimer l'image";
+"detail.alert.delete.button.confirm" = "Supprimer du serveur";
+"detail.alert.delete.button.cancel" = "Annuler";
+"detail.alert.delete.message" = "L'image sera définitivement supprimée du serveur. Cette action est irréversible.";
+"detail.button.share" = "PARTAGER";
+"detail.button.copy" = "COPIER";
+"detail.button.copied" = "COPIÉ";
+"detail.button.open" = "OUVRIR";
+"detail.button.delete" = "SUPPRIMER";
+"detail.button.delete_deleting" = "...";
+"detail.copy_button.label" = "COPIER";
+"detail.copy_button.copied" = "✓";
+
+// MARK: - Photo Grid
+"photogrid.button.cancel" = "ANNULER";
+"photogrid.alert.delete.title" = "Supprimer %d fichier ?";
+"photogrid.alert.delete.title_plural" = "Supprimer %d fichiers ?";
+"photogrid.alert.delete.button.confirm" = "Supprimer";
+"photogrid.alert.delete.button.cancel" = "Annuler";
+"photogrid.alert.delete.message" = "Les fichiers sélectionnés seront définitivement supprimés du serveur.";
+"photogrid.date.today" = "Aujourd'hui";
+"photogrid.date.yesterday" = "Hier";
+"photogrid.select_indicator" = "✓";
+
+// MARK: - Settings View
+"settings.title" = "RÉGLAGES";
+"settings.subtitle" = "COMPTE ET PRÉFÉRENCES";
+"settings.section.account" = "Compte";
+"settings.account.email_verified" = "✓ VÉRIFIÉ";
+"settings.section.storage" = "Stockage";
+"settings.storage.separator" = "/";
+"settings.storage.percent_format" = "%.2f%%";
+"settings.subscription.button.upgrade" = "Passer à Pro";
+"settings.subscription.button.subscribe" = "S'abonner à Pro";
+"settings.section.upload" = "Envoi";
+"settings.upload.label.resolution" = "RÉSOLUTION PAR DÉFAUT";
+"settings.upload.label.default_badge" = "PAR DÉFAUT";
+"settings.upload.hint" = "Qualité inférieure = fichiers plus petits, envois plus rapides";
+"settings.upload.label.behavior" = "COMPORTEMENT";
+"settings.upload.toggle.confirm_label" = "Confirmer avant l'envoi";
+"settings.upload.toggle.confirm_hint" = "Demander confirmation avant chaque envoi";
+"settings.section.link_format" = "Format du lien";
+"settings.link_format.variables_label" = "Variables :";
+"settings.link_format.var.url" = "{url}";
+"settings.link_format.var.filename" = "{filename}";
+"settings.link_format.button.edit_custom" = "MODIFIER LE FORMAT PERSONNALISÉ";
+"settings.section.actions" = "Actions";
+"settings.action.clear_history.title" = "Effacer l'historique des envois";
+"settings.action.clear_history.subtitle" = "Supprimer uniquement l'historique local";
+"settings.action.export.title" = "Exporter toutes les images";
+"settings.action.export.subtitle" = "Télécharger en archive ZIP";
+"settings.action.delete_account.title" = "Supprimer le compte";
+"settings.action.delete_account.subtitle" = "Supprimer définitivement toutes les données";
+"settings.section.legal" = "Mentions légales";
+"settings.legal.terms" = "Conditions d'utilisation (EULA)";
+"settings.legal.privacy" = "Politique de confidentialité";
+"settings.button.sign_out" = "Se déconnecter";
+"settings.alert.ok" = "OK";
+"settings.alert.clear_history.title" = "Effacer l'historique";
+"settings.alert.clear_history.button.confirm" = "Effacer tout l'historique";
+"settings.alert.clear_history.button.cancel" = "Annuler";
+"settings.alert.clear_history.message" = "Cela supprimera tout l'historique des envois de cet appareil. Les images sur le serveur ne seront pas affectées.";
+"settings.alert.delete_account.title" = "Supprimer le compte";
+"settings.alert.delete_account.button.confirm" = "Supprimer le compte";
+"settings.alert.delete_account.button.cancel" = "Annuler";
+"settings.alert.delete_account.message" = "Cela supprimera définitivement votre compte et toutes vos images envoyées. Cette action est irréversible.";
+"settings.success.history_cleared.title" = "Historique effacé";
+"settings.success.history_cleared.message" = "Tout l'historique des envois a été supprimé.";
+"settings.error.title" = "Erreur";
+"settings.error.load_account" = "Impossible de charger les infos du compte : %@";
+"settings.error.clear_history" = "Impossible d'effacer l'historique : %@";
+"settings.error.delete_account" = "Impossible de supprimer le compte : %@";
+"settings.custom_format.title" = "FORMAT\nPERSONNALISÉ";
+"settings.custom_format.description" = "Définissez votre propre modèle de lien";
+"settings.custom_format.label.template" = "MODÈLE";
+"settings.custom_format.placeholder" = "Saisir un modèle...";
+"settings.custom_format.label.variables" = "VARIABLES DISPONIBLES";
+"settings.custom_format.var.url" = "{url}";
+"settings.custom_format.var.url.desc" = "- L'URL de l'image";
+"settings.custom_format.var.filename" = "{filename}";
+"settings.custom_format.var.filename.desc" = "- Nom du fichier original";
+"settings.custom_format.label.preview" = "APERÇU";
+"settings.custom_format.button.save" = "Enregistrer le format";
+"settings.custom_format.button.cancel" = "ANNULER";
+"settings.export.title" = "EXPORTER";
+"settings.export.description" = "Créez une archive ZIP de toutes vos images envoyées.";
+"settings.export.button.start" = "Démarrer l'export";
+"settings.export.state.starting" = "Démarrage";
+"settings.export.state.exporting" = "EXPORTATION DES IMAGES";
+"settings.export.state.downloading" = "TÉLÉCHARGEMENT DE L'ARCHIVE";
+"settings.export.state.complete.icon" = "✓";
+"settings.export.state.complete.title" = "EXPORTATION TERMINÉE";
+"settings.export.state.complete.button.save_photos" = "Enregistrer dans Photos";
+"settings.export.state.complete.button.save_files" = "Enregistrer dans Fichiers";
+"settings.export.state.complete.button.done" = "Terminé";
+"settings.export.state.saving_photos" = "ENREGISTREMENT DANS PHOTOS";
+"settings.export.state.saved_photos.icon" = "✓";
+"settings.export.state.saved_photos.title" = "ENREGISTRÉ DANS PHOTOS";
+"settings.export.state.saved_photos.message" = "%d images enregistrées dans votre photothèque";
+"settings.export.state.saved_photos.button.done" = "Terminé";
+"settings.export.state.failed.icon" = "✕";
+"settings.export.state.failed.title" = "ÉCHEC DE L'EXPORTATION";
+"settings.export.state.failed.button.retry" = "Réessayer";
+"settings.export.state.failed.button.cancel" = "Annuler";
+"settings.export.button.cancel" = "Annuler";
+"settings.export.progress_format" = "%d%%";
+
+// MARK: - Paywall / Subscription
+"paywall.title.unlock" = "DÉBLOQUER";
+"paywall.title.pro" = "PRO";
+"paywall.title.trial" = "ESSAI GRATUIT DE 7 JOURS";
+"paywall.section.features" = "CE QUI EST INCLUS";
+"paywall.feature.file_size.title" = "Fichiers de 500 Mo";
+"paywall.feature.file_size.desc" = "Envoyez de gros fichiers, vidéos et plus";
+"paywall.feature.storage.title" = "10 Go de stockage";
+"paywall.feature.storage.desc" = "Limite de stockage Pro pendant l'essai";
+"paywall.feature.sharing.title" = "Partage rapide";
+"paywall.feature.sharing.desc" = "Liens instantanés pour vos images";
+"paywall.feature.private.title" = "Privé par défaut";
+"paywall.feature.private.desc" = "Stockage sécurisé et chiffré";
+"paywall.section.plans" = "CHOISISSEZ VOTRE OFFRE";
+"paywall.error.loading" = "Impossible de charger les options d'abonnement";
+"paywall.button.retry" = "Réessayer";
+"paywall.badge.save" = "ÉCONOMISEZ 30 %";
+"paywall.button.start_trial" = "Démarrer l'essai gratuit";
+"paywall.button.restore" = "Restaurer les achats";
+"paywall.price.per_month_format" = "%@/mois";
+"paywall.price.per_month_fallback" = "/mois";
+"paywall.error.alert.title" = "Erreur";
+"paywall.error.alert.button.ok" = "OK";
+"paywall.error.alert.message_fallback" = "Une erreur est survenue";
+"paywall.legal.renewal_notice" = "Après votre essai gratuit de 7 jours, votre abonnement sera automatiquement renouvelé au prix sélectionné, sauf annulation au moins 24 heures avant la fin de la période d'essai. Le paiement sera débité de votre compte Apple ID lors de la confirmation de l'achat. Votre abonnement se renouvelle automatiquement sauf si le renouvellement automatique est désactivé au moins 24 heures avant la fin de la période en cours. Vous pouvez gérer et annuler vos abonnements dans les réglages de votre compte App Store.";
+"paywall.legal.separator" = "|";
+"paywall.legal.button.terms" = "Conditions";
+"paywall.legal.button.privacy" = "Confidentialité";
+
+// MARK: - Subscription Status
+"subscription.title" = "ABONNEMENT";
+"subscription.section.current_plan" = "OFFRE ACTUELLE";
+"subscription.button.manage" = "Gérer l'abonnement";
+"subscription.plan.trial" = "ESSAI PRO";
+"subscription.plan.active" = "PRO";
+"subscription.plan.cancelled" = "PRO (ANNULÉ)";
+"subscription.plan.free" = "GRATUIT";
+"subscription.badge.trial" = "ESSAI";
+"subscription.badge.active" = "ACTIF";
+"subscription.badge.cancelled" = "ANNULÉ";
+"subscription.badge.expired" = "EXPIRÉ";
+"subscription.trial.ends_tomorrow" = "L'essai se termine demain";
+"subscription.trial.ends_in_days" = "L'essai se termine dans %d jours";
+"subscription.renews_on" = "Renouvellement le %@";
+"subscription.expires_on" = "Expire le %@";
+"subscription.access_until" = "Accès jusqu'au %@";
+"subscription.expired_message" = "Votre abonnement a expiré";
+
+// MARK: - Error Messages
+"error.not_configured.description" = "Application non configurée. Veuillez configurer l'URL du serveur et le jeton dans les réglages.";
+"error.invalid_url.description" = "URL du serveur invalide. Veuillez vérifier vos réglages.";
+"error.invalid_url.recovery" = "Assurez-vous que l'URL commence par https:// et qu'il s'agit d'une adresse web valide.";
+"error.upload_failed.with_message" = "Échec de l'envoi (%d) : %@";
+"error.upload_failed.status_only" = "Échec de l'envoi avec le code d'état %d";
+"error.network.description" = "Erreur réseau : %@";
+"error.invalid_response.description" = "Réponse invalide du serveur";
+"error.keychain.description" = "Erreur Keychain : %d";
+"error.file_system.description" = "Erreur du système de fichiers : %@";
+"error.image_processing.description" = "Impossible de traiter l'image";
+"error.delete_failed.with_message" = "Échec de la suppression (%d) : %@";
+"error.delete_failed.status_only" = "Échec de la suppression avec le code d'état %d";
+"error.email_not_verified.description" = "Veuillez vérifier votre e-mail avant d'envoyer des images.";
+"error.subscription_required.description" = "Un abonnement actif est nécessaire pour envoyer des fichiers.";
+"error.not_configured.recovery" = "Ouvrez l'application imghost et configurez l'URL du serveur et le jeton d'envoi.";
+"error.upload_failed.recovery" = "Vérifiez votre connexion internet et réessayez. Si le problème persiste, vérifiez votre jeton d'envoi.";
+"error.network.recovery" = "Vérifiez votre connexion internet et réessayez.";
+"error.invalid_response.recovery" = "Le serveur a renvoyé une réponse inattendue. Veuillez réessayer plus tard.";
+"error.keychain.recovery" = "Essayez de supprimer et de ressaisir votre jeton d'envoi dans les réglages.";
+"error.file_system.recovery" = "Essayez de redémarrer l'application. Si le problème persiste, réinstallez l'application.";
+"error.image_processing.recovery" = "L'image est peut-être corrompue ou dans un format non pris en charge.";
+"error.delete_failed.recovery" = "L'image a peut-être déjà été supprimée, ou votre jeton n'a peut-être pas les permissions de suppression.";
+"error.email_not_verified.recovery" = "Ouvrez l'application imghost et vérifiez votre adresse e-mail pour activer les envois.";
+"error.subscription_required.recovery" = "Abonnez-vous à imghost Pro pour débloquer les envois et le stockage.";

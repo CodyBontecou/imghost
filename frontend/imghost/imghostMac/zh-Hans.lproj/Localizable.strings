@@ -1,0 +1,482 @@
+/* =========================================================
+   imghost — macOS App
+   Localizable.strings (Mandarin Chinese, Simplified)
+   ========================================================= */
+
+// MARK: - Common Buttons
+"button.ok" = "好";
+"button.cancel" = "取消";
+"button.done" = "完成";
+"button.retry" = "重试";
+"button.close" = "关闭";
+"button.save" = "保存";
+"button.delete" = "删除";
+"button.sign_in" = "登录";
+"button.sign_out" = "退出登录";
+"button.upload" = "上传";
+"button.next" = "下一步";
+"button.skip" = "跳过";
+"button.start" = "开始";
+
+// MARK: - Common States
+"state.loading" = "加载中";
+"state.uploading" = "上传中";
+"state.preparing" = "准备中";
+
+// MARK: - Common Labels
+"label.verified" = "✓ 已验证";
+"label.default" = "默认";
+"label.required_marker" = "*";
+"label.copied" = "✓";
+
+// MARK: - Auth — Login
+"auth.login.title" = "登录";
+"auth.login.subtitle" = "访问你的图片";
+"auth.login.field.email" = "邮箱";
+"auth.login.field.password" = "密码";
+"auth.login.button.sign_in" = "登录";
+"auth.login.button.forgot_password" = "忘记密码？";
+"auth.login.button.view_pro_plans" = "查看 Pro 方案";
+"auth.login.prompt.no_account" = "没有账户？";
+"auth.login.button.create_account" = "创建账户";
+"auth.login.divider" = "或";
+"auth.login.error.unexpected" = "发生了意外错误。";
+"auth.login.error.invalid_apple_credential" = "Apple ID 凭证无效。";
+"auth.login.error.no_identity_token" = "无法获取身份令牌。";
+"auth.login.error.apple_failed" = "Apple 登录失败：%@";
+"auth.login.error.apple_failed_generic" = "Apple 登录失败，请重试。";
+"auth.login.error.apple_failed_simple" = "Apple 登录失败。";
+
+// MARK: - Auth — Register
+"auth.register.title" = "创建\n账户";
+"auth.register.subtitle" = "开始上传图片";
+"auth.register.field.email" = "邮箱";
+"auth.register.field.password" = "密码";
+"auth.register.field.confirm_password" = "确认密码";
+"auth.register.requirement.min_chars" = "至少 8 个字符";
+"auth.register.requirement.passwords_match" = "密码一致";
+"auth.register.button.create_account" = "创建账户";
+"auth.register.prompt.have_account" = "已有账户？";
+"auth.register.button.sign_in" = "登录";
+"auth.register.error.unexpected" = "发生了意外错误。";
+
+// MARK: - Auth — Email Verification
+"auth.verify_email.title" = "验证\n邮箱";
+"auth.verify_email.subtitle" = "请查收邮件";
+"auth.verify_email.code_sent_to" = "验证码已发送至：";
+"auth.verify_email.warning_icon" = "!";
+"auth.verify_email.warning_message" = "上传图片前需要先验证邮箱。";
+"auth.verify_email.field.code" = "验证码";
+"auth.verify_email.button.verify" = "验证邮箱";
+"auth.verify_email.button.resend" = "重新发送验证码";
+"auth.verify_email.button.sign_out" = "退出登录";
+"auth.verify_email.success.code_sent" = "验证码已发送！";
+"auth.verify_email.error.unexpected" = "发生了意外错误。";
+
+// MARK: - Auth — Forgot Password
+"auth.forgot_password.title" = "重置\n密码";
+"auth.forgot_password.subtitle.check_email" = "请查收邮件";
+"auth.forgot_password.subtitle.enter_email" = "输入你的邮箱";
+"auth.forgot_password.field.email" = "邮箱";
+"auth.forgot_password.code_sent_to" = "重置码已发送至：";
+"auth.forgot_password.spam_hint" = "如未收到，请检查垃圾邮件文件夹。";
+"auth.forgot_password.button.enter_code" = "输入重置码";
+"auth.forgot_password.button.send_again" = "重新发送";
+"auth.forgot_password.button.send_code" = "发送重置码";
+"auth.forgot_password.error.unexpected" = "发生了意外错误。";
+
+// MARK: - Auth — Reset Password
+"auth.reset_password.title" = "新\n密码";
+"auth.reset_password.title.done" = "完成";
+"auth.reset_password.subtitle.enter_code" = "输入重置码";
+"auth.reset_password.subtitle.updated" = "密码已更新";
+"auth.reset_password.success.icon" = "✓";
+"auth.reset_password.success.message" = "你的密码已成功更新。";
+"auth.reset_password.field.reset_code" = "重置码";
+"auth.reset_password.field.new_password" = "新密码";
+"auth.reset_password.field.confirm_password" = "确认密码";
+"auth.reset_password.requirement.min_chars" = "至少 8 个字符";
+"auth.reset_password.requirement.passwords_match" = "密码一致";
+"auth.reset_password.button.reset" = "重置密码";
+"auth.reset_password.button.back_to_sign_in" = "返回登录";
+"auth.reset_password.error.unexpected" = "发生了意外错误。";
+
+// MARK: - Onboarding
+"onboarding.page1.title" = "托管\n你的\n图片";
+"onboarding.page1.subtitle" = "安全的云存储";
+"onboarding.page2.title" = "随时\n随地\n分享";
+"onboarding.page2.subtitle" = "iOS 共享菜单集成";
+"onboarding.page3.title" = "获取\n直链";
+"onboarding.page3.subtitle" = "即时生成可分享链接";
+"onboarding.page4.title" = "井然\n有序";
+"onboarding.page4.subtitle" = "所有上传集中管理";
+"onboarding.button.skip" = "跳过";
+"onboarding.button.next" = "下一步";
+"onboarding.button.start" = "开始";
+"onboarding.page_indicator" = "%d/%d";
+
+// MARK: - Upload View
+"upload.title" = "上传";
+"upload.drop_zone.title" = "上传\n文件";
+"upload.drop_zone.subtitle" = "图片、视频、文档等";
+"upload.source.photo_library" = "照片图库";
+"upload.source.browse_files" = "浏览文件";
+"upload.confirm.file" = "上传"%@"？";
+"upload.confirm.photo" = "上传选中的照片？";
+"upload.confirm.resolution" = "分辨率：%@";
+"upload.confirm.button.upload" = "上传";
+"upload.confirm.button.cancel" = "取消";
+"upload.progress.title" = "上传中";
+"upload.progress.cancel" = "取消";
+"upload.success.title" = "上传成功";
+"upload.success.link_copied" = "链接已复制到剪贴板";
+"upload.success.hold_to_copy" = "长按复制";
+"upload.success.copied_feedback" = "已复制！";
+"upload.success.button.upload_another" = "继续上传";
+"upload.failure.title" = "上传失败";
+"upload.failure.button.retry" = "重试";
+"upload.failure.button.cancel" = "取消";
+
+// MARK: - History View
+"history.title" = "媒体";
+"history.empty.title" = "暂无\n媒体\n文件";
+"history.empty.subtitle.upload" = "上传文件以开始使用。";
+"history.empty.subtitle.sync" = "你的上传将显示在这里。";
+"history.error.title" = "出了点问题";
+"history.error.button.retry" = "重试";
+
+// MARK: - Upload Detail View
+"detail.section.image_url" = "图片 URL";
+"detail.section.details" = "详情";
+"detail.label.uploaded" = "上传时间";
+"detail.label.original_file" = "原始文件";
+"detail.label.id" = "ID";
+"detail.alert.delete.title" = "删除图片";
+"detail.alert.delete.button.confirm" = "从服务器删除";
+"detail.alert.delete.button.cancel" = "取消";
+"detail.alert.delete.message" = "此操作将永久删除服务器上的图片，且无法撤销。";
+"detail.button.share" = "分享";
+"detail.button.copy" = "复制";
+"detail.button.copied" = "已复制";
+"detail.button.open" = "打开";
+"detail.button.delete" = "删除";
+"detail.button.delete_deleting" = "...";
+"detail.copy_button.label" = "复制";
+"detail.copy_button.copied" = "✓";
+
+// MARK: - Photo Grid
+"photogrid.button.cancel" = "取消";
+"photogrid.alert.delete.title" = "删除 %d 个文件？";
+"photogrid.alert.delete.title_plural" = "删除 %d 个文件？";
+"photogrid.alert.delete.button.confirm" = "删除";
+"photogrid.alert.delete.button.cancel" = "取消";
+"photogrid.alert.delete.message" = "此操作将永久删除所选文件。";
+"photogrid.date.today" = "今天";
+"photogrid.date.yesterday" = "昨天";
+"photogrid.select_indicator" = "✓";
+
+// MARK: - Settings View
+"settings.title" = "设置";
+"settings.subtitle" = "账户与偏好设置";
+"settings.section.account" = "账户";
+"settings.account.email_verified" = "✓ 已验证";
+"settings.section.storage" = "存储空间";
+"settings.storage.separator" = "/";
+"settings.storage.percent_format" = "%.2f%%";
+"settings.subscription.button.upgrade" = "升级到 Pro";
+"settings.subscription.button.subscribe" = "订阅 Pro";
+"settings.section.upload" = "上传";
+"settings.upload.label.resolution" = "默认分辨率";
+"settings.upload.label.default_badge" = "默认";
+"settings.upload.hint" = "较低质量 = 更小文件、更快上传";
+"settings.upload.label.behavior" = "行为";
+"settings.upload.toggle.confirm_label" = "上传前确认";
+"settings.upload.toggle.confirm_hint" = "每次上传前询问确认";
+"settings.section.link_format" = "链接格式";
+"settings.link_format.variables_label" = "变量：";
+"settings.link_format.var.url" = "{url}";
+"settings.link_format.var.filename" = "{filename}";
+"settings.link_format.button.edit_custom" = "编辑自定义格式";
+"settings.section.actions" = "操作";
+"settings.action.clear_history.title" = "清除上传历史";
+"settings.action.clear_history.subtitle" = "仅删除本地历史记录";
+"settings.action.export.title" = "导出所有图片";
+"settings.action.export.subtitle" = "下载为 ZIP 压缩包";
+"settings.action.delete_account.title" = "删除账户";
+"settings.action.delete_account.subtitle" = "永久删除所有数据";
+"settings.section.legal" = "法律信息";
+"settings.legal.terms" = "使用条款 (EULA)";
+"settings.legal.privacy" = "隐私政策";
+"settings.button.sign_out" = "退出登录";
+"settings.alert.ok" = "好";
+"settings.alert.clear_history.title" = "清除历史";
+"settings.alert.clear_history.button.confirm" = "清除所有历史";
+"settings.alert.clear_history.button.cancel" = "取消";
+"settings.alert.clear_history.message" = "此操作将删除本设备上的所有上传历史。服务器上的图片不受影响。";
+"settings.alert.delete_account.title" = "删除账户";
+"settings.alert.delete_account.button.confirm" = "删除账户";
+"settings.alert.delete_account.button.cancel" = "取消";
+"settings.alert.delete_account.message" = "此操作将永久删除你的账户及所有已上传的图片，且无法撤销。";
+"settings.success.history_cleared.title" = "历史已清除";
+"settings.success.history_cleared.message" = "所有上传历史已删除。";
+"settings.error.title" = "错误";
+"settings.error.load_account" = "加载账户信息失败：%@";
+"settings.error.clear_history" = "清除历史失败：%@";
+"settings.error.delete_account" = "删除账户失败：%@";
+"settings.custom_format.title" = "自定义\n格式";
+"settings.custom_format.description" = "定义你自己的链接模板";
+"settings.custom_format.label.template" = "模板";
+"settings.custom_format.placeholder" = "输入模板...";
+"settings.custom_format.label.variables" = "可用变量";
+"settings.custom_format.var.url" = "{url}";
+"settings.custom_format.var.url.desc" = "- 图片 URL";
+"settings.custom_format.var.filename" = "{filename}";
+"settings.custom_format.var.filename.desc" = "- 原始文件名";
+"settings.custom_format.label.preview" = "预览";
+"settings.custom_format.button.save" = "保存格式";
+"settings.custom_format.button.cancel" = "取消";
+"settings.export.title" = "导出";
+"settings.export.description" = "创建所有已上传图片的 ZIP 压缩包。";
+"settings.export.button.start" = "开始导出";
+"settings.export.state.starting" = "正在启动";
+"settings.export.state.exporting" = "导出图片中";
+"settings.export.state.downloading" = "下载压缩包中";
+"settings.export.state.complete.icon" = "✓";
+"settings.export.state.complete.title" = "导出完成";
+"settings.export.state.complete.button.save_photos" = "保存到照片";
+"settings.export.state.complete.button.save_files" = "保存到文件";
+"settings.export.state.complete.button.done" = "完成";
+"settings.export.state.saving_photos" = "正在保存到照片";
+"settings.export.state.saved_photos.icon" = "✓";
+"settings.export.state.saved_photos.title" = "已保存到照片";
+"settings.export.state.saved_photos.message" = "%d 张图片已保存到照片图库";
+"settings.export.state.saved_photos.button.done" = "完成";
+"settings.export.state.failed.icon" = "✕";
+"settings.export.state.failed.title" = "导出失败";
+"settings.export.state.failed.button.retry" = "再试一次";
+"settings.export.state.failed.button.cancel" = "取消";
+"settings.export.button.cancel" = "取消";
+"settings.export.progress_format" = "%d%%";
+
+// MARK: - Paywall / Subscription
+"paywall.title.unlock" = "解锁";
+"paywall.title.pro" = "PRO";
+"paywall.title.trial" = "7 天免费试用";
+"paywall.section.features" = "包含内容";
+"paywall.feature.file_size.title" = "500MB 文件大小";
+"paywall.feature.file_size.desc" = "上传大文件、视频等";
+"paywall.feature.storage.title" = "10GB 存储空间";
+"paywall.feature.storage.desc" = "试用期间享受 Pro 存储容量";
+"paywall.feature.sharing.title" = "快速分享";
+"paywall.feature.sharing.desc" = "即时生成图片链接";
+"paywall.feature.private.title" = "默认私密";
+"paywall.feature.private.desc" = "安全加密存储";
+"paywall.section.plans" = "选择方案";
+"paywall.error.loading" = "无法加载订阅选项";
+"paywall.button.retry" = "重试";
+"paywall.badge.save" = "省 30%";
+"paywall.button.start_trial" = "开始免费试用";
+"paywall.button.restore" = "恢复购买";
+"paywall.price.per_month_format" = "%@/月";
+"paywall.price.per_month_fallback" = "/月";
+"paywall.error.alert.title" = "错误";
+"paywall.error.alert.button.ok" = "好";
+"paywall.error.alert.message_fallback" = "发生了错误";
+"paywall.legal.renewal_notice" = "7 天免费试用结束后，除非在试用期结束前至少 24 小时取消，否则将按所选价格自动续订。购买确认后将从你的 Apple ID 账户扣费。除非在当前订阅期结束前至少 24 小时关闭自动续订，否则订阅将自动续期。你可以在购买后前往 App Store 账户设置管理和取消订阅。";
+"paywall.legal.separator" = "|";
+"paywall.legal.button.terms" = "条款";
+"paywall.legal.button.privacy" = "隐私";
+
+// MARK: - Subscription Status
+"subscription.title" = "订阅";
+"subscription.section.current_plan" = "当前方案";
+"subscription.button.manage" = "管理订阅";
+"subscription.plan.trial" = "PRO 试用";
+"subscription.plan.active" = "PRO";
+"subscription.plan.cancelled" = "PRO（已取消）";
+"subscription.plan.free" = "免费";
+"subscription.badge.trial" = "试用";
+"subscription.badge.active" = "有效";
+"subscription.badge.cancelled" = "已取消";
+"subscription.badge.expired" = "已过期";
+"subscription.trial.ends_tomorrow" = "试用明天到期";
+"subscription.trial.ends_in_days" = "试用将在 %d 天后到期";
+"subscription.renews_on" = "续订日期：%@";
+"subscription.expires_on" = "到期日期：%@";
+"subscription.access_until" = "可使用至 %@";
+"subscription.expired_message" = "你的订阅已过期";
+
+// MARK: - Error Messages
+"error.not_configured.description" = "应用未配置。请在设置中配置后端 URL 和令牌。";
+"error.invalid_url.description" = "后端 URL 无效。请检查设置。";
+"error.invalid_url.recovery" = "请确保 URL 以 https:// 开头且为有效的网址。";
+"error.upload_failed.with_message" = "上传失败 (%d)：%@";
+"error.upload_failed.status_only" = "上传失败，状态码 %d";
+"error.network.description" = "网络错误：%@";
+"error.invalid_response.description" = "服务器响应无效";
+"error.keychain.description" = "Keychain 错误：%d";
+"error.file_system.description" = "文件系统错误：%@";
+"error.image_processing.description" = "图片处理失败";
+"error.delete_failed.with_message" = "删除失败 (%d)：%@";
+"error.delete_failed.status_only" = "删除失败，状态码 %d";
+"error.email_not_verified.description" = "请在上传图片前验证你的邮箱。";
+"error.subscription_required.description" = "上传文件需要有效的订阅。";
+"error.not_configured.recovery" = "打开 imghost 应用，配置后端 URL 和上传令牌。";
+"error.upload_failed.recovery" = "请检查网络连接后重试。如问题持续，请验证上传令牌。";
+"error.network.recovery" = "请检查网络连接后重试。";
+"error.invalid_response.recovery" = "服务器返回了意外响应。请稍后再试。";
+"error.keychain.recovery" = "请尝试在设置中删除并重新输入上传令牌。";
+"error.file_system.recovery" = "请尝试重启应用。如问题持续，请重新安装应用。";
+"error.image_processing.recovery" = "图片可能已损坏或格式不受支持。";
+"error.delete_failed.recovery" = "图片可能已被删除，或你的令牌没有删除权限。";
+"error.email_not_verified.recovery" = "打开 imghost 应用验证你的邮箱地址以启用上传。";
+"error.subscription_required.recovery" = "订阅 imghost Pro 以解锁上传和存储功能。";
+
+// MARK: - Mac Auth Login
+"auth.login.app_name" = "IMG\nHOST";
+"auth.login.tagline" = "安全的图片托管";
+"auth.login.section.sign_in" = "登录";
+"auth.login.section.hint" = "输入你的凭证";
+"auth.login.button.create_account" = "创建账户";
+"auth.login.button.forgot_password" = "忘记密码";
+"auth.login.error.no_apple_credential" = "获取 Apple 凭证失败";
+
+// MARK: - Mac Auth Register
+"auth.register.sheet.title" = "创建账户";
+"auth.register.prompt.have_account" = "已有账户？登录";
+
+// MARK: - Mac Auth Email Verification
+"auth.verify_email.button.verify" = "验证邮箱";
+"auth.verify_email.button.resend" = "重新发送";
+"auth.verify_email.button.sign_out" = "退出登录";
+
+// MARK: - Mac Auth Reset Password
+"auth.forgot_password.sheet.title" = "重置密码";
+"auth.forgot_password.button.send_code" = "发送重置码";
+"auth.forgot_password.button.enter_code" = "输入重置码";
+"auth.forgot_password.button.send_again" = "重新发送";
+"auth.reset_password.button.reset" = "重置密码";
+"auth.reset_password.success.title" = "密码已更新";
+"auth.reset_password.success.message" = "你现在可以使用新密码登录了。";
+"auth.reset_password.success.button.sign_in" = "返回登录";
+
+// MARK: - Mac Onboarding (5 pages, replaces iOS page 3+4)
+"onboarding.page3.title" = "允许\n访问";
+"onboarding.page3.subtitle" = "macOS 将请求访问共享文件的权限——这使 imghost 能读取你从 Finder 或 Safari 等应用共享的文件";
+"onboarding.page4.title" = "获取\n直链";
+"onboarding.page4.subtitle" = "即时生成可分享链接";
+"onboarding.page5.title" = "拖放\n上传";
+"onboarding.page5.subtitle" = "轻松上传文件";
+
+// MARK: - Mac Settings
+"settings.section.subscription" = "订阅";
+"settings.subscription.days_remaining" = "剩余 %d 天";
+"settings.subscription.button.manage" = "管理订阅";
+"settings.badge.trial" = "试用";
+"settings.badge.active" = "有效";
+"settings.badge.cancelled" = "已取消";
+"settings.badge.expired" = "已过期";
+"settings.storage.of_limit" = "共 %@";
+"settings.storage.percent_format" = "%.0f%%";
+"settings.storage.file_count" = "%d 个文件";
+"settings.section.link_format.subtitle" = "复制链接时使用的格式";
+"settings.link_format.custom_field" = "自定义模板";
+"settings.section.upload.subtitle" = "所有上传的默认行为";
+"settings.section.data" = "数据";
+"settings.data.button.export" = "导出所有数据";
+"settings.section.danger" = "危险操作";
+"settings.danger.button.delete_account" = "删除账户";
+"settings.danger.button.deleting" = "删除中...";
+"settings.account.status.verified" = "已验证";
+"settings.account.status.unverified" = "未验证";
+"settings.account.button.sign_out" = "退出登录";
+
+// MARK: - Mac Media View
+"media.title" = "媒体";
+"media.search.placeholder" = "搜索...";
+"media.label.quality" = "质量";
+"media.button.upload.label" = "上传";
+"media.button.sync.help" = "从服务器同步图片";
+"media.button.upload.help" = "上传文件（或拖放，或按 ⌘V 粘贴）";
+"media.file_count" = "%d";
+"media.upload.progress.title" = "上传中";
+"media.upload.progress.percent" = "%d%%";
+"media.upload.progress.cancel" = "取消";
+"media.drop_zone.title" = "将文件拖放到此处";
+"media.drop_zone.subtitle" = "或点击上传以浏览";
+"media.drop_zone.hint" = "图片、视频和最大 500MB 的文件";
+"media.clipboard.hint" = "粘贴剪贴板内容";
+"media.drag_overlay.title" = "松开以上传";
+"media.loading" = "加载中";
+"media.banner.subscription_required" = "上传需要订阅";
+"media.banner.upload_success_singular" = "已上传 %d 个文件——链接已复制";
+"media.banner.upload_success_plural" = "已上传 %d 个文件——链接已复制";
+"media.banner.upload_failed_singular" = "%d 个上传失败";
+"media.banner.upload_failed_plural" = "%d 个上传失败";
+"media.banner.upload_partial" = "%d 个已上传，%d 个失败";
+
+// MARK: - Mac History View
+"history.title" = "历史";
+"history.search.placeholder" = "搜索...";
+"history.loading" = "加载中";
+"history.empty.title" = "暂无上传";
+"history.empty.subtitle" = "上传第一张图片以开始使用";
+"history.search.empty.title" = "无结果";
+"history.search.empty.subtitle" = "请尝试其他搜索词";
+"history.file_count" = "%d";
+"history.detail.placeholder" = "选择一张图片";
+
+// MARK: - Mac Upload View
+"upload.confirm.files_plural" = "上传 %d 个文件？";
+"upload.confirm.clipboard_single" = "上传剪贴板图片？";
+"upload.confirm.clipboard_plural" = "上传剪贴板中的 %d 个项目？";
+"upload.label.resolution" = "分辨率";
+"upload.drop_zone.subtitle" = "或点击以浏览";
+"upload.clipboard.hint" = "粘贴剪贴板内容";
+"upload.success.button.upload_more" = "继续上传";
+"upload.success.button.copy_all" = "复制所有链接";
+
+// MARK: - Mac Upload Detail View
+"detail.label.filename" = "文件名";
+"detail.label.link_format" = "链接格式";
+"detail.button.copy_link" = "复制链接";
+"detail.button.copied" = "已复制";
+"detail.button.share" = "分享";
+
+// MARK: - Mac Paywall
+"paywall.feature.file_size" = "500MB 文件";
+"paywall.feature.storage" = "10GB 存储";
+"paywall.feature.sharing" = "快速分享";
+"paywall.feature.private" = "私密";
+
+// MARK: - Menu Bar
+"menubar.app_name" = "IMGHOST";
+"menubar.status.online" = "在线";
+"menubar.button.upload.label" = "上传";
+"menubar.button.paste.label" = "粘贴";
+"menubar.button.sync.label" = "同步";
+"menubar.upload.filename_fallback" = "上传中...";
+"menubar.upload.progress_percent" = "%d%%";
+"menubar.section.recent" = "最近";
+"menubar.recent.empty" = "暂无上传";
+"menubar.footer.open_app" = "打开应用";
+"menubar.footer.settings" = "设置";
+"menubar.footer.quit" = "退出";
+"menubar.not_signed_in.title" = "未登录";
+"menubar.not_signed_in.message" = "打开应用以登录";
+"menubar.not_signed_in.button.open" = "打开 IMGHOST";
+"menubar.upload_panel.title" = "上传图片";
+"menubar.confirm.file" = "上传"%@"？";
+"menubar.confirm.clipboard" = "上传剪贴板图片？";
+"menubar.confirm.resolution" = "分辨率：%@";
+"menubar.confirm.button.upload" = "上传";
+"menubar.confirm.button.cancel" = "取消";
+"menubar.status.no_clipboard_image" = "剪贴板中没有图片";
+"menubar.status.uploaded_link_copied" = "已上传——链接已复制";
+"menubar.status.upload_failed" = "上传失败";
+"menubar.status.synced" = "已同步";
+"menubar.time.just_now" = "刚刚";
+"menubar.time.minutes_ago" = "%d分钟前";
+"menubar.time.hours_ago" = "%d小时前";
+"menubar.time.days_ago" = "%d天前";
+"menubar.recent_item.filename_fallback" = "图片";

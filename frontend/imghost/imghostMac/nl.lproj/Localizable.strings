@@ -1,0 +1,482 @@
+/* =========================================================
+   imghost — macOS App
+   Localizable.strings (Dutch)
+   ========================================================= */
+
+// MARK: - Common Buttons
+"button.ok" = "OK";
+"button.cancel" = "Annuleer";
+"button.done" = "Klaar";
+"button.retry" = "Opnieuw";
+"button.close" = "Sluit";
+"button.save" = "Bewaar";
+"button.delete" = "Verwijder";
+"button.sign_in" = "Inloggen";
+"button.sign_out" = "Uitloggen";
+"button.upload" = "Upload";
+"button.next" = "VOLGENDE";
+"button.skip" = "OVERSLAAN";
+"button.start" = "START";
+
+// MARK: - Common States
+"state.loading" = "Laden";
+"state.uploading" = "UPLOADEN";
+"state.preparing" = "Voorbereiden";
+
+// MARK: - Common Labels
+"label.verified" = "✓ GEVERIFIEERD";
+"label.default" = "STANDAARD";
+"label.required_marker" = "*";
+"label.copied" = "✓";
+
+// MARK: - Auth — Login
+"auth.login.title" = "INLOG-\nGEN";
+"auth.login.subtitle" = "TOEGANG TOT JE AFBEELDINGEN";
+"auth.login.field.email" = "E-mail";
+"auth.login.field.password" = "Wachtwoord";
+"auth.login.button.sign_in" = "Inloggen";
+"auth.login.button.forgot_password" = "Wachtwoord vergeten?";
+"auth.login.button.view_pro_plans" = "Bekijk Pro-abonnementen";
+"auth.login.prompt.no_account" = "GEEN ACCOUNT?";
+"auth.login.button.create_account" = "Maak er een aan";
+"auth.login.divider" = "of";
+"auth.login.error.unexpected" = "Er is een onverwachte fout opgetreden.";
+"auth.login.error.invalid_apple_credential" = "Ongeldige Apple ID-inloggegevens.";
+"auth.login.error.no_identity_token" = "Kan identiteitstoken niet ophalen.";
+"auth.login.error.apple_failed" = "Inloggen met Apple mislukt: %@";
+"auth.login.error.apple_failed_generic" = "Inloggen met Apple mislukt. Probeer het opnieuw.";
+"auth.login.error.apple_failed_simple" = "Inloggen met Apple mislukt.";
+
+// MARK: - Auth — Register
+"auth.register.title" = "ACCOUNT\nAANMAKEN";
+"auth.register.subtitle" = "BEGIN MET UPLOADEN";
+"auth.register.field.email" = "E-mail";
+"auth.register.field.password" = "Wachtwoord";
+"auth.register.field.confirm_password" = "Bevestig wachtwoord";
+"auth.register.requirement.min_chars" = "Minimaal 8 tekens";
+"auth.register.requirement.passwords_match" = "Wachtwoorden komen overeen";
+"auth.register.button.create_account" = "Account aanmaken";
+"auth.register.prompt.have_account" = "HEB JE AL EEN ACCOUNT?";
+"auth.register.button.sign_in" = "Inloggen";
+"auth.register.error.unexpected" = "Er is een onverwachte fout opgetreden.";
+
+// MARK: - Auth — Email Verification
+"auth.verify_email.title" = "E-MAIL\nVERIFIEREN";
+"auth.verify_email.subtitle" = "CONTROLEER JE INBOX";
+"auth.verify_email.code_sent_to" = "CODE VERZONDEN NAAR:";
+"auth.verify_email.warning_icon" = "!";
+"auth.verify_email.warning_message" = "Je moet je e-mail verifiëren voordat je afbeeldingen kunt uploaden.";
+"auth.verify_email.field.code" = "Verificatiecode";
+"auth.verify_email.button.verify" = "E-mail verifiëren";
+"auth.verify_email.button.resend" = "Code opnieuw verzenden";
+"auth.verify_email.button.sign_out" = "Uitloggen";
+"auth.verify_email.success.code_sent" = "Verificatiecode verzonden!";
+"auth.verify_email.error.unexpected" = "Er is een onverwachte fout opgetreden.";
+
+// MARK: - Auth — Forgot Password
+"auth.forgot_password.title" = "WACHT-\nWOORD\nHERSTELLEN";
+"auth.forgot_password.subtitle.check_email" = "CONTROLEER JE E-MAIL";
+"auth.forgot_password.subtitle.enter_email" = "VOER JE E-MAIL IN";
+"auth.forgot_password.field.email" = "E-mail";
+"auth.forgot_password.code_sent_to" = "HERSTELCODE VERZONDEN NAAR:";
+"auth.forgot_password.spam_hint" = "Controleer je spammap als je het niet ziet.";
+"auth.forgot_password.button.enter_code" = "Herstelcode invoeren";
+"auth.forgot_password.button.send_again" = "Opnieuw verzenden";
+"auth.forgot_password.button.send_code" = "Herstelcode verzenden";
+"auth.forgot_password.error.unexpected" = "Er is een onverwachte fout opgetreden.";
+
+// MARK: - Auth — Reset Password
+"auth.reset_password.title" = "NIEUW\nWACHT-\nWOORD";
+"auth.reset_password.title.done" = "KLAAR";
+"auth.reset_password.subtitle.enter_code" = "VOER HERSTELCODE IN";
+"auth.reset_password.subtitle.updated" = "WACHTWOORD BIJGEWERKT";
+"auth.reset_password.success.icon" = "✓";
+"auth.reset_password.success.message" = "Je wachtwoord is succesvol bijgewerkt.";
+"auth.reset_password.field.reset_code" = "Herstelcode";
+"auth.reset_password.field.new_password" = "Nieuw wachtwoord";
+"auth.reset_password.field.confirm_password" = "Bevestig wachtwoord";
+"auth.reset_password.requirement.min_chars" = "Minimaal 8 tekens";
+"auth.reset_password.requirement.passwords_match" = "Wachtwoorden komen overeen";
+"auth.reset_password.button.reset" = "Wachtwoord herstellen";
+"auth.reset_password.button.back_to_sign_in" = "Terug naar inloggen";
+"auth.reset_password.error.unexpected" = "Er is een onverwachte fout opgetreden.";
+
+// MARK: - Onboarding
+"onboarding.page1.title" = "HOST\nJE\nAFBEELDINGEN";
+"onboarding.page1.subtitle" = "Veilige cloudopslag";
+"onboarding.page2.title" = "DEEL\nVANUIT\nOVERAL";
+"onboarding.page2.subtitle" = "iOS Share Sheet-integratie";
+"onboarding.page3.title" = "KRIJG\nDIRECTE\nLINKS";
+"onboarding.page3.subtitle" = "Direct deelbare URL's";
+"onboarding.page4.title" = "BLIJF\nGEORGA-\nNISEERD";
+"onboarding.page4.subtitle" = "Al je uploads op één plek";
+"onboarding.button.skip" = "OVERSLAAN";
+"onboarding.button.next" = "VOLGENDE";
+"onboarding.button.start" = "START";
+"onboarding.page_indicator" = "%d/%d";
+
+// MARK: - Upload View
+"upload.title" = "UPLOAD";
+"upload.drop_zone.title" = "BESTAND\nUPLOADEN";
+"upload.drop_zone.subtitle" = "Afbeeldingen, video's, documenten en meer";
+"upload.source.photo_library" = "Fotobibliotheek";
+"upload.source.browse_files" = "Bladeren door bestanden";
+"upload.confirm.file" = "\"%@\" uploaden?";
+"upload.confirm.photo" = "Geselecteerde foto uploaden?";
+"upload.confirm.resolution" = "Resolutie: %@";
+"upload.confirm.button.upload" = "Upload";
+"upload.confirm.button.cancel" = "Annuleer";
+"upload.progress.title" = "UPLOADEN";
+"upload.progress.cancel" = "Annuleer";
+"upload.success.title" = "GEÜPLOAD";
+"upload.success.link_copied" = "Link gekopieerd naar klembord";
+"upload.success.hold_to_copy" = "Houd ingedrukt om te kopiëren";
+"upload.success.copied_feedback" = "Gekopieerd!";
+"upload.success.button.upload_another" = "Nog een uploaden";
+"upload.failure.title" = "UPLOAD MISLUKT";
+"upload.failure.button.retry" = "Opnieuw";
+"upload.failure.button.cancel" = "Annuleer";
+
+// MARK: - History View
+"history.title" = "MEDIA";
+"history.empty.title" = "NOG\nGEEN\nMEDIA";
+"history.empty.subtitle.upload" = "Upload bestanden om te beginnen.";
+"history.empty.subtitle.sync" = "Je uploads verschijnen hier.";
+"history.error.title" = "Er ging iets mis";
+"history.error.button.retry" = "Opnieuw";
+
+// MARK: - Upload Detail View
+"detail.section.image_url" = "Afbeeldings-URL";
+"detail.section.details" = "Details";
+"detail.label.uploaded" = "Geüpload";
+"detail.label.original_file" = "Origineel bestand";
+"detail.label.id" = "ID";
+"detail.alert.delete.title" = "Afbeelding verwijderen";
+"detail.alert.delete.button.confirm" = "Verwijder van server";
+"detail.alert.delete.button.cancel" = "Annuleer";
+"detail.alert.delete.message" = "Dit verwijdert de afbeelding permanent van de server. Deze actie kan niet ongedaan worden gemaakt.";
+"detail.button.share" = "DEEL";
+"detail.button.copy" = "KOPIEER";
+"detail.button.copied" = "GEKOPIEERD";
+"detail.button.open" = "OPEN";
+"detail.button.delete" = "VERWIJDER";
+"detail.button.delete_deleting" = "...";
+"detail.copy_button.label" = "KOPIEER";
+"detail.copy_button.copied" = "✓";
+
+// MARK: - Photo Grid
+"photogrid.button.cancel" = "ANNULEER";
+"photogrid.alert.delete.title" = "%d bestand verwijderen?";
+"photogrid.alert.delete.title_plural" = "%d bestanden verwijderen?";
+"photogrid.alert.delete.button.confirm" = "Verwijder";
+"photogrid.alert.delete.button.cancel" = "Annuleer";
+"photogrid.alert.delete.message" = "Dit verwijdert de geselecteerde bestanden permanent van de server.";
+"photogrid.date.today" = "Vandaag";
+"photogrid.date.yesterday" = "Gisteren";
+"photogrid.select_indicator" = "✓";
+
+// MARK: - Settings View
+"settings.title" = "INSTELLINGEN";
+"settings.subtitle" = "ACCOUNT & VOORKEUREN";
+"settings.section.account" = "Account";
+"settings.account.email_verified" = "✓ GEVERIFIEERD";
+"settings.section.storage" = "Opslag";
+"settings.storage.separator" = "/";
+"settings.storage.percent_format" = "%.2f%%";
+"settings.subscription.button.upgrade" = "Upgraden naar Pro";
+"settings.subscription.button.subscribe" = "Abonneren op Pro";
+"settings.section.upload" = "Upload";
+"settings.upload.label.resolution" = "STANDAARDRESOLUTIE";
+"settings.upload.label.default_badge" = "STANDAARD";
+"settings.upload.hint" = "Lagere kwaliteit = kleinere bestanden, snellere uploads";
+"settings.upload.label.behavior" = "GEDRAG";
+"settings.upload.toggle.confirm_label" = "Bevestigen voor uploaden";
+"settings.upload.toggle.confirm_hint" = "Vraag om bevestiging voordat elke upload begint";
+"settings.section.link_format" = "Linkformaat";
+"settings.link_format.variables_label" = "Variabelen:";
+"settings.link_format.var.url" = "{url}";
+"settings.link_format.var.filename" = "{filename}";
+"settings.link_format.button.edit_custom" = "AANGEPAST FORMAAT BEWERKEN";
+"settings.section.actions" = "Acties";
+"settings.action.clear_history.title" = "Uploadgeschiedenis wissen";
+"settings.action.clear_history.subtitle" = "Alleen lokale geschiedenis verwijderen";
+"settings.action.export.title" = "Alle afbeeldingen exporteren";
+"settings.action.export.subtitle" = "Downloaden als ZIP-archief";
+"settings.action.delete_account.title" = "Account verwijderen";
+"settings.action.delete_account.subtitle" = "Alle gegevens permanent verwijderen";
+"settings.section.legal" = "Juridisch";
+"settings.legal.terms" = "Gebruiksvoorwaarden (EULA)";
+"settings.legal.privacy" = "Privacybeleid";
+"settings.button.sign_out" = "Uitloggen";
+"settings.alert.ok" = "OK";
+"settings.alert.clear_history.title" = "Geschiedenis wissen";
+"settings.alert.clear_history.button.confirm" = "Alle geschiedenis wissen";
+"settings.alert.clear_history.button.cancel" = "Annuleer";
+"settings.alert.clear_history.message" = "Dit verwijdert alle uploadgeschiedenis van dit apparaat. Afbeeldingen op de server worden niet beïnvloed.";
+"settings.alert.delete_account.title" = "Account verwijderen";
+"settings.alert.delete_account.button.confirm" = "Account verwijderen";
+"settings.alert.delete_account.button.cancel" = "Annuleer";
+"settings.alert.delete_account.message" = "Dit verwijdert permanent je account en al je geüploade afbeeldingen. Deze actie kan niet ongedaan worden gemaakt.";
+"settings.success.history_cleared.title" = "Geschiedenis gewist";
+"settings.success.history_cleared.message" = "Alle uploadgeschiedenis is verwijderd.";
+"settings.error.title" = "Fout";
+"settings.error.load_account" = "Kan accountinfo niet laden: %@";
+"settings.error.clear_history" = "Kan geschiedenis niet wissen: %@";
+"settings.error.delete_account" = "Kan account niet verwijderen: %@";
+"settings.custom_format.title" = "AANGEPAST\nFORMAAT";
+"settings.custom_format.description" = "Definieer je eigen linksjabloon";
+"settings.custom_format.label.template" = "SJABLOON";
+"settings.custom_format.placeholder" = "Voer sjabloon in...";
+"settings.custom_format.label.variables" = "BESCHIKBARE VARIABELEN";
+"settings.custom_format.var.url" = "{url}";
+"settings.custom_format.var.url.desc" = "- De afbeeldings-URL";
+"settings.custom_format.var.filename" = "{filename}";
+"settings.custom_format.var.filename.desc" = "- Oorspronkelijke bestandsnaam";
+"settings.custom_format.label.preview" = "VOORBEELD";
+"settings.custom_format.button.save" = "Formaat opslaan";
+"settings.custom_format.button.cancel" = "ANNULEER";
+"settings.export.title" = "EXPORTEREN";
+"settings.export.description" = "Maak een ZIP-archief van al je geüploade afbeeldingen.";
+"settings.export.button.start" = "Export starten";
+"settings.export.state.starting" = "Starten";
+"settings.export.state.exporting" = "AFBEELDINGEN EXPORTEREN";
+"settings.export.state.downloading" = "ARCHIEF DOWNLOADEN";
+"settings.export.state.complete.icon" = "✓";
+"settings.export.state.complete.title" = "EXPORT VOLTOOID";
+"settings.export.state.complete.button.save_photos" = "Bewaar in Foto's";
+"settings.export.state.complete.button.save_files" = "Bewaar in Bestanden";
+"settings.export.state.complete.button.done" = "Klaar";
+"settings.export.state.saving_photos" = "OPSLAAN IN FOTO'S";
+"settings.export.state.saved_photos.icon" = "✓";
+"settings.export.state.saved_photos.title" = "OPGESLAGEN IN FOTO'S";
+"settings.export.state.saved_photos.message" = "%d afbeeldingen opgeslagen in je fotobibliotheek";
+"settings.export.state.saved_photos.button.done" = "Klaar";
+"settings.export.state.failed.icon" = "✕";
+"settings.export.state.failed.title" = "EXPORT MISLUKT";
+"settings.export.state.failed.button.retry" = "Opnieuw proberen";
+"settings.export.state.failed.button.cancel" = "Annuleer";
+"settings.export.button.cancel" = "Annuleer";
+"settings.export.progress_format" = "%d%%";
+
+// MARK: - Paywall / Subscription
+"paywall.title.unlock" = "ONTGRENDEL";
+"paywall.title.pro" = "PRO";
+"paywall.title.trial" = "7 DAGEN GRATIS PROEFPERIODE";
+"paywall.section.features" = "WAT JE KRIJGT";
+"paywall.feature.file_size.title" = "500MB bestandsgrootte";
+"paywall.feature.file_size.desc" = "Upload grote bestanden, video's en meer";
+"paywall.feature.storage.title" = "10GB opslag";
+"paywall.feature.storage.desc" = "Pro-opslaglimiet tijdens proefperiode";
+"paywall.feature.sharing.title" = "Snel delen";
+"paywall.feature.sharing.desc" = "Directe links voor je afbeeldingen";
+"paywall.feature.private.title" = "Standaard privé";
+"paywall.feature.private.desc" = "Veilige, versleutelde opslag";
+"paywall.section.plans" = "KIES JE ABONNEMENT";
+"paywall.error.loading" = "Kan abonnementsopties niet laden";
+"paywall.button.retry" = "Opnieuw";
+"paywall.badge.save" = "BESPAAR 30%";
+"paywall.button.start_trial" = "Gratis proefperiode starten";
+"paywall.button.restore" = "Aankopen herstellen";
+"paywall.price.per_month_format" = "%@/mnd";
+"paywall.price.per_month_fallback" = "/maand";
+"paywall.error.alert.title" = "Fout";
+"paywall.error.alert.button.ok" = "OK";
+"paywall.error.alert.message_fallback" = "Er is een fout opgetreden";
+"paywall.legal.renewal_notice" = "Na je gratis proefperiode van 7 dagen wordt je abonnement automatisch verlengd tegen de geselecteerde prijs, tenzij je minstens 24 uur voor het einde van de proefperiode annuleert. De betaling wordt in rekening gebracht op je Apple ID-account bij bevestiging van de aankoop. Je abonnement wordt automatisch verlengd, tenzij je de automatische verlenging minstens 24 uur voor het einde van de huidige periode uitschakelt. Je kunt je abonnementen beheren en annuleren via je App Store-accountinstellingen na aankoop.";
+"paywall.legal.separator" = "|";
+"paywall.legal.button.terms" = "Voorwaarden";
+"paywall.legal.button.privacy" = "Privacy";
+
+// MARK: - Subscription Status
+"subscription.title" = "ABONNEMENT";
+"subscription.section.current_plan" = "HUIDIG ABONNEMENT";
+"subscription.button.manage" = "Abonnement beheren";
+"subscription.plan.trial" = "PRO PROEFPERIODE";
+"subscription.plan.active" = "PRO";
+"subscription.plan.cancelled" = "PRO (GEANNULEERD)";
+"subscription.plan.free" = "GRATIS";
+"subscription.badge.trial" = "PROEF";
+"subscription.badge.active" = "ACTIEF";
+"subscription.badge.cancelled" = "GEANNULEERD";
+"subscription.badge.expired" = "VERLOPEN";
+"subscription.trial.ends_tomorrow" = "Proefperiode eindigt morgen";
+"subscription.trial.ends_in_days" = "Proefperiode eindigt over %d dagen";
+"subscription.renews_on" = "Wordt verlengd op %@";
+"subscription.expires_on" = "Verloopt op %@";
+"subscription.access_until" = "Toegang tot %@";
+"subscription.expired_message" = "Je abonnement is verlopen";
+
+// MARK: - Error Messages
+"error.not_configured.description" = "App niet geconfigureerd. Stel de backend-URL en token in via de instellingen.";
+"error.invalid_url.description" = "Ongeldige backend-URL. Controleer je instellingen.";
+"error.invalid_url.recovery" = "Zorg ervoor dat de URL begint met https:// en een geldig webadres is.";
+"error.upload_failed.with_message" = "Upload mislukt (%d): %@";
+"error.upload_failed.status_only" = "Upload mislukt met statuscode %d";
+"error.network.description" = "Netwerkfout: %@";
+"error.invalid_response.description" = "Ongeldig antwoord van de server";
+"error.keychain.description" = "Keychain-fout: %d";
+"error.file_system.description" = "Bestandssysteemfout: %@";
+"error.image_processing.description" = "Kan afbeelding niet verwerken";
+"error.delete_failed.with_message" = "Verwijderen mislukt (%d): %@";
+"error.delete_failed.status_only" = "Verwijderen mislukt met statuscode %d";
+"error.email_not_verified.description" = "Verifieer je e-mail voordat je afbeeldingen uploadt.";
+"error.subscription_required.description" = "Een actief abonnement is vereist om bestanden te uploaden.";
+"error.not_configured.recovery" = "Open de imghost-app en configureer je backend-URL en uploadtoken.";
+"error.upload_failed.recovery" = "Controleer je internetverbinding en probeer het opnieuw. Als het probleem aanhoudt, controleer je uploadtoken.";
+"error.network.recovery" = "Controleer je internetverbinding en probeer het opnieuw.";
+"error.invalid_response.recovery" = "De server gaf een onverwacht antwoord. Probeer het later opnieuw.";
+"error.keychain.recovery" = "Probeer je uploadtoken te verwijderen en opnieuw in te voeren in de instellingen.";
+"error.file_system.recovery" = "Probeer de app opnieuw te starten. Als het probleem aanhoudt, installeer de app opnieuw.";
+"error.image_processing.recovery" = "De afbeelding is mogelijk beschadigd of heeft een niet-ondersteund formaat.";
+"error.delete_failed.recovery" = "De afbeelding is mogelijk al verwijderd, of je token heeft geen verwijdermachtigingen.";
+"error.email_not_verified.recovery" = "Open de imghost-app en verifieer je e-mailadres om uploads in te schakelen.";
+"error.subscription_required.recovery" = "Abonneer je op imghost Pro om uploads en opslag te ontgrendelen.";
+
+// MARK: - Mac Auth Login
+"auth.login.app_name" = "IMG\nHOST";
+"auth.login.tagline" = "VEILIGE AFBEELDINGSHOSTING";
+"auth.login.section.sign_in" = "INLOGGEN";
+"auth.login.section.hint" = "Voer je inloggegevens in";
+"auth.login.button.create_account" = "ACCOUNT AANMAKEN";
+"auth.login.button.forgot_password" = "WACHTWOORD VERGETEN";
+"auth.login.error.no_apple_credential" = "Kan Apple-inloggegevens niet ophalen";
+
+// MARK: - Mac Auth Register
+"auth.register.sheet.title" = "ACCOUNT AANMAKEN";
+"auth.register.prompt.have_account" = "HEB JE AL EEN ACCOUNT? LOG IN";
+
+// MARK: - Mac Auth Email Verification
+"auth.verify_email.button.verify" = "E-MAIL VERIFIËREN";
+"auth.verify_email.button.resend" = "CODE OPNIEUW VERZENDEN";
+"auth.verify_email.button.sign_out" = "UITLOGGEN";
+
+// MARK: - Mac Auth Reset Password
+"auth.forgot_password.sheet.title" = "WACHTWOORD HERSTELLEN";
+"auth.forgot_password.button.send_code" = "HERSTELCODE VERZENDEN";
+"auth.forgot_password.button.enter_code" = "HERSTELCODE INVOEREN";
+"auth.forgot_password.button.send_again" = "OPNIEUW VERZENDEN";
+"auth.reset_password.button.reset" = "WACHTWOORD HERSTELLEN";
+"auth.reset_password.success.title" = "WACHTWOORD BIJGEWERKT";
+"auth.reset_password.success.message" = "Je kunt nu inloggen met je nieuwe wachtwoord.";
+"auth.reset_password.success.button.sign_in" = "TERUG NAAR INLOGGEN";
+
+// MARK: - Mac Onboarding (5 pages)
+"onboarding.page3.title" = "TOEGANG\nVERLENEN";
+"onboarding.page3.subtitle" = "macOS vraagt toegang tot gedeelde bestanden — dit laat imghost bestanden lezen die je deelt vanuit andere apps zoals Finder of Safari";
+"onboarding.page4.title" = "KRIJG DIRECTE\nLINKS";
+"onboarding.page4.subtitle" = "Direct deelbare URL's";
+"onboarding.page5.title" = "SLEPEN &\nNEERZETTEN";
+"onboarding.page5.subtitle" = "Upload bestanden moeiteloos";
+
+// MARK: - Mac Settings
+"settings.section.subscription" = "Abonnement";
+"settings.subscription.days_remaining" = "%d dagen resterend";
+"settings.subscription.button.manage" = "ABONNEMENT BEHEREN";
+"settings.badge.trial" = "PROEF";
+"settings.badge.active" = "ACTIEF";
+"settings.badge.cancelled" = "GEANNULEERD";
+"settings.badge.expired" = "VERLOPEN";
+"settings.storage.of_limit" = "van %@";
+"settings.storage.percent_format" = "%.0f%%";
+"settings.storage.file_count" = "%d bestanden";
+"settings.section.link_format.subtitle" = "Formaat gebruikt bij het kopiëren van links";
+"settings.link_format.custom_field" = "Aangepast sjabloon";
+"settings.section.upload.subtitle" = "Standaardgedrag voor alle uploads";
+"settings.section.data" = "Gegevens";
+"settings.data.button.export" = "ALLE GEGEVENS EXPORTEREN";
+"settings.section.danger" = "Gevarenzone";
+"settings.danger.button.delete_account" = "ACCOUNT VERWIJDEREN";
+"settings.danger.button.deleting" = "VERWIJDEREN...";
+"settings.account.status.verified" = "GEVERIFIEERD";
+"settings.account.status.unverified" = "NIET GEVERIFIEERD";
+"settings.account.button.sign_out" = "UITLOGGEN";
+
+// MARK: - Mac Media View
+"media.title" = "MEDIA";
+"media.search.placeholder" = "Zoeken...";
+"media.label.quality" = "KWALITEIT";
+"media.button.upload.label" = "UPLOAD";
+"media.button.sync.help" = "Afbeeldingen synchroniseren van server";
+"media.button.upload.help" = "Bestanden uploaden (of slepen & neerzetten, of ⌘V om te plakken)";
+"media.file_count" = "%d";
+"media.upload.progress.title" = "UPLOADEN";
+"media.upload.progress.percent" = "%d%%";
+"media.upload.progress.cancel" = "ANNULEER";
+"media.drop_zone.title" = "BESTANDEN HIER NEERZETTEN";
+"media.drop_zone.subtitle" = "of klik op Upload om te bladeren";
+"media.drop_zone.hint" = "Afbeeldingen, video's en bestanden tot 500MB";
+"media.clipboard.hint" = "om van klembord te plakken";
+"media.drag_overlay.title" = "NEERZETTEN OM TE UPLOADEN";
+"media.loading" = "Laden";
+"media.banner.subscription_required" = "Abonnement vereist om te uploaden";
+"media.banner.upload_success_singular" = "%d bestand geüpload — link gekopieerd";
+"media.banner.upload_success_plural" = "%d bestanden geüpload — links gekopieerd";
+"media.banner.upload_failed_singular" = "%d upload mislukt";
+"media.banner.upload_failed_plural" = "%d uploads mislukt";
+"media.banner.upload_partial" = "%d geüpload, %d mislukt";
+
+// MARK: - Mac History View
+"history.title" = "GESCHIEDENIS";
+"history.search.placeholder" = "Zoeken...";
+"history.loading" = "Laden";
+"history.empty.title" = "Nog geen uploads";
+"history.empty.subtitle" = "Upload je eerste afbeelding om te beginnen";
+"history.search.empty.title" = "Geen resultaten";
+"history.search.empty.subtitle" = "Probeer een andere zoekterm";
+"history.file_count" = "%d";
+"history.detail.placeholder" = "SELECTEER EEN AFBEELDING";
+
+// MARK: - Mac Upload View
+"upload.confirm.files_plural" = "%d bestanden uploaden?";
+"upload.confirm.clipboard_single" = "Klembordafbeelding uploaden?";
+"upload.confirm.clipboard_plural" = "%d items van klembord uploaden?";
+"upload.label.resolution" = "RESOLUTIE";
+"upload.drop_zone.subtitle" = "of klik om te bladeren";
+"upload.clipboard.hint" = "om van klembord te plakken";
+"upload.success.button.upload_more" = "MEER UPLOADEN";
+"upload.success.button.copy_all" = "ALLE LINKS KOPIËREN";
+
+// MARK: - Mac Upload Detail View
+"detail.label.filename" = "BESTANDSNAAM";
+"detail.label.link_format" = "LINKFORMAAT";
+"detail.button.copy_link" = "LINK KOPIËREN";
+"detail.button.copied" = "GEKOPIEERD";
+"detail.button.share" = "DEEL";
+
+// MARK: - Mac Paywall
+"paywall.feature.file_size" = "500MB bestanden";
+"paywall.feature.storage" = "10GB opslag";
+"paywall.feature.sharing" = "Snel delen";
+"paywall.feature.private" = "Privé";
+
+// MARK: - Menu Bar
+"menubar.app_name" = "IMGHOST";
+"menubar.status.online" = "ONLINE";
+"menubar.button.upload.label" = "UPLOAD";
+"menubar.button.paste.label" = "PLAKKEN";
+"menubar.button.sync.label" = "SYNC";
+"menubar.upload.filename_fallback" = "Uploaden...";
+"menubar.upload.progress_percent" = "%d%%";
+"menubar.section.recent" = "RECENT";
+"menubar.recent.empty" = "NOG GEEN UPLOADS";
+"menubar.footer.open_app" = "Open app";
+"menubar.footer.settings" = "Instellingen";
+"menubar.footer.quit" = "Stop";
+"menubar.not_signed_in.title" = "NIET INGELOGD";
+"menubar.not_signed_in.message" = "Open de app om in te loggen";
+"menubar.not_signed_in.button.open" = "OPEN IMGHOST";
+"menubar.upload_panel.title" = "Afbeelding uploaden";
+"menubar.confirm.file" = "\"%@\" uploaden?";
+"menubar.confirm.clipboard" = "Klembordafbeelding uploaden?";
+"menubar.confirm.resolution" = "Resolutie: %@";
+"menubar.confirm.button.upload" = "Upload";
+"menubar.confirm.button.cancel" = "Annuleer";
+"menubar.status.no_clipboard_image" = "Geen afbeelding op klembord";
+"menubar.status.uploaded_link_copied" = "Geüpload — link gekopieerd";
+"menubar.status.upload_failed" = "Upload mislukt";
+"menubar.status.synced" = "Gesynchroniseerd";
+"menubar.time.just_now" = "zojuist";
+"menubar.time.minutes_ago" = "%dm geleden";
+"menubar.time.hours_ago" = "%du geleden";
+"menubar.time.days_ago" = "%dd geleden";
+"menubar.recent_item.filename_fallback" = "afbeelding";

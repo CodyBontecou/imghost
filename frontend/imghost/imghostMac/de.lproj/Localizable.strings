@@ -1,0 +1,482 @@
+/* =========================================================
+   imghost — macOS App
+   Localizable.strings (German)
+   ========================================================= */
+
+// MARK: - Common Buttons
+"button.ok" = "OK";
+"button.cancel" = "Abbrechen";
+"button.done" = "Fertig";
+"button.retry" = "Erneut versuchen";
+"button.close" = "Schließen";
+"button.save" = "Speichern";
+"button.delete" = "Löschen";
+"button.sign_in" = "Anmelden";
+"button.sign_out" = "Abmelden";
+"button.upload" = "Hochladen";
+"button.next" = "WEITER";
+"button.skip" = "ÜBERSPRINGEN";
+"button.start" = "STARTEN";
+
+// MARK: - Common States
+"state.loading" = "Laden";
+"state.uploading" = "WIRD HOCHGELADEN";
+"state.preparing" = "Vorbereiten";
+
+// MARK: - Common Labels
+"label.verified" = "✓ VERIFIZIERT";
+"label.default" = "STANDARD";
+"label.required_marker" = "*";
+"label.copied" = "✓";
+
+// MARK: - Auth — Login
+"auth.login.title" = "AN-\nMELDEN";
+"auth.login.subtitle" = "ZUGRIFF AUF DEINE BILDER";
+"auth.login.field.email" = "E-Mail";
+"auth.login.field.password" = "Passwort";
+"auth.login.button.sign_in" = "Anmelden";
+"auth.login.button.forgot_password" = "Passwort vergessen?";
+"auth.login.button.view_pro_plans" = "Pro-Pläne ansehen";
+"auth.login.prompt.no_account" = "KEIN KONTO?";
+"auth.login.button.create_account" = "Erstellen";
+"auth.login.divider" = "oder";
+"auth.login.error.unexpected" = "Ein unerwarteter Fehler ist aufgetreten.";
+"auth.login.error.invalid_apple_credential" = "Ungültige Apple-ID-Anmeldedaten.";
+"auth.login.error.no_identity_token" = "Identitätstoken konnte nicht abgerufen werden.";
+"auth.login.error.apple_failed" = "Apple-Anmeldung fehlgeschlagen: %@";
+"auth.login.error.apple_failed_generic" = "Apple-Anmeldung fehlgeschlagen. Bitte erneut versuchen.";
+"auth.login.error.apple_failed_simple" = "Apple-Anmeldung fehlgeschlagen.";
+
+// MARK: - Auth — Register
+"auth.register.title" = "KONTO\nERSTELLEN";
+"auth.register.subtitle" = "BILDER HOCHLADEN";
+"auth.register.field.email" = "E-Mail";
+"auth.register.field.password" = "Passwort";
+"auth.register.field.confirm_password" = "Passwort bestätigen";
+"auth.register.requirement.min_chars" = "Mindestens 8 Zeichen";
+"auth.register.requirement.passwords_match" = "Passwörter stimmen überein";
+"auth.register.button.create_account" = "Konto erstellen";
+"auth.register.prompt.have_account" = "BEREITS EIN KONTO?";
+"auth.register.button.sign_in" = "Anmelden";
+"auth.register.error.unexpected" = "Ein unerwarteter Fehler ist aufgetreten.";
+
+// MARK: - Auth — Email Verification
+"auth.verify_email.title" = "E-MAIL\nBESTÄTIGEN";
+"auth.verify_email.subtitle" = "POSTEINGANG PRÜFEN";
+"auth.verify_email.code_sent_to" = "CODE GESENDET AN:";
+"auth.verify_email.warning_icon" = "!";
+"auth.verify_email.warning_message" = "Du musst deine E-Mail bestätigen, bevor du Bilder hochladen kannst.";
+"auth.verify_email.field.code" = "Bestätigungscode";
+"auth.verify_email.button.verify" = "E-Mail bestätigen";
+"auth.verify_email.button.resend" = "Code erneut senden";
+"auth.verify_email.button.sign_out" = "Abmelden";
+"auth.verify_email.success.code_sent" = "Bestätigungscode gesendet!";
+"auth.verify_email.error.unexpected" = "Ein unerwarteter Fehler ist aufgetreten.";
+
+// MARK: - Auth — Forgot Password
+"auth.forgot_password.title" = "PASSWORT\nZURÜCK-\nSETZEN";
+"auth.forgot_password.subtitle.check_email" = "E-MAIL PRÜFEN";
+"auth.forgot_password.subtitle.enter_email" = "E-MAIL EINGEBEN";
+"auth.forgot_password.field.email" = "E-Mail";
+"auth.forgot_password.code_sent_to" = "RÜCKSETZCODE GESENDET AN:";
+"auth.forgot_password.spam_hint" = "Prüfe deinen Spam-Ordner, falls du die E-Mail nicht findest.";
+"auth.forgot_password.button.enter_code" = "Rücksetzcode eingeben";
+"auth.forgot_password.button.send_again" = "Erneut senden";
+"auth.forgot_password.button.send_code" = "Rücksetzcode senden";
+"auth.forgot_password.error.unexpected" = "Ein unerwarteter Fehler ist aufgetreten.";
+
+// MARK: - Auth — Reset Password
+"auth.reset_password.title" = "NEUES\nPASS-\nWORT";
+"auth.reset_password.title.done" = "FERTIG";
+"auth.reset_password.subtitle.enter_code" = "RÜCKSETZCODE EINGEBEN";
+"auth.reset_password.subtitle.updated" = "PASSWORT AKTUALISIERT";
+"auth.reset_password.success.icon" = "✓";
+"auth.reset_password.success.message" = "Dein Passwort wurde erfolgreich aktualisiert.";
+"auth.reset_password.field.reset_code" = "Rücksetzcode";
+"auth.reset_password.field.new_password" = "Neues Passwort";
+"auth.reset_password.field.confirm_password" = "Passwort bestätigen";
+"auth.reset_password.requirement.min_chars" = "Mindestens 8 Zeichen";
+"auth.reset_password.requirement.passwords_match" = "Passwörter stimmen überein";
+"auth.reset_password.button.reset" = "Passwort zurücksetzen";
+"auth.reset_password.button.back_to_sign_in" = "Zurück zur Anmeldung";
+"auth.reset_password.error.unexpected" = "Ein unerwarteter Fehler ist aufgetreten.";
+
+// MARK: - Onboarding
+"onboarding.page1.title" = "BILDER\nHOSTEN";
+"onboarding.page1.subtitle" = "Sicherer Cloud-Speicher";
+"onboarding.page2.title" = "VON\nÜBERALL\nTEILEN";
+"onboarding.page2.subtitle" = "iOS-Teilen-Erweiterung";
+"onboarding.page3.title" = "DIREKT-\nLINKS\nERHALTEN";
+"onboarding.page3.subtitle" = "Sofort teilbare URLs";
+"onboarding.page4.title" = "ALLES\nORGANI-\nSIERT";
+"onboarding.page4.subtitle" = "Alle Uploads an einem Ort";
+"onboarding.button.skip" = "ÜBERSPRINGEN";
+"onboarding.button.next" = "WEITER";
+"onboarding.button.start" = "STARTEN";
+"onboarding.page_indicator" = "%d/%d";
+
+// MARK: - Upload View
+"upload.title" = "HOCHLADEN";
+"upload.drop_zone.title" = "DATEI\nHOCHLADEN";
+"upload.drop_zone.subtitle" = "Bilder, Videos, Dokumente und mehr";
+"upload.source.photo_library" = "Fotobibliothek";
+"upload.source.browse_files" = "Dateien durchsuchen";
+"upload.confirm.file" = "\"%@\" hochladen?";
+"upload.confirm.photo" = "Ausgewähltes Foto hochladen?";
+"upload.confirm.resolution" = "Auflösung: %@";
+"upload.confirm.button.upload" = "Hochladen";
+"upload.confirm.button.cancel" = "Abbrechen";
+"upload.progress.title" = "WIRD HOCHGELADEN";
+"upload.progress.cancel" = "Abbrechen";
+"upload.success.title" = "HOCHGELADEN";
+"upload.success.link_copied" = "Link in Zwischenablage kopiert";
+"upload.success.hold_to_copy" = "Gedrückt halten zum Kopieren";
+"upload.success.copied_feedback" = "Kopiert!";
+"upload.success.button.upload_another" = "Weitere hochladen";
+"upload.failure.title" = "HOCHLADEN FEHLGESCHLAGEN";
+"upload.failure.button.retry" = "Erneut versuchen";
+"upload.failure.button.cancel" = "Abbrechen";
+
+// MARK: - History View
+"history.title" = "MEDIEN";
+"history.empty.title" = "NOCH\nKEINE\nMEDIEN";
+"history.empty.subtitle.upload" = "Lade Dateien hoch, um loszulegen.";
+"history.empty.subtitle.sync" = "Deine Uploads erscheinen hier.";
+"history.error.title" = "Etwas ist schiefgelaufen";
+"history.error.button.retry" = "Erneut versuchen";
+
+// MARK: - Upload Detail View
+"detail.section.image_url" = "Bild-URL";
+"detail.section.details" = "Details";
+"detail.label.uploaded" = "Hochgeladen";
+"detail.label.original_file" = "Originaldatei";
+"detail.label.id" = "ID";
+"detail.alert.delete.title" = "Bild löschen";
+"detail.alert.delete.button.confirm" = "Vom Server löschen";
+"detail.alert.delete.button.cancel" = "Abbrechen";
+"detail.alert.delete.message" = "Das Bild wird dauerhaft vom Server gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.";
+"detail.button.share" = "TEILEN";
+"detail.button.copy" = "KOPIEREN";
+"detail.button.copied" = "KOPIERT";
+"detail.button.open" = "ÖFFNEN";
+"detail.button.delete" = "LÖSCHEN";
+"detail.button.delete_deleting" = "...";
+"detail.copy_button.label" = "KOPIEREN";
+"detail.copy_button.copied" = "✓";
+
+// MARK: - Photo Grid
+"photogrid.button.cancel" = "ABBRECHEN";
+"photogrid.alert.delete.title" = "%d Datei löschen?";
+"photogrid.alert.delete.title_plural" = "%d Dateien löschen?";
+"photogrid.alert.delete.button.confirm" = "Löschen";
+"photogrid.alert.delete.button.cancel" = "Abbrechen";
+"photogrid.alert.delete.message" = "Die ausgewählten Dateien werden dauerhaft vom Server gelöscht.";
+"photogrid.date.today" = "Heute";
+"photogrid.date.yesterday" = "Gestern";
+"photogrid.select_indicator" = "✓";
+
+// MARK: - Settings View
+"settings.title" = "EINSTELLUNGEN";
+"settings.subtitle" = "KONTO & EINSTELLUNGEN";
+"settings.section.account" = "Konto";
+"settings.account.email_verified" = "✓ VERIFIZIERT";
+"settings.section.storage" = "Speicher";
+"settings.storage.separator" = "/";
+"settings.storage.percent_format" = "%.2f%%";
+"settings.subscription.button.upgrade" = "Auf Pro upgraden";
+"settings.subscription.button.subscribe" = "Pro abonnieren";
+"settings.section.upload" = "Upload";
+"settings.upload.label.resolution" = "STANDARDAUFLÖSUNG";
+"settings.upload.label.default_badge" = "STANDARD";
+"settings.upload.hint" = "Niedrigere Qualität = kleinere Dateien, schnellere Uploads";
+"settings.upload.label.behavior" = "VERHALTEN";
+"settings.upload.toggle.confirm_label" = "Vor dem Hochladen bestätigen";
+"settings.upload.toggle.confirm_hint" = "Vor jedem Upload um Bestätigung bitten";
+"settings.section.link_format" = "Linkformat";
+"settings.link_format.variables_label" = "Variablen:";
+"settings.link_format.var.url" = "{url}";
+"settings.link_format.var.filename" = "{filename}";
+"settings.link_format.button.edit_custom" = "EIGENES FORMAT BEARBEITEN";
+"settings.section.actions" = "Aktionen";
+"settings.action.clear_history.title" = "Upload-Verlauf löschen";
+"settings.action.clear_history.subtitle" = "Nur lokalen Verlauf entfernen";
+"settings.action.export.title" = "Alle Bilder exportieren";
+"settings.action.export.subtitle" = "Als ZIP-Archiv herunterladen";
+"settings.action.delete_account.title" = "Konto löschen";
+"settings.action.delete_account.subtitle" = "Alle Daten dauerhaft löschen";
+"settings.section.legal" = "Rechtliches";
+"settings.legal.terms" = "Nutzungsbedingungen (EULA)";
+"settings.legal.privacy" = "Datenschutzrichtlinie";
+"settings.button.sign_out" = "Abmelden";
+"settings.alert.ok" = "OK";
+"settings.alert.clear_history.title" = "Verlauf löschen";
+"settings.alert.clear_history.button.confirm" = "Gesamten Verlauf löschen";
+"settings.alert.clear_history.button.cancel" = "Abbrechen";
+"settings.alert.clear_history.message" = "Der gesamte Upload-Verlauf wird von diesem Gerät entfernt. Bilder auf dem Server sind nicht betroffen.";
+"settings.alert.delete_account.title" = "Konto löschen";
+"settings.alert.delete_account.button.confirm" = "Konto löschen";
+"settings.alert.delete_account.button.cancel" = "Abbrechen";
+"settings.alert.delete_account.message" = "Dein Konto und alle hochgeladenen Bilder werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.";
+"settings.success.history_cleared.title" = "Verlauf gelöscht";
+"settings.success.history_cleared.message" = "Der gesamte Upload-Verlauf wurde entfernt.";
+"settings.error.title" = "Fehler";
+"settings.error.load_account" = "Kontoinformationen konnten nicht geladen werden: %@";
+"settings.error.clear_history" = "Verlauf konnte nicht gelöscht werden: %@";
+"settings.error.delete_account" = "Konto konnte nicht gelöscht werden: %@";
+"settings.custom_format.title" = "EIGENES\nFORMAT";
+"settings.custom_format.description" = "Eigene Linkvorlage definieren";
+"settings.custom_format.label.template" = "VORLAGE";
+"settings.custom_format.placeholder" = "Vorlage eingeben...";
+"settings.custom_format.label.variables" = "VERFÜGBARE VARIABLEN";
+"settings.custom_format.var.url" = "{url}";
+"settings.custom_format.var.url.desc" = "- Die Bild-URL";
+"settings.custom_format.var.filename" = "{filename}";
+"settings.custom_format.var.filename.desc" = "- Originaler Dateiname";
+"settings.custom_format.label.preview" = "VORSCHAU";
+"settings.custom_format.button.save" = "Format speichern";
+"settings.custom_format.button.cancel" = "ABBRECHEN";
+"settings.export.title" = "EXPORTIEREN";
+"settings.export.description" = "Erstelle ein ZIP-Archiv aller hochgeladenen Bilder.";
+"settings.export.button.start" = "Export starten";
+"settings.export.state.starting" = "Starten";
+"settings.export.state.exporting" = "BILDER EXPORTIEREN";
+"settings.export.state.downloading" = "ARCHIV HERUNTERLADEN";
+"settings.export.state.complete.icon" = "✓";
+"settings.export.state.complete.title" = "EXPORT ABGESCHLOSSEN";
+"settings.export.state.complete.button.save_photos" = "In Fotos sichern";
+"settings.export.state.complete.button.save_files" = "In Dateien sichern";
+"settings.export.state.complete.button.done" = "Fertig";
+"settings.export.state.saving_photos" = "IN FOTOS SICHERN";
+"settings.export.state.saved_photos.icon" = "✓";
+"settings.export.state.saved_photos.title" = "IN FOTOS GESICHERT";
+"settings.export.state.saved_photos.message" = "%d Bilder in deiner Fotobibliothek gesichert";
+"settings.export.state.saved_photos.button.done" = "Fertig";
+"settings.export.state.failed.icon" = "✕";
+"settings.export.state.failed.title" = "EXPORT FEHLGESCHLAGEN";
+"settings.export.state.failed.button.retry" = "Erneut versuchen";
+"settings.export.state.failed.button.cancel" = "Abbrechen";
+"settings.export.button.cancel" = "Abbrechen";
+"settings.export.progress_format" = "%d%%";
+
+// MARK: - Paywall / Subscription
+"paywall.title.unlock" = "FREISCHALTEN";
+"paywall.title.pro" = "PRO";
+"paywall.title.trial" = "7 TAGE KOSTENLOS TESTEN";
+"paywall.section.features" = "DAS BEKOMMST DU";
+"paywall.feature.file_size.title" = "500 MB Dateigröße";
+"paywall.feature.file_size.desc" = "Große Dateien, Videos und mehr hochladen";
+"paywall.feature.storage.title" = "10 GB Speicher";
+"paywall.feature.storage.desc" = "Pro-Speicherlimit während der Testphase";
+"paywall.feature.sharing.title" = "Schnelles Teilen";
+"paywall.feature.sharing.desc" = "Sofortige Links für deine Bilder";
+"paywall.feature.private.title" = "Standardmäßig privat";
+"paywall.feature.private.desc" = "Sicherer, verschlüsselter Speicher";
+"paywall.section.plans" = "WÄHLE DEINEN PLAN";
+"paywall.error.loading" = "Abooptionen konnten nicht geladen werden";
+"paywall.button.retry" = "Erneut versuchen";
+"paywall.badge.save" = "30 % SPAREN";
+"paywall.button.start_trial" = "Kostenlos testen";
+"paywall.button.restore" = "Käufe wiederherstellen";
+"paywall.price.per_month_format" = "%@/Monat";
+"paywall.price.per_month_fallback" = "/Monat";
+"paywall.error.alert.title" = "Fehler";
+"paywall.error.alert.button.ok" = "OK";
+"paywall.error.alert.message_fallback" = "Ein Fehler ist aufgetreten";
+"paywall.legal.renewal_notice" = "Nach deiner 7-tägigen kostenlosen Testphase verlängert sich dein Abonnement automatisch zum gewählten Preis, sofern du nicht mindestens 24 Stunden vor Ablauf der Testphase kündigst. Die Zahlung wird bei Kaufbestätigung deinem Apple-ID-Konto belastet. Dein Abonnement verlängert sich automatisch, sofern du die automatische Verlängerung nicht mindestens 24 Stunden vor Ablauf des aktuellen Zeitraums deaktivierst. Du kannst deine Abonnements in den Einstellungen deines App Store-Kontos verwalten und kündigen.";
+"paywall.legal.separator" = "|";
+"paywall.legal.button.terms" = "AGB";
+"paywall.legal.button.privacy" = "Datenschutz";
+
+// MARK: - Subscription Status
+"subscription.title" = "ABONNEMENT";
+"subscription.section.current_plan" = "AKTUELLER PLAN";
+"subscription.button.manage" = "Abonnement verwalten";
+"subscription.plan.trial" = "PRO-TESTPHASE";
+"subscription.plan.active" = "PRO";
+"subscription.plan.cancelled" = "PRO (GEKÜNDIGT)";
+"subscription.plan.free" = "KOSTENLOS";
+"subscription.badge.trial" = "TESTPHASE";
+"subscription.badge.active" = "AKTIV";
+"subscription.badge.cancelled" = "GEKÜNDIGT";
+"subscription.badge.expired" = "ABGELAUFEN";
+"subscription.trial.ends_tomorrow" = "Testphase endet morgen";
+"subscription.trial.ends_in_days" = "Testphase endet in %d Tagen";
+"subscription.renews_on" = "Verlängert sich am %@";
+"subscription.expires_on" = "Läuft ab am %@";
+"subscription.access_until" = "Zugang bis %@";
+"subscription.expired_message" = "Dein Abonnement ist abgelaufen";
+
+// MARK: - Error Messages
+"error.not_configured.description" = "App nicht konfiguriert. Bitte richte die Backend-URL und den Token in den Einstellungen ein.";
+"error.invalid_url.description" = "Ungültige Backend-URL. Bitte überprüfe deine Einstellungen.";
+"error.invalid_url.recovery" = "Stelle sicher, dass die URL mit https:// beginnt und eine gültige Webadresse ist.";
+"error.upload_failed.with_message" = "Hochladen fehlgeschlagen (%d): %@";
+"error.upload_failed.status_only" = "Hochladen fehlgeschlagen mit Statuscode %d";
+"error.network.description" = "Netzwerkfehler: %@";
+"error.invalid_response.description" = "Ungültige Antwort vom Server";
+"error.keychain.description" = "Keychain-Fehler: %d";
+"error.file_system.description" = "Dateisystemfehler: %@";
+"error.image_processing.description" = "Bild konnte nicht verarbeitet werden";
+"error.delete_failed.with_message" = "Löschen fehlgeschlagen (%d): %@";
+"error.delete_failed.status_only" = "Löschen fehlgeschlagen mit Statuscode %d";
+"error.email_not_verified.description" = "Bitte bestätige deine E-Mail, bevor du Bilder hochlädst.";
+"error.subscription_required.description" = "Ein aktives Abonnement ist erforderlich, um Dateien hochzuladen.";
+"error.not_configured.recovery" = "Öffne die imghost-App und konfiguriere deine Backend-URL und deinen Upload-Token.";
+"error.upload_failed.recovery" = "Überprüfe deine Internetverbindung und versuche es erneut. Falls das Problem weiterhin besteht, überprüfe deinen Upload-Token.";
+"error.network.recovery" = "Überprüfe deine Internetverbindung und versuche es erneut.";
+"error.invalid_response.recovery" = "Der Server hat eine unerwartete Antwort gesendet. Bitte versuche es später erneut.";
+"error.keychain.recovery" = "Versuche, deinen Upload-Token in den Einstellungen zu entfernen und erneut einzugeben.";
+"error.file_system.recovery" = "Versuche, die App neu zu starten. Falls das Problem weiterhin besteht, installiere die App erneut.";
+"error.image_processing.recovery" = "Das Bild ist möglicherweise beschädigt oder in einem nicht unterstützten Format.";
+"error.delete_failed.recovery" = "Das Bild wurde möglicherweise bereits gelöscht, oder dein Token hat keine Löschberechtigung.";
+"error.email_not_verified.recovery" = "Öffne die imghost-App und bestätige deine E-Mail-Adresse, um Uploads zu aktivieren.";
+"error.subscription_required.recovery" = "Abonniere imghost Pro, um Uploads und Speicher freizuschalten.";
+
+// MARK: - Mac Auth Login
+"auth.login.app_name" = "IMG\nHOST";
+"auth.login.tagline" = "SICHERES BILDER-HOSTING";
+"auth.login.section.sign_in" = "ANMELDEN";
+"auth.login.section.hint" = "Anmeldedaten eingeben";
+"auth.login.button.create_account" = "KONTO ERSTELLEN";
+"auth.login.button.forgot_password" = "PASSWORT VERGESSEN";
+"auth.login.error.no_apple_credential" = "Apple-Anmeldedaten konnten nicht abgerufen werden";
+
+// MARK: - Mac Auth Register
+"auth.register.sheet.title" = "KONTO ERSTELLEN";
+"auth.register.prompt.have_account" = "BEREITS EIN KONTO? ANMELDEN";
+
+// MARK: - Mac Auth Email Verification
+"auth.verify_email.button.verify" = "E-MAIL BESTÄTIGEN";
+"auth.verify_email.button.resend" = "CODE ERNEUT SENDEN";
+"auth.verify_email.button.sign_out" = "ABMELDEN";
+
+// MARK: - Mac Auth Reset Password
+"auth.forgot_password.sheet.title" = "PASSWORT ZURÜCKSETZEN";
+"auth.forgot_password.button.send_code" = "RÜCKSETZCODE SENDEN";
+"auth.forgot_password.button.enter_code" = "RÜCKSETZCODE EINGEBEN";
+"auth.forgot_password.button.send_again" = "ERNEUT SENDEN";
+"auth.reset_password.button.reset" = "PASSWORT ZURÜCKSETZEN";
+"auth.reset_password.success.title" = "PASSWORT AKTUALISIERT";
+"auth.reset_password.success.message" = "Du kannst dich jetzt mit deinem neuen Passwort anmelden.";
+"auth.reset_password.success.button.sign_in" = "ZURÜCK ZUR ANMELDUNG";
+
+// MARK: - Mac Onboarding (5 pages)
+"onboarding.page3.title" = "ZUGRIFF\nERLAUBEN";
+"onboarding.page3.subtitle" = "macOS fragt nach Zugriff auf geteilte Dateien — dies erlaubt imghost, Dateien zu lesen, die du aus anderen Apps wie Finder oder Safari teilst";
+"onboarding.page4.title" = "DIREKT-\nLINKS";
+"onboarding.page4.subtitle" = "Sofort teilbare URLs";
+"onboarding.page5.title" = "DRAG &\nDROP";
+"onboarding.page5.subtitle" = "Dateien mühelos hochladen";
+
+// MARK: - Mac Settings
+"settings.section.subscription" = "Abonnement";
+"settings.subscription.days_remaining" = "%d Tage verbleibend";
+"settings.subscription.button.manage" = "ABONNEMENT VERWALTEN";
+"settings.badge.trial" = "TESTPHASE";
+"settings.badge.active" = "AKTIV";
+"settings.badge.cancelled" = "GEKÜNDIGT";
+"settings.badge.expired" = "ABGELAUFEN";
+"settings.storage.of_limit" = "von %@";
+"settings.storage.percent_format" = "%.0f%%";
+"settings.storage.file_count" = "%d Dateien";
+"settings.section.link_format.subtitle" = "Format beim Kopieren von Links";
+"settings.link_format.custom_field" = "Eigene Vorlage";
+"settings.section.upload.subtitle" = "Standardverhalten für alle Uploads";
+"settings.section.data" = "Daten";
+"settings.data.button.export" = "ALLE DATEN EXPORTIEREN";
+"settings.section.danger" = "Gefahrenzone";
+"settings.danger.button.delete_account" = "KONTO LÖSCHEN";
+"settings.danger.button.deleting" = "WIRD GELÖSCHT...";
+"settings.account.status.verified" = "VERIFIZIERT";
+"settings.account.status.unverified" = "NICHT VERIFIZIERT";
+"settings.account.button.sign_out" = "ABMELDEN";
+
+// MARK: - Mac Media View
+"media.title" = "MEDIEN";
+"media.search.placeholder" = "Suchen...";
+"media.label.quality" = "QUALITÄT";
+"media.button.upload.label" = "HOCHLADEN";
+"media.button.sync.help" = "Bilder vom Server synchronisieren";
+"media.button.upload.help" = "Dateien hochladen (oder per Drag & Drop, oder mit ⌘V einfügen)";
+"media.file_count" = "%d";
+"media.upload.progress.title" = "WIRD HOCHGELADEN";
+"media.upload.progress.percent" = "%d%%";
+"media.upload.progress.cancel" = "ABBRECHEN";
+"media.drop_zone.title" = "DATEIEN HIER ABLEGEN";
+"media.drop_zone.subtitle" = "oder auf Hochladen klicken";
+"media.drop_zone.hint" = "Bilder, Videos und Dateien bis 500 MB";
+"media.clipboard.hint" = "zum Einfügen aus der Zwischenablage";
+"media.drag_overlay.title" = "ZUM HOCHLADEN ABLEGEN";
+"media.loading" = "Laden";
+"media.banner.subscription_required" = "Abonnement zum Hochladen erforderlich";
+"media.banner.upload_success_singular" = "%d Datei hochgeladen — Link kopiert";
+"media.banner.upload_success_plural" = "%d Dateien hochgeladen — Links kopiert";
+"media.banner.upload_failed_singular" = "%d Upload fehlgeschlagen";
+"media.banner.upload_failed_plural" = "%d Uploads fehlgeschlagen";
+"media.banner.upload_partial" = "%d hochgeladen, %d fehlgeschlagen";
+
+// MARK: - Mac History View
+"history.title" = "VERLAUF";
+"history.search.placeholder" = "Suchen...";
+"history.loading" = "Laden";
+"history.empty.title" = "Noch keine Uploads";
+"history.empty.subtitle" = "Lade dein erstes Bild hoch";
+"history.search.empty.title" = "Keine Ergebnisse";
+"history.search.empty.subtitle" = "Versuche einen anderen Suchbegriff";
+"history.file_count" = "%d";
+"history.detail.placeholder" = "BILD AUSWÄHLEN";
+
+// MARK: - Mac Upload View
+"upload.confirm.files_plural" = "%d Dateien hochladen?";
+"upload.confirm.clipboard_single" = "Bild aus Zwischenablage hochladen?";
+"upload.confirm.clipboard_plural" = "%d Elemente aus Zwischenablage hochladen?";
+"upload.label.resolution" = "AUFLÖSUNG";
+"upload.drop_zone.subtitle" = "oder klicken zum Durchsuchen";
+"upload.clipboard.hint" = "zum Einfügen aus der Zwischenablage";
+"upload.success.button.upload_more" = "WEITERE HOCHLADEN";
+"upload.success.button.copy_all" = "ALLE LINKS KOPIEREN";
+
+// MARK: - Mac Upload Detail View
+"detail.label.filename" = "DATEINAME";
+"detail.label.link_format" = "LINKFORMAT";
+"detail.button.copy_link" = "LINK KOPIEREN";
+"detail.button.copied" = "KOPIERT";
+"detail.button.share" = "TEILEN";
+
+// MARK: - Mac Paywall
+"paywall.feature.file_size" = "500 MB Dateien";
+"paywall.feature.storage" = "10 GB Speicher";
+"paywall.feature.sharing" = "Schnelles Teilen";
+"paywall.feature.private" = "Privat";
+
+// MARK: - Menu Bar
+"menubar.app_name" = "IMGHOST";
+"menubar.status.online" = "ONLINE";
+"menubar.button.upload.label" = "HOCHLADEN";
+"menubar.button.paste.label" = "EINFÜGEN";
+"menubar.button.sync.label" = "SYNC";
+"menubar.upload.filename_fallback" = "Wird hochgeladen...";
+"menubar.upload.progress_percent" = "%d%%";
+"menubar.section.recent" = "ZULETZT";
+"menubar.recent.empty" = "NOCH KEINE UPLOADS";
+"menubar.footer.open_app" = "App öffnen";
+"menubar.footer.settings" = "Einstellungen";
+"menubar.footer.quit" = "Beenden";
+"menubar.not_signed_in.title" = "NICHT ANGEMELDET";
+"menubar.not_signed_in.message" = "Öffne die App zum Anmelden";
+"menubar.not_signed_in.button.open" = "IMGHOST ÖFFNEN";
+"menubar.upload_panel.title" = "Bild hochladen";
+"menubar.confirm.file" = "\"%@\" hochladen?";
+"menubar.confirm.clipboard" = "Bild aus Zwischenablage hochladen?";
+"menubar.confirm.resolution" = "Auflösung: %@";
+"menubar.confirm.button.upload" = "Hochladen";
+"menubar.confirm.button.cancel" = "Abbrechen";
+"menubar.status.no_clipboard_image" = "Kein Bild in der Zwischenablage";
+"menubar.status.uploaded_link_copied" = "Hochgeladen — Link kopiert";
+"menubar.status.upload_failed" = "Hochladen fehlgeschlagen";
+"menubar.status.synced" = "Synchronisiert";
+"menubar.time.just_now" = "gerade eben";
+"menubar.time.minutes_ago" = "vor %d Min.";
+"menubar.time.hours_ago" = "vor %d Std.";
+"menubar.time.days_ago" = "vor %d T.";
+"menubar.recent_item.filename_fallback" = "Bild";
