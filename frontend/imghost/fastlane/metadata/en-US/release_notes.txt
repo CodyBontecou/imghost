@@ -1,1 +1,2 @@
+• Fixed Sign in with Apple on macOS — authentication now works correctly for all users
 • App Store review prompts: imghost now asks for a review after your 3rd successful upload — when you've had a chance to form a real opinion. No spam, no interruptions during onboarding.

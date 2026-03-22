@@ -195,12 +195,12 @@
 "settings.section.link_format.subtitle" = "Format used when copying links";
 "settings.link_format.custom_field" = "Custom Template";
 "settings.section.upload" = "Upload";
-"settings.section.upload.subtitle" = "Default behavior for all uploads";
+"settings.section.upload.subtitle" = "Default behavior for the share extension";
 "settings.upload.label.resolution" = "DEFAULT RESOLUTION";
 "settings.upload.label.default_badge" = "DEFAULT";
 "settings.upload.label.behavior" = "BEHAVIOR";
 "settings.upload.toggle.confirm_label" = "Confirm before uploading";
-"settings.upload.toggle.confirm_hint" = "Ask for confirmation before each upload starts";
+"settings.upload.toggle.confirm_hint" = "When off, the share extension uploads instantly at the default resolution without showing a dialog";
 "settings.section.data" = "Data";
 "settings.data.button.export" = "EXPORT ALL DATA";
 "settings.section.danger" = "Danger Zone";

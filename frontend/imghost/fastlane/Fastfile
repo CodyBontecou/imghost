@@ -54,7 +54,7 @@ platform :ios do
 end
 
 platform :mac do
-  desc "Submit for review"
+  desc "Build, upload, and submit for review"
   lane :submit do
     k = app_store_connect_api_key(
       key_id: KEY_ID,
@@ -62,6 +62,41 @@ platform :mac do
       key_filepath: KEY_PATH,
       in_house: false
     )
+
+    # Archive
+    xcodebuild(
+      scheme: "imghostMac",
+      project: "imghost.xcodeproj",
+      configuration: "Release",
+      destination: "generic/platform=macOS",
+      archive: true,
+      archive_path: "build/imghostMac.xcarchive",
+      xcargs: "CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM=67KC823C9A"
+    )
+
+    # Export .pkg for App Store
+    xcodebuild(
+      export_archive: true,
+      export_archive_path: "build/imghostMac.xcarchive",
+      export_path: "build/imghostMac-export",
+      export_options_plist: "build/imghostMac-export/ExportOptions.plist"
+    )
+
+    # Upload binary only
+    deliver(
+      api_key: k,
+      app_identifier: APP_ID,
+      app_version: "1.3",
+      pkg: "build/imghostMac-export/imghost.pkg",
+      skip_screenshots: true,
+      skip_metadata: true,
+      run_precheck_before_submit: false,
+      submit_for_review: false,
+      force: true,
+      platform: "osx"
+    )
+
+    # Submit for review (binary already uploaded)
     deliver(
       api_key: k,
       app_identifier: APP_ID,

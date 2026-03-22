@@ -52,6 +52,7 @@ private struct SelectableLinkText: NSViewRepresentable {
 struct MacUploadDetailView: View {
     let record: UploadRecord
     let onDelete: () -> Void
+    let onClose: () -> Void
 
     @State private var isCopied = false
     @State private var showDeleteConfirm = false
@@ -60,9 +61,10 @@ struct MacUploadDetailView: View {
 
     private let linkFormatService = LinkFormatService.shared
 
-    init(record: UploadRecord, onDelete: @escaping () -> Void) {
+    init(record: UploadRecord, onDelete: @escaping () -> Void, onClose: @escaping () -> Void) {
         self.record = record
         self.onDelete = onDelete
+        self.onClose = onClose
         _selectedFormat = State(initialValue: LinkFormatService.shared.currentFormat)
     }
 
@@ -71,8 +73,26 @@ struct MacUploadDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
+            // Fixed close header — always visible, never scrolls away
+            HStack {
+                Spacer()
+                Button(action: onClose) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(Color.brutalTextSecondary)
+                        .frame(width: 28, height: 28)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help("Close sidebar")
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Color.brutalSurface)
+
+            ScrollView {
+                VStack(spacing: 0) {
                 // Image preview
                 imagePreview
 
@@ -200,8 +220,9 @@ struct MacUploadDetailView: View {
                     }
                 }
                 .padding(16)
-            }
-        }
+            } // VStack inside ScrollView
+            } // ScrollView
+        } // outer VStack
         .background(Color.brutalSurface.opacity(0.5))
         .alert(String(localized: "detail.alert.delete.title"), isPresented: $showDeleteConfirm) {
             Button(String(localized: "detail.alert.delete.button.cancel"), role: .cancel) {}

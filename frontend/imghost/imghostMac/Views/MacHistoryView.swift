@@ -136,6 +136,8 @@ struct MacHistoryView: View {
             if let record = selectedRecord {
                 MacUploadDetailView(record: record, onDelete: {
                     deleteRecord(record)
+                }, onClose: {
+                    withAnimation { selectedRecord = nil }
                 })
                 .frame(minWidth: 280, idealWidth: 320)
             } else {

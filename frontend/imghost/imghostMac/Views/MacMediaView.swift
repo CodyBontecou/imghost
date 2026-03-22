@@ -68,75 +68,78 @@ struct MacMediaView: View {
     // MARK: - Body
 
     var body: some View {
-        HStack(spacing: 0) {
-            // Left: Grid + Upload
-            VStack(spacing: 0) {
-                toolbar
+        VStack(spacing: 0) {
+            toolbar
 
-                Divider().background(Color.brutalBorder)
+            Divider().background(Color.brutalBorder)
 
-                // Upload progress banner
-                if isUploading {
-                    uploadProgressBanner
-                }
-
-                // Success/error banner
-                if showUploadBanner {
-                    resultBanner
-                }
-
-                // Main content area
-                ZStack {
-                    if isLoading {
-                        VStack {
-                            Spacer()
-                            BrutalLoading(text: String(localized: "media.loading"))
-                            Spacer()
-                        }
-                    } else if filteredRecords.isEmpty && !isUploading {
-                        emptyState
-                    } else {
-                        gridContent
-                    }
-
-                    // Drag overlay
-                    if isDragOver {
-                        dragOverlay
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .onDrop(of: [.fileURL], isTargeted: $isDragOver) { providers in
-                    handleDrop(providers: providers)
-                    return true
-                }
-                .onPasteCommand(of: [.fileURL, .image, .png, .jpeg]) { providers in
-                    handlePaste(providers: providers)
-                }
-            }
-            .frame(minWidth: 400, maxWidth: .infinity)
-            .background(Color.brutalBackground)
-            .fileImporter(
-                isPresented: $showFileImporter,
-                allowedContentTypes: [.image, .movie, .data],
-                allowsMultipleSelection: true
-            ) { result in
-                handleFileImport(result)
+            // Upload progress banner
+            if isUploading {
+                uploadProgressBanner
             }
 
-            // Right: Detail
-            if let record = selectedRecord {
-                Divider().background(Color.brutalBorder)
-                MacUploadDetailView(record: record, onDelete: {
-                    deleteRecord(record)
-                })
-                .frame(width: detailWidth(for: record))
-                .transition(.move(edge: .trailing).combined(with: .opacity))
+            // Success/error banner
+            if showUploadBanner {
+                resultBanner
+            }
+
+            // Main content area
+            ZStack {
+                if isLoading {
+                    VStack {
+                        Spacer()
+                        BrutalLoading(text: String(localized: "media.loading"))
+                        Spacer()
+                    }
+                } else if filteredRecords.isEmpty && !isUploading {
+                    emptyState
+                } else {
+                    gridContent
+                }
+
+                // Drag overlay
+                if isDragOver {
+                    dragOverlay
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onDrop(of: [.fileURL], isTargeted: $isDragOver) { providers in
+                handleDrop(providers: providers)
+                return true
+            }
+            .onPasteCommand(of: [.fileURL, .image, .png, .jpeg]) { providers in
+                handlePaste(providers: providers)
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: selectedRecord?.id)
+        .frame(minWidth: 400, maxWidth: .infinity)
+        .background(Color.brutalBackground)
+        .fileImporter(
+            isPresented: $showFileImporter,
+            allowedContentTypes: [.image, .movie, .data],
+            allowsMultipleSelection: true
+        ) { result in
+            handleFileImport(result)
+        }
+        .inspector(isPresented: inspectorBinding) {
+            if let record = selectedRecord {
+                MacUploadDetailView(record: record, onDelete: {
+                    deleteRecord(record)
+                }, onClose: {
+                    selectedRecord = nil
+                })
+                .inspectorColumnWidth(min: 260, ideal: 300, max: 360)
+            }
+        }
         .task {
             loadRecords()
         }
+    }
+
+    private var inspectorBinding: Binding<Bool> {
+        Binding(
+            get: { selectedRecord != nil },
+            set: { if !$0 { selectedRecord = nil } }
+        )
     }
 
     // MARK: - Toolbar
@@ -372,7 +375,13 @@ struct MacMediaView: View {
                                 isSelected: selectedRecord?.id == record.id
                             )
                             .onTapGesture {
-                                selectedRecord = record
+                                withAnimation {
+                                    if selectedRecord?.id == record.id {
+                                        selectedRecord = nil
+                                    } else {
+                                        selectedRecord = record
+                                    }
+                                }
                             }
                         }
                     }
@@ -405,27 +414,6 @@ struct MacMediaView: View {
                 .stroke(Color.white, style: StrokeStyle(lineWidth: 2, dash: [12, 8]))
                 .padding(16)
         )
-    }
-
-    // MARK: - Detail Sidebar Sizing
-
-    /// Computes sidebar width so the image preview (at max 300pt height) shows the
-    /// full image without cropping.  Clamped to [280, 600] so controls stay usable
-    /// and the sidebar never dominates the window.
-    private func detailWidth(for record: UploadRecord) -> CGFloat {
-        let previewMaxHeight: CGFloat = 300
-        let minWidth: CGFloat = 280
-        let maxWidth: CGFloat = 600
-
-        if let data = record.thumbnailData, let nsImage = NSImage(data: data) {
-            let size = nsImage.size
-            if size.height > 0 {
-                let aspectRatio = size.width / size.height
-                let idealWidth = previewMaxHeight * aspectRatio
-                return max(minWidth, min(maxWidth, idealWidth))
-            }
-        }
-        return 320 // default fallback
     }
 
     // MARK: - History Actions
