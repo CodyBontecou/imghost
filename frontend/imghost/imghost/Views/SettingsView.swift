@@ -479,6 +479,8 @@ struct SettingsView: View {
         .toolbarBackground(Color.brutalBackground, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .onAppear {
+            // Always refresh subscription status so Settings reflects current server state
+            Task { await subscriptionState.checkStatus() }
             if authState.currentUser == nil || authState.currentUser?.storageUsedBytes == 0 {
                 refreshUserInfo()
             }
