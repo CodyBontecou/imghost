@@ -1,4 +1,5 @@
 // Authentication endpoint handlers
+import { EmailMessage } from 'cloudflare:email';
 import { Database } from './database';
 import { Auth } from './auth';
 import { AppleAuth } from './apple-auth';
@@ -10,10 +11,10 @@ interface Env {
   DB: D1Database;
   JWT_SECRET: string;
   EMAIL_FROM?: string;
-  EMAIL_API_KEY?: string;
   BASE_URL?: string;
   APPLE_CLIENT_ID?: string;
   APPLE_MAC_CLIENT_ID?: string;
+  SEND_EMAIL?: SendEmail;
 }
 
 function json(data: unknown, status = 200): Response {
@@ -23,32 +24,29 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-// Helper function to send email (placeholder - integrate with email service)
+// Send email via Cloudflare Email Workers
 async function sendEmail(to: string, subject: string, body: string, env: Env): Promise<boolean> {
-  // TODO: Integrate with actual email service (SendGrid, Postmark, or Cloudflare Email Workers)
-  // For now, just log the email
-  console.log(`[EMAIL] To: ${to}, Subject: ${subject}, Body: ${body}`);
+  const from = env.EMAIL_FROM || 'noreply@imghost.isolated.tech';
 
-  // If EMAIL_API_KEY is set, you can integrate with actual email service here
-  // Example with SendGrid:
-  // if (env.EMAIL_API_KEY && env.EMAIL_FROM) {
-  //   const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Authorization': `Bearer ${env.EMAIL_API_KEY}`,
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       personalizations: [{ to: [{ email: to }] }],
-  //       from: { email: env.EMAIL_FROM },
-  //       subject,
-  //       content: [{ type: 'text/plain', value: body }],
-  //     }),
-  //   });
-  //   return response.ok;
-  // }
+  // Fall back to console logging in local dev (SEND_EMAIL binding not available)
+  if (!env.SEND_EMAIL) {
+    console.log(`[EMAIL] To: ${to}, Subject: ${subject}\n${body}`);
+    return true;
+  }
 
-  return true; // Simulate success for now
+  const rawEmail = [
+    `From: imghost <${from}>`,
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=UTF-8',
+    '',
+    body,
+  ].join('\r\n');
+
+  const message = new EmailMessage(from, to, rawEmail);
+  await env.SEND_EMAIL.send(message);
+  return true;
 }
 
 /**

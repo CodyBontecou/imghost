@@ -83,16 +83,16 @@ export interface Env {
   UPLOAD_TOKEN: string; // Legacy - kept for backward compatibility
   JWT_SECRET: string;
   EMAIL_FROM?: string;
-  EMAIL_API_KEY?: string;
   BASE_URL?: string;
   APPLE_BUNDLE_ID?: string;
+  SEND_EMAIL?: SendEmail;
 }
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (paid tier / Cloudflare Workers limit)
 const FREE_MAX_FILE_SIZE = 5 * 1024 * 1024;    // 5MB max for free tier
 const FREE_STORAGE_LIMIT = 50 * 1024 * 1024;   // 50MB total for free tier
 const FREE_TTL_MS = 7 * 24 * 60 * 60 * 1000;  // 7 days TTL for free-tier images
-const FREE_DAILY_UPLOADS = 20;                  // max uploads per 24h for free tier
+const FREE_DAILY_UPLOADS = 5;                   // max uploads per 24h for free tier
 
 function generateId(): string {
   return crypto.randomUUID().slice(0, 8);

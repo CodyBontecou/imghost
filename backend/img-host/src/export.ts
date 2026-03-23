@@ -1,5 +1,6 @@
 // Export service for creating ZIP archives of user images
 
+import { zipSync, strToU8 } from 'fflate';
 import { Database, Image } from './database';
 
 export interface ExportManifest {
@@ -106,37 +107,50 @@ export class ExportService {
   }
 
   /**
-   * Create ZIP archive from images
+   * Create a real ZIP archive from images using fflate.
+   *
+   * Each image is stored with DEFLATE compression (level 6).
+   * A manifest.json is included at the root of the archive describing all exported files.
    */
   private async createZipArchive(images: Image[]): Promise<{ zipBlob: Blob; totalSize: number }> {
-    // For Cloudflare Workers, we need to use a streaming approach or a library
-    // Since we don't have native ZIP support, we'll use a simple approach:
-    // Create a ZIP file structure manually or use a lightweight library
-
-    // For now, we'll create a simple implementation that stores files with manifest
-    // In production, you'd want to use a proper ZIP library like fflate or jszip
-
-    const files: Array<{ name: string; data: ArrayBuffer }> = [];
+    const zipEntries: Record<string, [Uint8Array, { level: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }]> = {};
     let totalSize = 0;
 
-    // Fetch all images from R2
+    // Track seen filenames so we never write two entries with the same path
+    const seenNames = new Map<string, number>();
+
+    // Fetch all images from R2 and add to the zip entry map
     for (const image of images) {
       try {
         const object = await this.r2Bucket.get(image.r2_key);
-        if (object) {
-          const data = await object.arrayBuffer();
-          files.push({
-            name: image.filename,
-            data,
-          });
-          totalSize += data.byteLength;
+        if (!object) continue;
+
+        const data = new Uint8Array(await object.arrayBuffer());
+        totalSize += data.byteLength;
+
+        // Deduplicate filenames (e.g. two files both named "photo.jpg")
+        let entryName = image.filename;
+        const count = seenNames.get(entryName) ?? 0;
+        if (count > 0) {
+          const ext = entryName.includes('.') ? `.${entryName.split('.').pop()}` : '';
+          const base = ext ? entryName.slice(0, -ext.length) : entryName;
+          entryName = `${base}(${count})${ext}`;
         }
+        seenNames.set(image.filename, count + 1);
+
+        // Store images with compression; binary formats (JPEG/PNG/WEBP/GIF) are
+        // already compressed so level 1 avoids wasting CPU for negligible gain.
+        // For less-compressed formats (BMP, TIFF) use level 6.
+        const alreadyCompressed = /image\/(jpeg|png|webp|gif|heic|heif|avif)|video\//.test(
+          image.content_type
+        );
+        zipEntries[entryName] = [data, { level: alreadyCompressed ? 1 : 6 }];
       } catch (error) {
-        console.error(`Failed to fetch image ${image.r2_key}:`, error);
+        console.error(`Failed to fetch image ${image.r2_key} for export:`, error);
       }
     }
 
-    // Create manifest
+    // Build manifest describing everything in the archive
     const manifest: ExportManifest = {
       export_date: new Date().toISOString(),
       image_count: images.length,
@@ -150,38 +164,13 @@ export class ExportService {
       })),
     };
 
-    // Create a simple ZIP-like structure using custom format
-    // NOTE: For production, replace this with a proper ZIP library
-    const zipBlob = await this.createSimpleArchive(files, manifest);
+    zipEntries['manifest.json'] = [strToU8(JSON.stringify(manifest, null, 2)), { level: 6 }];
 
-    return { zipBlob, totalSize };
-  }
+    // Produce the ZIP synchronously (Workers are single-threaded; zipSync is fine
+    // for archives up to the Workers memory limit of ~128 MB)
+    const zipped = zipSync(zipEntries);
 
-  /**
-   * Create a simple archive format (placeholder for proper ZIP implementation)
-   * In production, use fflate or jszip library
-   */
-  private async createSimpleArchive(
-    files: Array<{ name: string; data: ArrayBuffer }>,
-    manifest: ExportManifest
-  ): Promise<Blob> {
-    // This is a simplified implementation
-    // In production, you should use a proper ZIP library like fflate
-
-    const parts: (Uint8Array | string)[] = [];
-
-    // Add manifest as first file
-    const manifestJson = JSON.stringify(manifest, null, 2);
-    parts.push(new TextEncoder().encode(`MANIFEST.JSON\n${manifestJson}\n\n`));
-
-    // Add each file
-    for (const file of files) {
-      parts.push(new TextEncoder().encode(`FILE:${file.name}\n`));
-      parts.push(new Uint8Array(file.data));
-      parts.push(new TextEncoder().encode('\n\n'));
-    }
-
-    return new Blob(parts);
+    return { zipBlob: new Blob([zipped], { type: 'application/zip' }), totalSize };
   }
 
   /**

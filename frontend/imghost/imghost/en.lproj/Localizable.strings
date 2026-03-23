@@ -344,7 +344,7 @@
 "upload.free_tier.ttl_notice_short" = "Expires in 7 days";
 "upload.free_tier.file_too_large" = "File exceeds the 5 MB free-tier limit.";
 "upload.free_tier.storage_full" = "You've used all 50 MB of free storage.";
-"upload.free_tier.daily_limit" = "You've reached the 20-upload daily limit.";
+"upload.free_tier.daily_limit" = "You've reached the 5-upload daily limit.";
 "upload.free_tier.upgrade_cta" = "Upgrade to Pro";
 
 // MARK: - Upload Detail (expiry badge)
@@ -379,7 +379,7 @@
 "error.subscription_required.recovery" = "Subscribe to imghost Pro to unlock uploads and storage.";
 "error.free_tier_file_size.description" = "File is too large for the free tier (5 MB limit).";
 "error.free_tier_storage_full.description" = "Your free storage (50 MB) is full.";
-"error.free_tier_daily_limit.description" = "You've reached today's upload limit on the free tier.";
+"error.free_tier_daily_limit.description" = "Free tier is limited to 5 uploads per day.";
 "error.free_tier.upgrade_recovery" = "Upgrade to Pro for 10 GB storage, 500 MB files, and permanent links.";
 
 // Feedback
