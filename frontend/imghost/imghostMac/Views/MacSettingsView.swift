@@ -72,10 +72,6 @@ struct MacSettingsView: View {
             }
         }
         .background(Color.brutalBackground)
-        .task {
-            // Always fetch fresh subscription status when Settings opens
-            await subscriptionState.checkStatus()
-        }
         .alert(String(localized: "settings.alert.delete_account.title"), isPresented: $showDeleteAccountConfirm) {
             Button(String(localized: "settings.alert.delete_account.button.cancel"), role: .cancel) {}
             Button(String(localized: "settings.alert.delete_account.button.confirm"), role: .destructive) { deleteAccount() }

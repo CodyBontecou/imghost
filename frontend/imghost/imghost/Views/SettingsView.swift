@@ -479,11 +479,7 @@ struct SettingsView: View {
         .toolbarBackground(Color.brutalBackground, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .onAppear {
-            // Always refresh subscription status so Settings reflects current server state
-            Task { await subscriptionState.checkStatus() }
-            if authState.currentUser == nil || authState.currentUser?.storageUsedBytes == 0 {
-                refreshUserInfo()
-            }
+            refreshUserInfo()
         }
         .alert(alertTitle, isPresented: $showAlert) {
             Button(String(localized: "settings.alert.ok"), role: .cancel) {}
@@ -583,11 +579,16 @@ struct SettingsView: View {
     }
 
     private func refreshUserInfo() {
+        guard !isLoadingUser else { return }
         isLoadingUser = true
 
         Task {
             do {
-                let user = try await AuthService.shared.getCurrentUser()
+                // Fetch user info (storage, tier) and subscription status in parallel
+                async let userFetch = AuthService.shared.getCurrentUser()
+                async let statusFetch: Void = subscriptionState.checkStatus()
+                let user = try await userFetch
+                _ = await statusFetch
                 await MainActor.run {
                     authState.updateUser(user)
                     isLoadingUser = false
