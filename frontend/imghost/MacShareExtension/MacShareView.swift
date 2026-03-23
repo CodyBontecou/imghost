@@ -880,6 +880,12 @@ struct MacShareView: View {
                 return String(localized: "share.error.description.image_processing")
             case .deleteFailed(let statusCode, let message):
                 return String(format: String(localized: "share.error.description.delete_failed"), statusCode, message ?? String(localized: "share.error.description.no_details"))
+            case .freeTierFileSizeExceeded:
+                return String(localized: "share.error.description.free_tier_file_size")
+            case .freeTierStorageFull:
+                return String(localized: "share.error.description.free_tier_storage_full")
+            case .freeTierDailyLimitReached:
+                return String(localized: "share.error.description.free_tier_daily_limit")
             }
         }
         return error.localizedDescription

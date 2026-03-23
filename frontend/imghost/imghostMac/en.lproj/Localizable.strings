@@ -325,6 +325,23 @@
 "error.email_not_verified.recovery" = "Open the imghost app and verify your email address to enable uploads.";
 "error.subscription_required.recovery" = "Subscribe to imghost Pro to unlock uploads and storage.";
 
+// Export
+"settings.export.title" = "EXPORT";
+"settings.export.description" = "Create a ZIP archive of all your uploaded images.";
+"settings.export.button.start" = "Start Export";
+"settings.export.button.cancel" = "Cancel";
+"settings.export.state.starting" = "Starting";
+"settings.export.state.exporting" = "EXPORTING IMAGES";
+"settings.export.state.downloading" = "DOWNLOADING ARCHIVE";
+"settings.export.state.complete.icon" = "✓";
+"settings.export.state.complete.title" = "EXPORT COMPLETE";
+"settings.export.state.complete.button.done" = "Done";
+"settings.export.state.failed.icon" = "✕";
+"settings.export.state.failed.title" = "EXPORT FAILED";
+"settings.export.state.failed.button.retry" = "Try Again";
+"settings.export.state.failed.button.cancel" = "Cancel";
+"settings.export.mac.button.save_finder" = "Save to Finder";
+
 // Feedback
 "settings.section.feedback" = "Feedback";
 "settings.feedback.button.send" = "Send Feedback";

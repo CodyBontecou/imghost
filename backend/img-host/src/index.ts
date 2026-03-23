@@ -85,7 +85,9 @@ export interface Env {
   EMAIL_FROM?: string;
   BASE_URL?: string;
   APPLE_BUNDLE_ID?: string;
-  SEND_EMAIL?: SendEmail;
+  AWS_ACCESS_KEY_ID?: string;
+  AWS_SECRET_ACCESS_KEY?: string;
+  AWS_REGION?: string;
 }
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (paid tier / Cloudflare Workers limit)

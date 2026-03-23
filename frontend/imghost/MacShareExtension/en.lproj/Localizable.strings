@@ -74,6 +74,9 @@
 "share.error.description.file_system" = "File error: %@";
 "share.error.description.image_processing" = "Failed to process image. File may be corrupted.";
 "share.error.description.delete_failed" = "Delete failed (HTTP %d): %@";
+"share.error.description.free_tier_file_size" = "File exceeds the free tier size limit.";
+"share.error.description.free_tier_storage_full" = "Free tier storage is full. Upgrade to continue uploading.";
+"share.error.description.free_tier_daily_limit" = "Daily upload limit reached. Upgrade for unlimited uploads.";
 "share.error.description.no_details" = "No details";
 
 // MARK: - Error Messages (ImghostError — shared)

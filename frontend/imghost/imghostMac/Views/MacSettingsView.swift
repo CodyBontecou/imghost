@@ -14,6 +14,11 @@ struct MacSettingsView: View {
     @State private var showExportView = false
     @State private var showPaywall = false
 
+    // Export state
+    @State private var exportState: MacExportState = .idle
+    @State private var exportedFileURL: URL? = nil
+    @State private var currentJobId: String? = nil
+
     private let linkFormatService = LinkFormatService.shared
     private let qualityService = UploadQualityService.shared
 
@@ -77,6 +82,16 @@ struct MacSettingsView: View {
             MacPaywallView(allowDismiss: true)
                 .environmentObject(subscriptionState)
                 .frame(width: 540, height: 620)
+        }
+        .sheet(isPresented: $showExportView, onDismiss: resetExportState) {
+            MacExportView(
+                exportState: $exportState,
+                exportedFileURL: exportedFileURL,
+                onStartExport: startExport,
+                onCancelExport: cancelExport,
+                onDismiss: { showExportView = false }
+            )
+            .frame(width: 420, height: 380)
         }
     }
 
@@ -481,6 +496,69 @@ struct MacSettingsView: View {
 
     private func logout() {
         authState.logout()
+    }
+
+    // MARK: - Export Actions
+
+    private func startExport() {
+        Task {
+            await MainActor.run { exportState = .starting }
+
+            do {
+                let jobId = try await ExportService.shared.startExport()
+                await MainActor.run { currentJobId = jobId }
+
+                let finalStatus = try await ExportService.shared.pollUntilComplete(jobId: jobId) { status in
+                    Task { @MainActor in
+                        switch status {
+                        case .processing(let progress):
+                            exportState = .exporting(progress: progress)
+                        case .failed(let error):
+                            exportState = .error(error)
+                        default:
+                            break
+                        }
+                    }
+                }
+
+                if case .completed(let downloadUrl) = finalStatus {
+                    await MainActor.run { exportState = .downloading(progress: 0.0) }
+
+                    let fileURL = try await ExportService.shared.downloadArchive(jobId: jobId) { progress in
+                        Task { @MainActor in
+                            exportState = .downloading(progress: progress)
+                        }
+                    }
+
+                    await MainActor.run {
+                        exportedFileURL = fileURL
+                        exportState = .complete
+                    }
+                    _ = downloadUrl
+                }
+            } catch {
+                await MainActor.run {
+                    exportState = .error(error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func cancelExport() {
+        guard let jobId = currentJobId else {
+            resetExportState()
+            return
+        }
+        Task {
+            try? await ExportService.shared.cancelExport(jobId: jobId)
+            await MainActor.run { resetExportState() }
+        }
+    }
+
+    private func resetExportState() {
+        exportState = .idle
+        exportedFileURL = nil
+        currentJobId = nil
     }
 
     private func deleteAccount() {

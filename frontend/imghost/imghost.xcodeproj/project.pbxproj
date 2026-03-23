@@ -46,6 +46,7 @@
 		7997CF8DB66E8AAC9D130E62 /* MacUploadDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1040C9A1CA69D632C30E4554 /* MacUploadDetailView.swift */; };
 		7D04552B096C14B6D51B106E /* MacLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBC4E12232045D8B7721410 /* MacLoginView.swift */; };
 		85E1DD5379CF38E4F8F4FEA9 /* MacOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */; };
+		AA11BB22CC33DD44EE55FF66 /* MacExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF77 /* MacExportView.swift */; };
 		893674DB5E53E09B996D33D6 /* StoreKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1000003000 /* StoreKitManager.swift */; };
 		95715A2339CC0390E06FDA55 /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000014000 /* HistoryService.swift */; };
 		9A4BD5872D6B0C494F747225 /* MacUploadQualityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2176F70E7A81BD20B52041F1 /* MacUploadQualityService.swift */; };
@@ -280,6 +281,7 @@
 		BC0BE7534A742FDDAD95D361 /* de */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C1000001000 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacOnboardingView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF77 /* MacExportView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacExportView.swift; sourceTree = "<group>"; };
 		C850A2123899D241ECB03484 /* fr */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C871E58D09413EFBEEFBB8EA /* it */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D0F4668E2429EDB4F6EA2448 /* MacContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacContentView.swift; sourceTree = "<group>"; };
@@ -450,6 +452,7 @@
 				5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */,
 				5B4CA97A2C8A52DDB7773830 /* MacMediaView.swift */,
 				C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */,
+				AA11BB22CC33DD44EE55FF77 /* MacExportView.swift */,
 				0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */,
 				FB000002000 /* MacFeedbackSettingsView.swift */,
 				1040C9A1CA69D632C30E4554 /* MacUploadDetailView.swift */,
@@ -802,6 +805,7 @@
 				B49E7B51BF8DB84A1296BAB9 /* MacHistoryView.swift in Sources */,
 				B49E7B51BF8DB84A1296BAB0 /* MacMediaView.swift in Sources */,
 				85E1DD5379CF38E4F8F4FEA9 /* MacOnboardingView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* MacExportView.swift in Sources */,
 				EF4E0702692B2A1ED065A0D1 /* MacSettingsView.swift in Sources */,
 				FB000001002 /* FeedbackHelper.swift in Sources */,
 				FB000002001 /* MacFeedbackSettingsView.swift in Sources */,

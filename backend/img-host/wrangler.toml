@@ -20,9 +20,6 @@ database_id = "904188b3-4cdf-43fc-bd19-c12c616e0d8e"
 # Run expired image cleanup daily at 2 AM UTC
 crons = ["0 2 * * *"]
 
-[[send_email]]
-name = "SEND_EMAIL"
-
 [vars]
 APPLE_CLIENT_ID = "com.codybontecou.imghost"
 APPLE_BUNDLE_ID = "com.codybontecou.imghost"

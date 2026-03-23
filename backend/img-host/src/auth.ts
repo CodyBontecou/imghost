@@ -121,12 +121,21 @@ export class Auth {
   }
 
   /**
-   * Generate a secure random token for email verification or password reset
+   * Generate a secure random token for password reset
    */
   static generateSecureToken(): string {
     const array = new Uint8Array(32);
     crypto.getRandomValues(array);
     return this.arrayBufferToBase64(array);
+  }
+
+  /**
+   * Generate a 6-digit numeric code for email verification
+   */
+  static generateVerificationCode(): string {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    return String(array[0] % 1000000).padStart(6, '0');
   }
 
   /**

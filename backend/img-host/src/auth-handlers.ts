@@ -1,5 +1,5 @@
 // Authentication endpoint handlers
-import { EmailMessage } from 'cloudflare:email';
+import { sendEmailSES } from './ses';
 import { Database } from './database';
 import { Auth } from './auth';
 import { AppleAuth } from './apple-auth';
@@ -14,7 +14,9 @@ interface Env {
   BASE_URL?: string;
   APPLE_CLIENT_ID?: string;
   APPLE_MAC_CLIENT_ID?: string;
-  SEND_EMAIL?: SendEmail;
+  AWS_ACCESS_KEY_ID?: string;
+  AWS_SECRET_ACCESS_KEY?: string;
+  AWS_REGION?: string;
 }
 
 function json(data: unknown, status = 200): Response {
@@ -24,28 +26,25 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-// Send email via Cloudflare Email Workers
+// Send email via AWS SES
 async function sendEmail(to: string, subject: string, body: string, env: Env): Promise<boolean> {
-  const from = env.EMAIL_FROM || 'noreply@imghost.isolated.tech';
+  const from = env.EMAIL_FROM || 'noreply@isolated.tech';
 
-  // Fall back to console logging in local dev (SEND_EMAIL binding not available)
-  if (!env.SEND_EMAIL) {
+  // Fall back to console logging in local dev (no AWS credentials)
+  if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY) {
     console.log(`[EMAIL] To: ${to}, Subject: ${subject}\n${body}`);
     return true;
   }
 
-  const rawEmail = [
-    `From: imghost <${from}>`,
-    `To: ${to}`,
-    `Subject: ${subject}`,
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    '',
+  await sendEmailSES(
+    to,
+    subject,
     body,
-  ].join('\r\n');
-
-  const message = new EmailMessage(from, to, rawEmail);
-  await env.SEND_EMAIL.send(message);
+    from,
+    env.AWS_ACCESS_KEY_ID,
+    env.AWS_SECRET_ACCESS_KEY,
+    env.AWS_REGION || 'us-east-1'
+  );
   return true;
 }
 
@@ -58,99 +57,105 @@ export async function handleRegisterV2(request: Request, env: Env): Promise<Resp
   const analytics = new Analytics(env.DB);
   const rateLimiter = new RateLimiter(env.DB);
 
-  try {
-    // Rate limiting for registration
-    const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateLimitCheck = await rateLimiter.checkIpRateLimit(clientIp, '/auth/register', { windowMs: 3600000, maxRequests: 5 }); // 5 per hour
+  // Rate limiting for registration
+  const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rateLimitCheck = await rateLimiter.checkIpRateLimit(clientIp, '/auth/register', { windowMs: 3600000, maxRequests: 5 }); // 5 per hour
 
-    if (!rateLimitCheck.allowed) {
-      return json({
-        error: 'Too many registration attempts. Please try again later.',
-        retry_after: Math.ceil((rateLimitCheck.reset - Date.now()) / 1000)
-      }, 429);
-    }
-
-    const body = await request.json() as { email: string; password: string };
-    const { email, password } = body;
-
-    if (!email || !password) {
-      return json({ error: 'Email and password required' }, 400);
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return json({ error: 'Invalid email format' }, 400);
-    }
-
-    // Validate password strength
-    if (password.length < 8) {
-      return json({ error: 'Password must be at least 8 characters long' }, 400);
-    }
-
-    // Check if user already exists
-    const existingUser = await db.getUserByEmail(email);
-    if (existingUser) {
-      return json({ error: 'Email already registered' }, 409);
-    }
-
-    // Hash password using PBKDF2
-    const passwordHash = await Auth.hashPassword(password);
-    const apiToken = Auth.generateApiToken();
-
-    // Create user on free tier
-    const user = await db.createUser(email, passwordHash, apiToken, 'free');
-
-    // Create free subscription (always active, no expiry)
-    await db.createSubscription(user.id, 'free', 'active');
-
-    // Generate email verification token
-    const verificationToken = Auth.generateSecureToken();
-    await db.setEmailVerificationToken(user.id, verificationToken, 24 * 60 * 60 * 1000); // 24 hours
-
-    // Send verification email
-    const baseUrl = env.BASE_URL || 'https://your-domain.com';
-    const verificationLink = `${baseUrl}/auth/verify-email?token=${encodeURIComponent(verificationToken)}`;
-    await sendEmail(
-      email,
-      'Verify your email address',
-      `Welcome to imghost! Please verify your email by clicking this link: ${verificationLink}\n\nThis link expires in 24 hours.`,
-      env
-    );
-
-    // Create JWT tokens
-    const jwtSecret = env.JWT_SECRET || 'default-secret-change-in-production';
-
-    const accessToken = await Auth.createJWT(
-      {
-        sub: user.id,
-        email: user.email,
-        tier: user.subscription_tier,
-        type: 'access'
-      },
-      3600, // 1 hour
-      jwtSecret
-    );
-
-    const refreshToken = Auth.generateSecureToken();
-    await db.createRefreshToken(user.id, refreshToken, 30 * 24 * 60 * 60 * 1000); // 30 days
-
+  if (!rateLimitCheck.allowed) {
     return json({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      api_token: apiToken, // For backward compatibility
-      expires_in: 3600,
-      token_type: 'Bearer',
-      user_id: user.id,
-      email: user.email,
-      subscription_tier: user.subscription_tier,
-      email_verified: false,
-      message: 'Registration successful. Please check your email to verify your account.'
-    }, 201);
-  } catch (error) {
-    console.error('Register error:', error);
+      error: 'Too many registration attempts. Please try again later.',
+      retry_after: Math.ceil((rateLimitCheck.reset - Date.now()) / 1000)
+    }, 429);
+  }
+
+  let body: { email: string; password: string };
+  try {
+    body = await request.json() as { email: string; password: string };
+  } catch {
     return json({ error: 'Invalid request body' }, 400);
   }
+
+  const { email, password } = body;
+
+  if (!email || !password) {
+    return json({ error: 'Email and password required' }, 400);
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return json({ error: 'Invalid email format' }, 400);
+  }
+
+  // Validate password strength
+  if (password.length < 8) {
+    return json({ error: 'Password must be at least 8 characters long' }, 400);
+  }
+
+  // Check if user already exists
+  const existingUser = await db.getUserByEmail(email);
+  if (existingUser) {
+    return json({ error: 'Email already registered' }, 409);
+  }
+
+  // Hash password using PBKDF2
+  const passwordHash = await Auth.hashPassword(password);
+  const apiToken = Auth.generateApiToken();
+
+  // Create user on free tier
+  const user = await db.createUser(email, passwordHash, apiToken, 'free');
+
+  // Create free subscription (always active, no expiry)
+  await db.createSubscription(user.id, 'free', 'active');
+
+  // Generate 6-digit verification code
+  const verificationToken = Auth.generateVerificationCode();
+  await db.setEmailVerificationToken(user.id, verificationToken, 24 * 60 * 60 * 1000); // 24 hours
+
+  // Send verification email — fail registration if delivery fails
+  try {
+    await sendEmail(
+      email,
+      'Your imghost verification code',
+      `Your verification code is:\n\n${verificationToken}\n\nEnter this code in the app to verify your email. It expires in 24 hours.`,
+      env
+    );
+  } catch (error) {
+    console.error('Register: failed to send verification email:', error);
+    // Roll back the created user so they can try again
+    await db.deleteUserAccount(user.id);
+    return json({ error: 'Failed to send verification email. Please try again.' }, 500);
+  }
+
+  // Create JWT tokens
+  const jwtSecret = env.JWT_SECRET || 'default-secret-change-in-production';
+
+  const accessToken = await Auth.createJWT(
+    {
+      sub: user.id,
+      email: user.email,
+      tier: user.subscription_tier,
+      type: 'access'
+    },
+    3600, // 1 hour
+    jwtSecret
+  );
+
+  const refreshToken = Auth.generateSecureToken();
+  await db.createRefreshToken(user.id, refreshToken, 30 * 24 * 60 * 60 * 1000); // 30 days
+
+  return json({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    api_token: apiToken, // For backward compatibility
+    expires_in: 3600,
+    token_type: 'Bearer',
+    user_id: user.id,
+    email: user.email,
+    subscription_tier: user.subscription_tier,
+    email_verified: false,
+    message: 'Registration successful. Please check your email to verify your account.'
+  }, 201);
 }
 
 /**
@@ -307,7 +312,13 @@ export async function handleForgotPassword(request: Request, env: Env): Promise<
       }, 429);
     }
 
-    const body = await request.json() as { email: string };
+    let body: { email: string };
+    try {
+      body = await request.json() as { email: string };
+    } catch {
+      return json({ error: 'Invalid request body' }, 400);
+    }
+
     const { email } = body;
 
     if (!email) {
@@ -331,19 +342,24 @@ export async function handleForgotPassword(request: Request, env: Env): Promise<
     // Send reset email
     const baseUrl = env.BASE_URL || 'https://your-domain.com';
     const resetLink = `${baseUrl}/auth/reset-password?token=${encodeURIComponent(resetToken)}`;
-    await sendEmail(
-      email,
-      'Password Reset Request',
-      `You requested a password reset. Click this link to reset your password: ${resetLink}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, please ignore this email.`,
-      env
-    );
+    try {
+      await sendEmail(
+        email,
+        'Password Reset Request',
+        `You requested a password reset. Click this link to reset your password: ${resetLink}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, please ignore this email.`,
+        env
+      );
+    } catch (error) {
+      console.error('Forgot password: failed to send reset email:', error);
+      return json({ error: 'Failed to send password reset email. Please try again.' }, 500);
+    }
 
     return json({
       message: 'If an account exists with this email, you will receive password reset instructions.'
     });
   } catch (error) {
     console.error('Forgot password error:', error);
-    return json({ error: 'Invalid request body' }, 400);
+    return json({ error: 'Internal server error' }, 500);
   }
 }
 
@@ -478,7 +494,7 @@ export async function handleResendVerification(request: Request, env: Env): Prom
   try {
     // Rate limiting
     const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateLimitCheck = await rateLimiter.checkIpRateLimit(clientIp, '/auth/resend-verification', { windowMs: 3600000, maxRequests: 3 }); // 3 per hour
+    const rateLimitCheck = await rateLimiter.checkIpRateLimit(clientIp, '/auth/resend-verification', { windowMs: 3600000, maxRequests: 10 }); // 10 per hour
 
     if (!rateLimitCheck.allowed) {
       return json({
@@ -487,7 +503,13 @@ export async function handleResendVerification(request: Request, env: Env): Prom
       }, 429);
     }
 
-    const body = await request.json() as { email: string };
+    let body: { email: string };
+    try {
+      body = await request.json() as { email: string };
+    } catch {
+      return json({ error: 'Invalid request body' }, 400);
+    }
+
     const { email } = body;
 
     if (!email) {
@@ -506,26 +528,28 @@ export async function handleResendVerification(request: Request, env: Env): Prom
       return json({ error: 'Email already verified' }, 400);
     }
 
-    // Generate new verification token
-    const verificationToken = Auth.generateSecureToken();
+    // Generate new 6-digit verification code
+    const verificationToken = Auth.generateVerificationCode();
     await db.setEmailVerificationToken(user.id, verificationToken, 24 * 60 * 60 * 1000); // 24 hours
 
-    // Send verification email
-    const baseUrl = env.BASE_URL || 'https://your-domain.com';
-    const verificationLink = `${baseUrl}/auth/verify-email?token=${encodeURIComponent(verificationToken)}`;
-    await sendEmail(
-      email,
-      'Verify your email address',
-      `Please verify your email by clicking this link: ${verificationLink}\n\nThis link expires in 24 hours.`,
-      env
-    );
+    try {
+      await sendEmail(
+        email,
+        'Your imghost verification code',
+        `Your verification code is:\n\n${verificationToken}\n\nEnter this code in the app to verify your email. It expires in 24 hours.`,
+        env
+      );
+    } catch (error) {
+      console.error('Resend verification: failed to send email:', error);
+      return json({ error: 'Failed to send verification email. Please try again.' }, 500);
+    }
 
     return json({
       message: 'If your email is registered, you will receive a verification email.'
     });
   } catch (error) {
     console.error('Resend verification error:', error);
-    return json({ error: 'Invalid request body' }, 400);
+    return json({ error: 'Internal server error' }, 500);
   }
 }
 
