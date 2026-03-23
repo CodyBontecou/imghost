@@ -579,16 +579,11 @@ struct SettingsView: View {
     }
 
     private func refreshUserInfo() {
-        guard !isLoadingUser else { return }
         isLoadingUser = true
 
         Task {
             do {
-                // Fetch user info (storage, tier) and subscription status in parallel
-                async let userFetch = AuthService.shared.getCurrentUser()
-                async let statusFetch: Void = subscriptionState.checkStatus()
-                let user = try await userFetch
-                _ = await statusFetch
+                let user = try await AuthService.shared.getCurrentUser()
                 await MainActor.run {
                     authState.updateUser(user)
                     isLoadingUser = false
