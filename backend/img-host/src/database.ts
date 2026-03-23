@@ -95,11 +95,11 @@ export class Database {
   // Helper to get storage limit for tier
   private getStorageLimitForTier(tier: 'free' | 'trial' | 'pro' | 'enterprise'): number {
     switch (tier) {
-      case 'free': return 52428800;           // 50MB
-      case 'trial': return 10000000000;       // 10GB
-      case 'pro': return 10000000000;         // 10GB
-      case 'enterprise': return 100000000000; // 100GB
-      default: return 52428800;               // 50MB safe default
+      case 'free': return 50_000_000;             // 50MB (decimal, displays as "50 MB")
+      case 'trial': return 10_000_000_000;       // 10GB
+      case 'pro': return 10_000_000_000;         // 10GB
+      case 'enterprise': return 100_000_000_000; // 100GB
+      default: return 50_000_000;                // 50MB safe default
     }
   }
 

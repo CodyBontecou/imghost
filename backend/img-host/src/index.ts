@@ -91,8 +91,8 @@ export interface Env {
 }
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (paid tier / Cloudflare Workers limit)
-const FREE_MAX_FILE_SIZE = 5 * 1024 * 1024;    // 5MB max for free tier
-const FREE_STORAGE_LIMIT = 50 * 1024 * 1024;   // 50MB total for free tier
+const FREE_MAX_FILE_SIZE = 5_000_000;           // 5MB max per file (decimal, displays as "5 MB")
+const FREE_STORAGE_LIMIT = 50_000_000;          // 50MB total for free tier (decimal, displays as "50 MB")
 const FREE_TTL_MS = 7 * 24 * 60 * 60 * 1000;  // 7 days TTL for free-tier images
 const FREE_DAILY_UPLOADS = 5;                   // max uploads per 24h for free tier
 
@@ -694,9 +694,13 @@ async function handleGetUser(request: Request, env: Env): Promise<Response> {
   // Get storage usage
   const usage = await db.getStorageUsage(user.id);
 
-  // Get subscription status
-  const subscription = await db.getSubscriptionByUserId(user.id);
+  // checkSubscriptionAccess may downgrade an expired trial → free (updating storage_limit_bytes).
+  // Re-fetch the user after so we always return the authoritative limit.
   const subscriptionAccess = await checkSubscriptionAccess(user.id, db);
+  const currentUser = await db.getUserById(user.id) ?? user;
+
+  // Get subscription record (after any status updates above)
+  const subscription = await db.getSubscriptionByUserId(user.id);
 
   // Calculate trial days remaining
   let trialDaysRemaining: number | undefined;
@@ -706,13 +710,13 @@ async function handleGetUser(request: Request, env: Env): Promise<Response> {
   }
 
   return json({
-    user_id: user.id,
-    email: user.email,
-    subscription_tier: user.subscription_tier,
+    user_id: currentUser.id,
+    email: currentUser.email,
+    subscription_tier: currentUser.subscription_tier,
     subscription_status: subscription?.status || 'none',
     has_subscription_access: subscriptionAccess.hasAccess,
-    email_verified: user.email_verified === 1,
-    storage_limit_bytes: user.storage_limit_bytes,
+    email_verified: currentUser.email_verified === 1,
+    storage_limit_bytes: currentUser.storage_limit_bytes,
     storage_used_bytes: usage.total_bytes_used,
     image_count: usage.image_count,
     trial_ends_at: subscription?.trial_ends_at ? new Date(subscription.trial_ends_at).toISOString() : undefined,
