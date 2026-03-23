@@ -123,7 +123,11 @@ export async function handleRegisterV2(request: Request, env: Env): Promise<Resp
   } catch (error) {
     console.error('Register: failed to send verification email:', error);
     // Roll back the created user so they can try again
-    await db.deleteUserAccount(user.id);
+    try {
+      await db.deleteUserAccount(user.id);
+    } catch (rollbackErr) {
+      console.error('Register: rollback also failed:', rollbackErr);
+    }
     return json({ error: 'Failed to send verification email. Please try again.' }, 500);
   }
 

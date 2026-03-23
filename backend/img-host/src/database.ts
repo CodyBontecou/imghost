@@ -847,11 +847,8 @@ export class Database {
       .bind(userId)
       .run();
 
-    // Delete storage usage record (if it exists as a separate table with triggers)
-    await this.db
-      .prepare('DELETE FROM storage_usage WHERE user_id = ?')
-      .bind(userId)
-      .run();
+    // Note: storage_usage is a VIEW (not a table), so we don't delete it directly.
+    // It is computed from the images table, which we already deleted above.
 
     // Finally delete the user
     await this.db
