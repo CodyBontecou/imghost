@@ -3,6 +3,7 @@ import SwiftUI
 struct SubscriptionStatusView: View {
     @EnvironmentObject var subscriptionState: SubscriptionState
     @EnvironmentObject var authState: AuthState
+    @State private var showPaywall = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -61,7 +62,15 @@ struct SubscriptionStatusView: View {
                     )
                 }
 
-                // Manage Subscription Button
+                // Upgrade hint for free users
+                if subscriptionState.isFree {
+                    Text("subscription.free.upgrade_hint")
+                        .brutalTypography(.bodySmall, color: .brutalTextTertiary)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                // Action Button
                 if subscriptionState.status == .subscribed || subscriptionState.status == .trialing {
                     BrutalSecondaryButton(title: String(localized: "subscription.button.manage")) {
                         openSubscriptionManagement()
@@ -72,12 +81,28 @@ struct SubscriptionStatusView: View {
             .padding(16)
             .background(Color.brutalBackground)
         }
+        .sheet(isPresented: $showPaywall) {
+            NavigationStack {
+                PaywallView(allowDismiss: true)
+                    .environmentObject(subscriptionState)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button { showPaywall = false } label: {
+                                Image(systemName: "xmark").foregroundColor(.white)
+                            }
+                        }
+                    }
+            }
+            .preferredColorScheme(.dark)
+        }
     }
 
     // MARK: - Computed Properties
 
     private var planDisplayName: String {
         switch subscriptionState.status {
+        case .free:
+            return String(localized: "subscription.plan.free")
         case .trialing:
             return String(localized: "subscription.plan.trial")
         case .subscribed:
@@ -92,6 +117,8 @@ struct SubscriptionStatusView: View {
     @ViewBuilder
     private var statusBadge: some View {
         switch subscriptionState.status {
+        case .free:
+            BrutalBadge(text: String(localized: "subscription.badge.free"), style: .default)
         case .trialing:
             BrutalBadge(text: String(localized: "subscription.badge.trial"), style: .warning)
         case .subscribed:
@@ -107,6 +134,13 @@ struct SubscriptionStatusView: View {
 
     private var statusInfo: (icon: String, text: String, color: Color)? {
         switch subscriptionState.status {
+        case .free:
+            return (
+                icon: "clock.fill",
+                text: String(localized: "subscription.free.limits"),
+                color: .brutalTextSecondary
+            )
+
         case .trialing:
             if let days = subscriptionState.trialDaysRemaining {
                 let text = days == 1

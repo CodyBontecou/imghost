@@ -127,6 +127,16 @@ struct UploadDetailView: View {
                                     .fill(Color.brutalBorder.opacity(0.5))
                                     .frame(height: 1)
                                 BrutalInfoRow(label: String(localized: "detail.label.id"), value: record.id)
+
+                                // Expiration row — only for free-tier uploads
+                                Rectangle()
+                                    .fill(Color.brutalBorder.opacity(0.5))
+                                    .frame(height: 1)
+                                BrutalInfoRow(
+                                    label: "Link",
+                                    value: expirationLabel,
+                                    valueColor: record.isTemporary ? .brutalWarning : .brutalTextSecondary
+                                )
                             }
                         }
                     }
@@ -158,6 +168,16 @@ struct UploadDetailView: View {
             }
         }
         .preferredColorScheme(.dark)
+    }
+
+    private var expirationLabel: String {
+        guard let days = record.daysUntilExpiry else {
+            return String(localized: "detail.permanent")
+        }
+        if days == 0 {
+            return String(localized: "detail.expires_today")
+        }
+        return String(format: String(localized: "detail.expires_in_days"), days)
     }
 
     private func copyToClipboard(_ text: String) {
@@ -311,6 +331,7 @@ struct BrutalCopyableRow: View {
 struct BrutalInfoRow: View {
     let label: String
     let value: String
+    var valueColor: Color = .brutalTextPrimary
 
     var body: some View {
         HStack {
@@ -319,7 +340,7 @@ struct BrutalInfoRow: View {
                 .tracking(1)
             Spacer()
             Text(value)
-                .brutalTypography(.bodySmall)
+                .brutalTypography(.bodySmall, color: valueColor)
                 .lineLimit(1)
         }
         .padding(.horizontal, 16)

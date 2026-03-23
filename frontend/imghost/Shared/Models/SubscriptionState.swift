@@ -16,6 +16,7 @@ final class SubscriptionState: ObservableObject {
 
     enum Status: Equatable {
         case loading
+        case free                // Free tier — has access with limits (50MB, 7-day TTL)
         case noSubscription      // Never subscribed, no trial - show paywall
         case trialing            // In free trial - allow access
         case trialExpired        // Trial ended, needs subscription - show paywall
@@ -28,6 +29,8 @@ final class SubscriptionState: ObservableObject {
             switch self {
             case .loading:
                 return "Loading..."
+            case .free:
+                return "Free"
             case .noSubscription:
                 return "No Subscription"
             case .trialing:
@@ -46,24 +49,32 @@ final class SubscriptionState: ObservableObject {
         }
     }
 
-    /// Whether user has access to app features
+    /// Whether user has access to app features (upload/view)
     var hasAccess: Bool {
         switch status {
-        case .trialing, .subscribed, .cancelled:
+        case .free, .trialing, .subscribed, .cancelled:
             return true
         default:
             return false
         }
     }
 
-    /// Whether to show the paywall
+    /// Whether this is a free-tier user (limited storage, 7-day TTL on uploads)
+    var isFree: Bool { status == .free }
+
+    /// Whether to show the hard paywall gate
     var shouldShowPaywall: Bool {
         switch status {
         case .noSubscription, .trialExpired, .expired:
             return true
         default:
-            return false
+            return false // .free shows soft upgrade prompts, not a hard gate
         }
+    }
+
+    /// Whether to show an upgrade nudge (softer than full paywall)
+    var shouldNudgeUpgrade: Bool {
+        status == .free
     }
 
     /// Check subscription status from backend (with retry for transient errors)
@@ -107,11 +118,16 @@ final class SubscriptionState: ObservableObject {
 
         switch response.status {
         case "active":
-            status = .subscribed
+            // Distinguish free-tier active from paid-tier active
+            if response.tier == "free" {
+                status = .free
+            } else {
+                status = .subscribed
+            }
         case "trialing":
             status = .trialing
         case "expired":
-            if response.tier == "trial" || tier == "free" {
+            if response.tier == "trial" || response.tier == "free" {
                 status = .trialExpired
             } else {
                 status = .expired

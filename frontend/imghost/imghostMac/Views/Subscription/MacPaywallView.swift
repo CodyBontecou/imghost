@@ -4,11 +4,14 @@ import StoreKit
 struct MacPaywallView: View {
     @StateObject private var storeKit = StoreKitManager.shared
     @EnvironmentObject var subscriptionState: SubscriptionState
+    @Environment(\.dismiss) private var dismiss
     @State private var selectedProduct: Product?
     @State private var isPurchasing = false
     @State private var isRestoring = false
     @State private var errorMessage: String?
     @State private var showError = false
+
+    var allowDismiss: Bool = false
 
     var body: some View {
         ZStack {
@@ -39,13 +42,8 @@ struct MacPaywallView: View {
                             .overlay(Rectangle().stroke(Color.brutalSuccess, lineWidth: 1))
                     }
 
-                    // Features
-                    HStack(spacing: 24) {
-                        MacFeatureItem(icon: "photo.stack", title: String(localized: "paywall.feature.file_size"))
-                        MacFeatureItem(icon: "externaldrive.fill", title: String(localized: "paywall.feature.storage"))
-                        MacFeatureItem(icon: "bolt.fill", title: String(localized: "paywall.feature.sharing"))
-                        MacFeatureItem(icon: "lock.fill", title: String(localized: "paywall.feature.private"))
-                    }
+                    // Tier comparison
+                    MacTierComparisonView()
 
                     // Products
                     if storeKit.isLoading {
@@ -113,6 +111,17 @@ struct MacPaywallView: View {
                         }
                         .buttonStyle(.plain)
                         .disabled(isRestoring)
+
+                        // Continue with Free
+                        if allowDismiss || subscriptionState.isFree {
+                            Button(action: { dismiss() }) {
+                                Text("paywall.button.continue_free")
+                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                    .foregroundStyle(Color.brutalTextTertiary)
+                                    .tracking(1)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
 
                     // Legal
@@ -190,6 +199,63 @@ struct MacPaywallView: View {
             showError = true
         }
         isRestoring = false
+    }
+}
+
+// MARK: - Tier Comparison Grid
+
+struct MacTierComparisonView: View {
+    private let rows: [(label: String, freeKey: String, proKey: String)] = [
+        ("paywall.comparison.row.storage",    "paywall.comparison.free.storage",    "paywall.comparison.pro.storage"),
+        ("paywall.comparison.row.file_size",  "paywall.comparison.free.file_size",  "paywall.comparison.pro.file_size"),
+        ("paywall.comparison.row.link_ttl",   "paywall.comparison.free.link_ttl",   "paywall.comparison.pro.link_ttl"),
+        ("paywall.comparison.row.export",     "paywall.comparison.free.export",     "paywall.comparison.pro.export"),
+        ("paywall.comparison.row.transforms", "paywall.comparison.free.transforms", "paywall.comparison.pro.transforms"),
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Column headers
+            HStack {
+                Text("").frame(maxWidth: .infinity, alignment: .leading)
+                Text(String(localized: "paywall.comparison.free.label"))
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundStyle(Color.white.opacity(0.4))
+                    .tracking(2)
+                    .frame(width: 72, alignment: .center)
+                Text(String(localized: "paywall.comparison.pro.label"))
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundStyle(Color.white)
+                    .tracking(2)
+                    .frame(width: 72, alignment: .center)
+            }
+            .padding(.bottom, 6)
+
+            Rectangle().fill(Color.white.opacity(0.15)).frame(height: 1)
+
+            ForEach(rows, id: \.label) { row in
+                let free = String(localized: String.LocalizationValue(row.freeKey))
+                let pro  = String(localized: String.LocalizationValue(row.proKey))
+                let label = String(localized: String.LocalizationValue(row.label))
+                HStack {
+                    Text(label)
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundStyle(Color.brutalTextSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(free)
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundStyle(free == "✕" ? Color.white.opacity(0.2) : Color.brutalTextSecondary)
+                        .frame(width: 72, alignment: .center)
+                    Text(pro)
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(pro == "✓" ? Color.green : Color.white)
+                        .frame(width: 72, alignment: .center)
+                }
+                .padding(.vertical, 7)
+                Rectangle().fill(Color.white.opacity(0.07)).frame(height: 1)
+            }
+        }
+        .frame(maxWidth: 420)
     }
 }
 

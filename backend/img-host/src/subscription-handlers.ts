@@ -342,6 +342,7 @@ export async function handleRestorePurchases(request: Request, env: Env): Promis
 
 /**
  * Check if user has subscription access (helper for other handlers)
+ * Free-tier users always have access (with storage/file-size/TTL limits applied at upload time).
  */
 export async function checkSubscriptionAccess(userId: string, db: Database): Promise<{
   hasAccess: boolean;
@@ -351,29 +352,39 @@ export async function checkSubscriptionAccess(userId: string, db: Database): Pro
 }> {
   const user = await db.getUserById(userId);
   if (!user) {
-    return { hasAccess: false, tier: 'trial', status: 'none', reason: 'User not found' };
+    return { hasAccess: false, tier: 'free', status: 'none', reason: 'User not found' };
+  }
+
+  // Free tier users always have upload access (limits enforced in the upload handler)
+  if (user.subscription_tier === 'free') {
+    const subscription = await db.getSubscriptionByUserId(userId);
+    if (subscription?.status === 'active') {
+      return { hasAccess: true, tier: 'free', status: 'active' };
+    }
+    // Free users with no subscription record still get access
+    return { hasAccess: true, tier: 'free', status: 'active' };
   }
 
   const subscription = await db.getSubscriptionByUserId(userId);
 
-  // No subscription record means trial tier with no access
+  // No subscription record on a paid tier = no access
   if (!subscription) {
-    return { hasAccess: false, tier: 'trial', status: 'none', reason: 'No subscription' };
+    return { hasAccess: false, tier: user.subscription_tier, status: 'none', reason: 'No subscription' };
   }
 
   const now = Date.now();
 
   // Check trial expiration
   if (subscription.status === 'trialing' && subscription.trial_ends_at && subscription.trial_ends_at < now) {
-    await db.updateSubscriptionTierAndStatus(userId, 'trial', 'expired');
-    return { hasAccess: false, tier: 'trial', status: 'expired', reason: 'Trial expired' };
+    await db.updateSubscriptionTierAndStatus(userId, 'free', 'expired');
+    return { hasAccess: false, tier: 'free', status: 'expired', reason: 'Trial expired' };
   }
 
   // Check subscription period expiration
   if (subscription.current_period_end && subscription.current_period_end < now) {
     if (subscription.status === 'active' || subscription.status === 'trialing') {
-      await db.updateSubscriptionTierAndStatus(userId, 'trial', 'expired');
-      return { hasAccess: false, tier: 'trial', status: 'expired', reason: 'Subscription expired' };
+      await db.updateSubscriptionTierAndStatus(userId, 'free', 'expired');
+      return { hasAccess: false, tier: 'free', status: 'expired', reason: 'Subscription expired' };
     }
   }
 

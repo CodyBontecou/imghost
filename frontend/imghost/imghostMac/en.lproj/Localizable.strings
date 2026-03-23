@@ -95,13 +95,13 @@
 "onboarding.page2.subtitle" = "macOS Share Extension integration";
 "onboarding.page3.title" = "ALLOW\nACCESS";
 "onboarding.page3.subtitle" = "macOS will ask to access shared files — this lets imghost read files you share from other apps like Finder or Safari";
-"onboarding.page4.title" = "GET DIRECT\nLINKS";
-"onboarding.page4.subtitle" = "Instant shareable URLs";
-"onboarding.page5.title" = "DRAG &\nDROP";
-"onboarding.page5.subtitle" = "Upload files effortlessly";
+"onboarding.page4.title" = "DRAG &\nDROP";
+"onboarding.page4.subtitle" = "Upload files effortlessly";
+"onboarding.page5.title" = "START\nFREE";
+"onboarding.page5.subtitle" = "50MB storage · 7-day links · upgrade anytime";
 "onboarding.button.skip" = "SKIP";
 "onboarding.button.next" = "NEXT";
-"onboarding.button.start" = "START";
+"onboarding.button.start" = "START FREE";
 "onboarding.page_indicator" = "%d/%d";
 
 // MARK: - Media View
@@ -125,6 +125,8 @@
 "media.banner.subscription_required" = "Subscription required to upload";
 "media.banner.upload_success_singular" = "%d file uploaded — link copied";
 "media.banner.upload_success_plural" = "%d files uploaded — links copied";
+"media.banner.upload_success_singular_ttl" = "%d file uploaded — expires in 7 days";
+"media.banner.upload_success_plural_ttl" = "%d files uploaded — expire in 7 days";
 "media.banner.upload_failed_singular" = "%d upload failed";
 "media.banner.upload_failed_plural" = "%d uploads failed";
 "media.banner.upload_partial" = "%d uploaded, %d failed";
@@ -174,6 +176,16 @@
 "detail.alert.delete.button.confirm" = "Delete";
 "detail.alert.delete.message" = "This will permanently delete the image from the server.";
 
+// MARK: - Free Tier
+"free.tier.ttl_notice" = "This file will be automatically deleted in 7 days.";
+"free.tier.badge" = "FREE";
+"free.tier.limits" = "50 MB storage · files expire in 7 days";
+"free.tier.upgrade_hint" = "Upgrade for permanent links and 10 GB storage.";
+"free.tier.export_blocked" = "Export is a Pro feature.";
+"detail.expires_in_days" = "Expires in %d days";
+"detail.expires_today" = "Expires today";
+"detail.permanent" = "Permanent";
+
 // MARK: - Settings View
 "settings.title" = "SETTINGS";
 "settings.section.account" = "Account";
@@ -183,6 +195,8 @@
 "settings.section.subscription" = "Subscription";
 "settings.subscription.days_remaining" = "%d days remaining";
 "settings.subscription.button.manage" = "MANAGE SUBSCRIPTION";
+"settings.subscription.button.upgrade" = "UPGRADE TO PRO";
+"settings.badge.free" = "FREE";
 "settings.badge.trial" = "TRIAL";
 "settings.badge.active" = "ACTIVE";
 "settings.badge.cancelled" = "CANCELLED";
@@ -212,17 +226,36 @@
 "settings.alert.delete_account.message" = "This will permanently delete your account and all uploaded images. This cannot be undone.";
 
 // MARK: - Paywall / Subscription
-"paywall.title.unlock" = "UNLOCK";
+"paywall.title.unlock" = "UPGRADE TO";
 "paywall.title.pro" = "PRO";
 "paywall.title.trial" = "7-DAY FREE TRIAL";
+"paywall.section.comparison" = "FREE VS PRO";
+"paywall.comparison.free.label" = "FREE";
+"paywall.comparison.pro.label" = "PRO";
+"paywall.comparison.row.storage" = "Storage";
+"paywall.comparison.row.file_size" = "Max File";
+"paywall.comparison.row.link_ttl" = "Links";
+"paywall.comparison.row.export" = "Export";
+"paywall.comparison.row.transforms" = "Transforms";
+"paywall.comparison.free.storage" = "50 MB";
+"paywall.comparison.free.file_size" = "5 MB";
+"paywall.comparison.free.link_ttl" = "7 days";
+"paywall.comparison.free.export" = "✕";
+"paywall.comparison.free.transforms" = "✕";
+"paywall.comparison.pro.storage" = "10 GB";
+"paywall.comparison.pro.file_size" = "500 MB";
+"paywall.comparison.pro.link_ttl" = "Permanent";
+"paywall.comparison.pro.export" = "✓";
+"paywall.comparison.pro.transforms" = "✓";
 "paywall.feature.file_size" = "500MB Files";
 "paywall.feature.storage" = "10GB Storage";
 "paywall.feature.sharing" = "Fast Sharing";
-"paywall.feature.private" = "Private";
+"paywall.feature.private" = "Permanent Links";
 "paywall.error.loading" = "Unable to load subscription options";
 "paywall.button.retry" = "RETRY";
 "paywall.badge.save" = "SAVE 30%";
 "paywall.button.start_trial" = "START FREE TRIAL";
+"paywall.button.continue_free" = "CONTINUE WITH FREE";
 "paywall.button.restore" = "RESTORE PURCHASES";
 "paywall.legal.renewal_notice" = "After your 7-day free trial, your subscription will automatically renew. Cancel anytime in Settings.";
 "paywall.legal.separator" = "|";

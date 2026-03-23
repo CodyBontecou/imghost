@@ -1,5 +1,66 @@
 import SwiftUI
 
+// MARK: - Tier Comparison (last onboarding page)
+
+struct MacOnboardingTierView: View {
+    private let rows: [(label: String, free: String, pro: String)] = [
+        ("Storage",   "50 MB",   "10 GB"),
+        ("Max File",  "5 MB",    "500 MB"),
+        ("Links",     "7 days",  "Permanent"),
+        ("Export",    "✕",       "✓"),
+        ("Transforms","✕",       "✓"),
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("FREE\nTO START")
+                .font(.system(size: 48, weight: .black))
+                .foregroundStyle(.white)
+                .lineSpacing(-4)
+
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Text("").frame(maxWidth: .infinity, alignment: .leading)
+                    Text("FREE")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.4))
+                        .tracking(2)
+                        .frame(width: 70, alignment: .center)
+                    Text("PRO")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.white)
+                        .tracking(2)
+                        .frame(width: 70, alignment: .center)
+                }
+                .padding(.bottom, 6)
+
+                Rectangle().fill(.white.opacity(0.15)).frame(height: 1)
+
+                ForEach(rows, id: \.label) { row in
+                    HStack {
+                        Text(row.label)
+                            .font(.system(size: 11, weight: .medium, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.5))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text(row.free)
+                            .font(.system(size: 11, weight: .medium, design: .monospaced))
+                            .foregroundStyle(row.free == "✕" ? .white.opacity(0.2) : .white.opacity(0.45))
+                            .frame(width: 70, alignment: .center)
+                        Text(row.pro)
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundStyle(row.pro == "✓" ? Color.green : .white)
+                            .frame(width: 70, alignment: .center)
+                    }
+                    .padding(.vertical, 8)
+                    Rectangle().fill(.white.opacity(0.07)).frame(height: 1)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
 struct MacOnboardingView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var currentPage = 0
@@ -36,28 +97,34 @@ struct MacOnboardingView: View {
 
                 Spacer()
 
-                // Main content
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(LocalizedStringKey(pages[currentPage].titleKey))
-                        .font(.system(size: 64, weight: .black))
-                        .foregroundStyle(Color.white)
-                        .lineSpacing(-4)
+                // Main content — last page shows tier comparison
+                if currentPage == pages.count - 1 {
+                    MacOnboardingTierView()
+                        .padding(.horizontal, 48)
+                        .animation(.easeInOut(duration: 0.3), value: currentPage)
+                } else {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(LocalizedStringKey(pages[currentPage].titleKey))
+                            .font(.system(size: 64, weight: .black))
+                            .foregroundStyle(Color.white)
+                            .lineSpacing(-4)
 
-                    HStack {
-                        Rectangle()
-                            .fill(Color.white)
-                            .frame(width: 24, height: 1)
+                        HStack {
+                            Rectangle()
+                                .fill(Color.white)
+                                .frame(width: 24, height: 1)
 
-                        Text(LocalizedStringKey(pages[currentPage].subtitleKey))
-                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .foregroundStyle(Color.brutalTextSecondary)
-                            .tracking(2)
-                            .textCase(.uppercase)
+                            Text(LocalizedStringKey(pages[currentPage].subtitleKey))
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundStyle(Color.brutalTextSecondary)
+                                .tracking(2)
+                                .textCase(.uppercase)
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 48)
+                    .animation(.easeInOut(duration: 0.3), value: currentPage)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 48)
-                .animation(.easeInOut(duration: 0.3), value: currentPage)
 
                 Spacer()
 

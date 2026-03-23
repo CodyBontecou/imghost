@@ -7,6 +7,8 @@ struct UploadRecord: Codable, Identifiable, Equatable, Hashable {
     let thumbnailData: Data?
     let createdAt: Date
     let originalFilename: String?
+    /// Non-nil for free-tier uploads; these are automatically deleted server-side after 7 days.
+    let expiresAt: Date?
 
     init(
         id: String,
@@ -14,7 +16,8 @@ struct UploadRecord: Codable, Identifiable, Equatable, Hashable {
         deleteUrl: String,
         thumbnailData: Data? = nil,
         createdAt: Date = Date(),
-        originalFilename: String? = nil
+        originalFilename: String? = nil,
+        expiresAt: Date? = nil
     ) {
         self.id = id
         self.url = url
@@ -22,6 +25,17 @@ struct UploadRecord: Codable, Identifiable, Equatable, Hashable {
         self.thumbnailData = thumbnailData
         self.createdAt = createdAt
         self.originalFilename = originalFilename
+        self.expiresAt = expiresAt
+    }
+
+    /// Whether this upload is on the free tier (has a server-side expiration).
+    var isTemporary: Bool { expiresAt != nil }
+
+    /// Human-readable days until expiration, or nil if permanent.
+    var daysUntilExpiry: Int? {
+        guard let expiresAt else { return nil }
+        let diff = Calendar.current.dateComponents([.day], from: Date(), to: expiresAt)
+        return max(0, diff.day ?? 0)
     }
 
     static func == (lhs: UploadRecord, rhs: UploadRecord) -> Bool {
@@ -37,7 +51,8 @@ extension UploadRecord {
         deleteUrl: "https://img.example.com/delete/abc123",
         thumbnailData: nil,
         createdAt: Date(),
-        originalFilename: "photo.jpg"
+        originalFilename: "photo.jpg",
+        expiresAt: Date().addingTimeInterval(7 * 86400)
     )
 
     static let previewList: [UploadRecord] = [

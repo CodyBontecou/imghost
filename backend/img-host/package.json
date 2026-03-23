@@ -22,7 +22,9 @@
     "db:query": "wrangler d1 execute imghost --command",
     "db:query:local": "wrangler d1 execute imghost --local --command",
     "db:tables": "wrangler d1 execute imghost --command=\"SELECT name FROM sqlite_master WHERE type='table';\"",
-    "db:tables:local": "wrangler d1 execute imghost --local --command=\"SELECT name FROM sqlite_master WHERE type='table';\""
+    "db:tables:local": "wrangler d1 execute imghost --local --command=\"SELECT name FROM sqlite_master WHERE type='table';\"",
+    "db:migrate:free-tier": "wrangler d1 execute imghost --remote --file=./migrations/0010_free_tier.sql",
+    "db:migrate:free-tier:local": "wrangler d1 execute imghost --local --file=./migrations/0010_free_tier.sql"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240117.0",

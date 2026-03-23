@@ -115,9 +115,19 @@ final class UploadService: NSObject {
             return try parseUploadResponse(data: retryData, imageData: imageData, filename: filename)
         }
 
-        // Handle 403 - email verification or subscription required
+        // Handle 403 - email verification, subscription, or free-tier limits
         if httpResponse.statusCode == 403 {
             throw Self.parse403Error(data: data)
+        }
+
+        // Handle 413 - free tier file size limit
+        if httpResponse.statusCode == 413 {
+            throw Self.parse413Error(data: data)
+        }
+
+        // Handle 429 - free tier daily upload limit
+        if httpResponse.statusCode == 429 {
+            throw ImghostError.freeTierDailyLimitReached
         }
 
         guard httpResponse.statusCode == 200 else {
@@ -128,14 +138,35 @@ final class UploadService: NSObject {
         return try parseUploadResponse(data: data, imageData: imageData, filename: filename)
     }
 
-    /// Parse a 403 response to distinguish subscription_required from email verification
+    /// Parse a 403/413 response into the appropriate ImghostError
     static func parse403Error(data: Data) -> ImghostError {
-        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let subscriptionRequired = json["subscription_required"] as? Bool,
-           subscriptionRequired {
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return .emailVerificationRequired
+        }
+        let upgradeRequired = json["upgrade_required"] as? Bool ?? false
+        if upgradeRequired {
+            let error = json["error"] as? String ?? ""
+            if error.contains("storage") {
+                return .freeTierStorageFull
+            }
+            if error.contains("daily") || error.contains("Daily") {
+                return .freeTierDailyLimitReached
+            }
+        }
+        if let subscriptionRequired = json["subscription_required"] as? Bool, subscriptionRequired {
             return .subscriptionRequired
         }
         return .emailVerificationRequired
+    }
+
+    /// Parse a 413 (file too large for free tier) response
+    static func parse413Error(data: Data) -> ImghostError {
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let upgradeRequired = json["upgrade_required"] as? Bool,
+           upgradeRequired {
+            return .freeTierFileSizeExceeded
+        }
+        return .uploadFailed(statusCode: 413, message: nil)
     }
 
     private func parseUploadResponse(data: Data, imageData: Data, filename: String) throws -> UploadRecord {
@@ -144,6 +175,10 @@ final class UploadService: NSObject {
               let urlString = json["url"] as? String,
               let deleteUrl = json["deleteUrl"] as? String else {
             throw ImghostError.invalidResponse
+        }
+
+        let expiresAt = (json["expires_at"] as? String).flatMap {
+            ISO8601DateFormatter().date(from: $0)
         }
 
         // Generate thumbnail
@@ -155,7 +190,8 @@ final class UploadService: NSObject {
             deleteUrl: deleteUrl,
             thumbnailData: thumbnailData,
             createdAt: Date(),
-            originalFilename: filename
+            originalFilename: filename,
+            expiresAt: expiresAt
         )
     }
 
@@ -240,9 +276,19 @@ final class UploadService: NSObject {
             return try parseUploadResponseWithThumbnail(data: retryData, thumbnailData: thumbnailData, filename: filename)
         }
 
-        // Handle 403 - email verification or subscription required
+        // Handle 403 - email verification, subscription, or free-tier limits
         if httpResponse.statusCode == 403 {
             throw Self.parse403Error(data: data)
+        }
+
+        // Handle 413 - free tier file size limit
+        if httpResponse.statusCode == 413 {
+            throw Self.parse413Error(data: data)
+        }
+
+        // Handle 429 - free tier daily upload limit
+        if httpResponse.statusCode == 429 {
+            throw ImghostError.freeTierDailyLimitReached
         }
 
         guard httpResponse.statusCode == 200 else {
@@ -366,13 +412,18 @@ final class UploadService: NSObject {
             throw ImghostError.invalidResponse
         }
 
+        let expiresAt = (json["expires_at"] as? String).flatMap {
+            ISO8601DateFormatter().date(from: $0)
+        }
+
         return UploadRecord(
             id: id,
             url: urlString,
             deleteUrl: deleteUrl,
             thumbnailData: thumbnailData,
             createdAt: Date(),
-            originalFilename: filename
+            originalFilename: filename,
+            expiresAt: expiresAt
         )
     }
 

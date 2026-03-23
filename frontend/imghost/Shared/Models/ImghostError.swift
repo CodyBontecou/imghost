@@ -12,6 +12,9 @@ enum ImghostError: LocalizedError {
     case deleteFailed(statusCode: Int, message: String?)
     case emailVerificationRequired
     case subscriptionRequired
+    case freeTierFileSizeExceeded   // File > 5 MB on free tier
+    case freeTierStorageFull        // 50 MB quota reached on free tier
+    case freeTierDailyLimitReached  // 20 uploads/day on free tier
 
     var errorDescription: String? {
         switch self {
@@ -43,6 +46,12 @@ enum ImghostError: LocalizedError {
             return String(localized: "error.email_not_verified.description")
         case .subscriptionRequired:
             return String(localized: "error.subscription_required.description")
+        case .freeTierFileSizeExceeded:
+            return String(localized: "error.free_tier_file_size.description")
+        case .freeTierStorageFull:
+            return String(localized: "error.free_tier_storage_full.description")
+        case .freeTierDailyLimitReached:
+            return String(localized: "error.free_tier_daily_limit.description")
         }
     }
 
@@ -70,6 +79,8 @@ enum ImghostError: LocalizedError {
             return String(localized: "error.email_not_verified.recovery")
         case .subscriptionRequired:
             return String(localized: "error.subscription_required.recovery")
+        case .freeTierFileSizeExceeded, .freeTierStorageFull, .freeTierDailyLimitReached:
+            return String(localized: "error.free_tier.upgrade_recovery")
         }
     }
 }

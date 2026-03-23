@@ -110,9 +110,12 @@
 "onboarding.page3.subtitle" = "Instant shareable URLs";
 "onboarding.page4.title" = "STAY\nORGAN-\nIZED";
 "onboarding.page4.subtitle" = "All uploads in one place";
+"onboarding.page5.title" = "START\nFREE";
+"onboarding.page5.subtitle" = "50MB storage • 7-day links • upgrade anytime";
 "onboarding.button.skip" = "SKIP";
 "onboarding.button.next" = "NEXT";
-"onboarding.button.start" = "START";
+"onboarding.button.start" = "START FREE";
+"onboarding.button.view_plans" = "VIEW PLANS";
 "onboarding.page_indicator" = "%d/%d";
 
 // MARK: - Upload View
@@ -202,6 +205,7 @@
 "settings.action.clear_history.subtitle" = "Remove local history only";
 "settings.action.export.title" = "Export All Images";
 "settings.action.export.subtitle" = "Download as ZIP archive";
+"settings.action.export.subtitle_free" = "Pro feature — upgrade to export";
 "settings.action.delete_account.title" = "Delete Account";
 "settings.action.delete_account.subtitle" = "Permanently delete all data";
 "settings.section.legal" = "Legal";
@@ -265,14 +269,32 @@
 "settings.export.progress_format" = "%d%%";
 
 // MARK: - Paywall / Subscription
-"paywall.title.unlock" = "UNLOCK";
+"paywall.title.unlock" = "UPGRADE TO";
 "paywall.title.pro" = "PRO";
 "paywall.title.trial" = "7-DAY FREE TRIAL";
+"paywall.section.comparison" = "FREE VS PRO";
+"paywall.comparison.free.label" = "FREE";
+"paywall.comparison.pro.label" = "PRO";
+"paywall.comparison.row.storage" = "Storage";
+"paywall.comparison.row.file_size" = "Max File Size";
+"paywall.comparison.row.link_ttl" = "Link Duration";
+"paywall.comparison.row.export" = "Export ZIP";
+"paywall.comparison.row.transforms" = "Image Transforms";
+"paywall.comparison.free.storage" = "50 MB";
+"paywall.comparison.free.file_size" = "5 MB";
+"paywall.comparison.free.link_ttl" = "7 days";
+"paywall.comparison.free.export" = "✕";
+"paywall.comparison.free.transforms" = "✕";
+"paywall.comparison.pro.storage" = "10 GB";
+"paywall.comparison.pro.file_size" = "500 MB";
+"paywall.comparison.pro.link_ttl" = "Permanent";
+"paywall.comparison.pro.export" = "✓";
+"paywall.comparison.pro.transforms" = "✓";
 "paywall.section.features" = "WHAT YOU GET";
 "paywall.feature.file_size.title" = "500MB File Size";
 "paywall.feature.file_size.desc" = "Upload large files, videos, and more";
 "paywall.feature.storage.title" = "10GB Storage";
-"paywall.feature.storage.desc" = "Pro storage limit during trial";
+"paywall.feature.storage.desc" = "10x more space, permanent links";
 "paywall.feature.sharing.title" = "Fast Sharing";
 "paywall.feature.sharing.desc" = "Instant links for your images";
 "paywall.feature.private.title" = "Private by Default";
@@ -281,7 +303,8 @@
 "paywall.error.loading" = "Unable to load subscription options";
 "paywall.button.retry" = "Retry";
 "paywall.badge.save" = "SAVE 30%";
-"paywall.button.start_trial" = "Start Free Trial";
+"paywall.button.start_trial" = "Start 7-Day Free Trial";
+"paywall.button.continue_free" = "Continue with Free";
 "paywall.button.restore" = "Restore Purchases";
 "paywall.price.per_month_format" = "%@/mo";
 "paywall.price.per_month_fallback" = "/month";
@@ -297,12 +320,14 @@
 "subscription.title" = "SUBSCRIPTION";
 "subscription.section.current_plan" = "CURRENT PLAN";
 "subscription.button.manage" = "Manage Subscription";
+"subscription.button.upgrade" = "Upgrade to Pro";
 "subscription.plan.trial" = "PRO TRIAL";
 "subscription.plan.active" = "PRO";
 "subscription.plan.cancelled" = "PRO (CANCELLED)";
 "subscription.plan.free" = "FREE";
 "subscription.badge.trial" = "TRIAL";
 "subscription.badge.active" = "ACTIVE";
+"subscription.badge.free" = "FREE";
 "subscription.badge.cancelled" = "CANCELLED";
 "subscription.badge.expired" = "EXPIRED";
 "subscription.trial.ends_tomorrow" = "Trial ends tomorrow";
@@ -311,6 +336,21 @@
 "subscription.expires_on" = "Expires on %@";
 "subscription.access_until" = "Access until %@";
 "subscription.expired_message" = "Your subscription has expired";
+"subscription.free.limits" = "50 MB storage · files expire after 7 days";
+"subscription.free.upgrade_hint" = "Upgrade for permanent links and 10 GB storage.";
+
+// MARK: - Free Tier Upload Banners
+"upload.free_tier.ttl_notice" = "This file will be automatically deleted in 7 days.";
+"upload.free_tier.ttl_notice_short" = "Expires in 7 days";
+"upload.free_tier.file_too_large" = "File exceeds the 5 MB free-tier limit.";
+"upload.free_tier.storage_full" = "You've used all 50 MB of free storage.";
+"upload.free_tier.daily_limit" = "You've reached the 20-upload daily limit.";
+"upload.free_tier.upgrade_cta" = "Upgrade to Pro";
+
+// MARK: - Upload Detail (expiry badge)
+"detail.expires_in_days" = "Expires in %d days";
+"detail.expires_today" = "Expires today";
+"detail.permanent" = "Permanent";
 
 // MARK: - Error Messages (ImghostError)
 "error.not_configured.description" = "App not configured. Please set up the backend URL and token in settings.";
@@ -337,6 +377,10 @@
 "error.delete_failed.recovery" = "The image may have already been deleted, or your token may not have delete permissions.";
 "error.email_not_verified.recovery" = "Open the imghost app and verify your email address to enable uploads.";
 "error.subscription_required.recovery" = "Subscribe to imghost Pro to unlock uploads and storage.";
+"error.free_tier_file_size.description" = "File is too large for the free tier (5 MB limit).";
+"error.free_tier_storage_full.description" = "Your free storage (50 MB) is full.";
+"error.free_tier_daily_limit.description" = "You've reached today's upload limit on the free tier.";
+"error.free_tier.upgrade_recovery" = "Upgrade to Pro for 10 GB storage, 500 MB files, and permanent links.";
 
 // Feedback
 "settings.section.feedback" = "Feedback";

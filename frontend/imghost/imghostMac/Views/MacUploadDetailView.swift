@@ -68,6 +68,14 @@ struct MacUploadDetailView: View {
         _selectedFormat = State(initialValue: LinkFormatService.shared.currentFormat)
     }
 
+    private var macExpirationLabel: String {
+        guard let days = record.daysUntilExpiry else {
+            return String(localized: "detail.permanent")
+        }
+        if days == 0 { return String(localized: "detail.expires_today") }
+        return String(format: String(localized: "detail.expires_in_days"), days)
+    }
+
     private var formattedLink: String {
         linkFormatService.format(url: record.url, using: selectedFormat, filename: record.originalFilename)
     }
@@ -120,6 +128,23 @@ struct MacUploadDetailView: View {
                         Text(record.createdAt, style: .date)
                             .font(.system(size: 13))
                             .foregroundStyle(Color.brutalTextSecondary)
+                    }
+
+                    // Expiry (free-tier uploads only)
+                    if record.isTemporary {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("LINK")
+                                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                                .foregroundStyle(Color.brutalTextTertiary)
+                                .tracking(1.5)
+                            HStack(spacing: 4) {
+                                Image(systemName: "clock.fill")
+                                    .font(.system(size: 11))
+                                Text(macExpirationLabel)
+                                    .font(.system(size: 13))
+                            }
+                            .foregroundStyle(Color.brutalWarning)
+                        }
                     }
 
                     Divider().background(Color.brutalBorder)

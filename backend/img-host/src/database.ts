@@ -5,7 +5,7 @@ export interface User {
   email: string;
   password_hash: string;
   created_at: number;
-  subscription_tier: 'trial' | 'pro' | 'enterprise';
+  subscription_tier: 'free' | 'trial' | 'pro' | 'enterprise';
   api_token: string;
   storage_limit_bytes: number;
   email_verified: number;
@@ -42,12 +42,13 @@ export interface Image {
   content_type: string;
   created_at: number;
   delete_token: string;
+  expires_at: number | null; // null = permanent (paid tier); timestamp = free tier TTL
 }
 
 export interface Subscription {
   id: string;
   user_id: string;
-  tier: 'trial' | 'pro' | 'enterprise';
+  tier: 'free' | 'trial' | 'pro' | 'enterprise';
   status: 'active' | 'cancelled' | 'past_due' | 'trialing' | 'expired';
   stripe_customer_id?: string;
   stripe_subscription_id?: string;
@@ -92,12 +93,13 @@ export class Database {
   constructor(private db: D1Database) {}
 
   // Helper to get storage limit for tier
-  private getStorageLimitForTier(tier: 'trial' | 'pro' | 'enterprise'): number {
+  private getStorageLimitForTier(tier: 'free' | 'trial' | 'pro' | 'enterprise'): number {
     switch (tier) {
-      case 'trial': return 10000000000;   // 10GB
-      case 'pro': return 10000000000;     // 10GB
+      case 'free': return 52428800;           // 50MB
+      case 'trial': return 10000000000;       // 10GB
+      case 'pro': return 10000000000;         // 10GB
       case 'enterprise': return 100000000000; // 100GB
-      default: return 10000000000;        // 10GB default
+      default: return 52428800;               // 50MB safe default
     }
   }
 
@@ -106,7 +108,7 @@ export class Database {
     email: string,
     passwordHash: string,
     apiToken: string,
-    tier: 'trial' | 'pro' | 'enterprise' = 'trial'
+    tier: 'free' | 'trial' | 'pro' | 'enterprise' = 'free'
   ): Promise<User> {
     const id = crypto.randomUUID();
     const createdAt = Date.now();
@@ -174,7 +176,7 @@ export class Database {
   async createAppleUser(
     email: string,
     appleUserId: string,
-    tier: 'trial' | 'pro' | 'enterprise' = 'trial'
+    tier: 'free' | 'trial' | 'pro' | 'enterprise' = 'free'
   ): Promise<User> {
     const id = crypto.randomUUID();
     const createdAt = Date.now();
@@ -205,7 +207,7 @@ export class Database {
     };
   }
 
-  async updateUserTier(userId: string, tier: 'trial' | 'pro' | 'enterprise'): Promise<void> {
+  async updateUserTier(userId: string, tier: 'free' | 'trial' | 'pro' | 'enterprise'): Promise<void> {
     const storageLimitBytes = this.getStorageLimitForTier(tier);
     await this.db
       .prepare('UPDATE users SET subscription_tier = ?, storage_limit_bytes = ? WHERE id = ?')
@@ -220,17 +222,18 @@ export class Database {
     filename: string,
     sizeBytes: number,
     contentType: string,
-    deleteToken: string
+    deleteToken: string,
+    expiresAt: number | null = null
   ): Promise<Image> {
     const id = crypto.randomUUID().slice(0, 8);
     const createdAt = Date.now();
 
     await this.db
       .prepare(
-        `INSERT INTO images (id, user_id, r2_key, filename, size_bytes, content_type, created_at, delete_token)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO images (id, user_id, r2_key, filename, size_bytes, content_type, created_at, delete_token, expires_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
-      .bind(id, userId, r2Key, filename, sizeBytes, contentType, createdAt, deleteToken)
+      .bind(id, userId, r2Key, filename, sizeBytes, contentType, createdAt, deleteToken, expiresAt)
       .run();
 
     return {
@@ -242,7 +245,34 @@ export class Database {
       content_type: contentType,
       created_at: createdAt,
       delete_token: deleteToken,
+      expires_at: expiresAt,
     };
+  }
+
+  // Delete all images whose TTL has passed; returns the R2 keys that were deleted
+  async deleteExpiredImages(): Promise<string[]> {
+    const now = Date.now();
+    const rows = await this.db
+      .prepare('SELECT id, r2_key FROM images WHERE expires_at IS NOT NULL AND expires_at <= ?')
+      .bind(now)
+      .all<{ id: string; r2_key: string }>();
+
+    if (!rows.results || rows.results.length === 0) return [];
+
+    const ids = rows.results.map(r => r.id);
+    const r2Keys = rows.results.map(r => r.r2_key);
+
+    // Delete in batches of 100 (D1 parameter limit)
+    for (let i = 0; i < ids.length; i += 100) {
+      const batch = ids.slice(i, i + 100);
+      const placeholders = batch.map(() => '?').join(',');
+      await this.db
+        .prepare(`DELETE FROM images WHERE id IN (${placeholders})`)
+        .bind(...batch)
+        .run();
+    }
+
+    return r2Keys;
   }
 
   async getImageByR2Key(r2Key: string): Promise<Image | null> {
@@ -307,7 +337,7 @@ export class Database {
   // Subscription operations
   async createSubscription(
     userId: string,
-    tier: 'trial' | 'pro' | 'enterprise',
+    tier: 'free' | 'trial' | 'pro' | 'enterprise',
     status: 'active' | 'cancelled' | 'past_due' | 'trialing' | 'expired',
     stripeCustomerId?: string,
     stripeSubscriptionId?: string,
@@ -423,7 +453,7 @@ export class Database {
   // Update subscription status and tier
   async updateSubscriptionTierAndStatus(
     userId: string,
-    tier: 'trial' | 'pro' | 'enterprise',
+    tier: 'free' | 'trial' | 'pro' | 'enterprise',
     status: 'active' | 'cancelled' | 'past_due' | 'trialing' | 'expired'
   ): Promise<void> {
     const now = Date.now();

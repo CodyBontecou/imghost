@@ -4,11 +4,15 @@ import StoreKit
 struct PaywallView: View {
     @StateObject private var storeKit = StoreKitManager.shared
     @EnvironmentObject var subscriptionState: SubscriptionState
+    @Environment(\.dismiss) private var dismiss
     @State private var selectedProduct: Product?
     @State private var isPurchasing = false
     @State private var isRestoring = false
     @State private var errorMessage: String?
     @State private var showError = false
+
+    /// When true the user can dismiss to stay on free tier (shown from onboarding/settings upgrade)
+    var allowDismiss: Bool = false
 
     var body: some View {
         ScrollView {
@@ -16,8 +20,8 @@ struct PaywallView: View {
                 // Hero Section
                 heroSection
 
-                // Features Section
-                featuresSection
+                // Tier Comparison Section
+                tierComparisonSection
 
                 // Pricing Section
                 pricingSection
@@ -70,13 +74,13 @@ struct PaywallView: View {
         .padding(.horizontal, 24)
     }
 
-    // MARK: - Features Section
+    // MARK: - Tier Comparison Section
 
-    private var featuresSection: some View {
+    private var tierComparisonSection: some View {
         VStack(spacing: 0) {
-            // Header
+            // Section header
             HStack {
-                Text("paywall.section.features")
+                Text("paywall.section.comparison")
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                     .tracking(2)
                 Spacer()
@@ -84,22 +88,43 @@ struct PaywallView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(Color.brutalSurface)
-            .overlay(
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundColor(.brutalBorder),
-                alignment: .bottom
-            )
+            .overlay(Rectangle().frame(height: 1).foregroundColor(.brutalBorder), alignment: .bottom)
 
-            // Feature List
-            VStack(spacing: 0) {
-                FeatureRow(icon: "photo.stack", title: String(localized: "paywall.feature.file_size.title"), description: String(localized: "paywall.feature.file_size.desc"))
-                FeatureRow(icon: "externaldrive.fill", title: String(localized: "paywall.feature.storage.title"), description: String(localized: "paywall.feature.storage.desc"))
-                FeatureRow(icon: "bolt.fill", title: String(localized: "paywall.feature.sharing.title"), description: String(localized: "paywall.feature.sharing.desc"))
-                FeatureRow(icon: "lock.fill", title: String(localized: "paywall.feature.private.title"), description: String(localized: "paywall.feature.private.desc"))
+            // Column headers
+            HStack {
+                Text("").frame(maxWidth: .infinity, alignment: .leading)
+                Text("paywall.comparison.free.label")
+                    .brutalTypography(.monoSmall, color: .brutalTextSecondary)
+                    .tracking(2)
+                    .frame(width: 88, alignment: .center)
+                Text("paywall.comparison.pro.label")
+                    .brutalTypography(.mono, color: .white)
+                    .tracking(2)
+                    .frame(width: 88, alignment: .center)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(Color.brutalBackground)
+            .overlay(Rectangle().frame(height: 1).foregroundColor(.brutalBorder), alignment: .bottom)
+
+            let rows: [(label: String, freeKey: String, proKey: String)] = [
+                ("paywall.comparison.row.storage",   "paywall.comparison.free.storage",   "paywall.comparison.pro.storage"),
+                ("paywall.comparison.row.file_size", "paywall.comparison.free.file_size", "paywall.comparison.pro.file_size"),
+                ("paywall.comparison.row.link_ttl",  "paywall.comparison.free.link_ttl",  "paywall.comparison.pro.link_ttl"),
+                ("paywall.comparison.row.export",    "paywall.comparison.free.export",    "paywall.comparison.pro.export"),
+                ("paywall.comparison.row.transforms","paywall.comparison.free.transforms","paywall.comparison.pro.transforms"),
+            ]
+
+            ForEach(rows, id: \.label) { row in
+                ComparisonRow(
+                    labelKey: row.label,
+                    freeValueKey: row.freeKey,
+                    proValueKey: row.proKey
+                )
             }
         }
         .padding(.horizontal, 16)
+        .padding(.bottom, 8)
     }
 
     // MARK: - Pricing Section
@@ -197,6 +222,14 @@ struct PaywallView: View {
                 }
                 .padding(.top, 8)
                 .opacity(isRestoring ? 0.5 : 1)
+
+                // Continue with Free (only shown from soft-upgrade contexts)
+                if allowDismiss || subscriptionState.isFree {
+                    BrutalTextButton(title: String(localized: "paywall.button.continue_free")) {
+                        dismiss()
+                    }
+                    .padding(.top, 4)
+                }
             }
         }
         .padding(.horizontal, 16)
@@ -258,6 +291,36 @@ struct PaywallView: View {
         }
 
         isRestoring = false
+    }
+}
+
+// MARK: - Comparison Row
+
+private struct ComparisonRow: View {
+    let labelKey: String
+    let freeValueKey: String
+    let proValueKey: String
+
+    private var freeValue: String { String(localized: String.LocalizationValue(freeValueKey)) }
+    private var proValue: String { String(localized: String.LocalizationValue(proValueKey)) }
+    private var label: String { String(localized: String.LocalizationValue(labelKey)) }
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .brutalTypography(.bodySmall, color: .brutalTextSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text(freeValue)
+                .brutalTypography(.monoSmall, color: freeValue == "✕" ? .brutalTextTertiary : .brutalTextSecondary)
+                .frame(width: 88, alignment: .center)
+            Text(proValue)
+                .brutalTypography(.mono, color: proValue == "✓" ? .brutalSuccess : .white)
+                .frame(width: 88, alignment: .center)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color.brutalBackground)
+        .overlay(Rectangle().frame(height: 1).foregroundColor(.brutalBorder), alignment: .bottom)
     }
 }
 

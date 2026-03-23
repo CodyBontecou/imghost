@@ -252,6 +252,24 @@ struct UploadView: View {
 
                 Text("upload.success.link_copied")
                     .brutalTypography(.bodyMedium, color: .brutalTextSecondary)
+
+                // TTL notice for free-tier uploads
+                if let record = uploadedRecord, record.isTemporary {
+                    HStack(spacing: 6) {
+                        Image(systemName: "clock.fill")
+                            .font(.system(size: 11))
+                        Text("upload.free_tier.ttl_notice")
+                            .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    }
+                    .foregroundStyle(Color.brutalWarning)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.brutalWarning.opacity(0.12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.brutalWarning.opacity(0.4), lineWidth: 1)
+                    )
+                }
             }
 
             if let record = uploadedRecord {

@@ -115,9 +115,13 @@ struct SettingsView: View {
                         .padding(.horizontal, 24)
                         .padding(.bottom, 12)
 
-                    // Upgrade to Pro Button (visible during trial or when no subscription)
-                    if !subscriptionState.hasAccess || subscriptionState.status == .trialing {
-                        BrutalPrimaryButton(title: subscriptionState.status == .trialing ? String(localized: "settings.subscription.button.upgrade") : String(localized: "settings.subscription.button.subscribe")) {
+                    // Upgrade / Subscribe button
+                    if !subscriptionState.hasAccess || subscriptionState.status == .trialing || subscriptionState.isFree {
+                        BrutalPrimaryButton(
+                            title: subscriptionState.status == .trialing
+                                ? String(localized: "settings.subscription.button.upgrade")
+                                : String(localized: "settings.subscription.button.subscribe")
+                        ) {
                             showPaywall = true
                         }
                         .padding(.horizontal, 24)
@@ -351,10 +355,16 @@ struct SettingsView: View {
 
                                 BrutalRow(
                                     title: String(localized: "settings.action.export.title"),
-                                    subtitle: String(localized: "settings.action.export.subtitle"),
+                                    subtitle: subscriptionState.isFree
+                                        ? String(localized: "settings.action.export.subtitle_free")
+                                        : String(localized: "settings.action.export.subtitle"),
                                     showChevron: true
                                 ) {
-                                    showingExportSheet = true
+                                    if subscriptionState.isFree {
+                                        showPaywall = true
+                                    } else {
+                                        showingExportSheet = true
+                                    }
                                 }
 
                                 Rectangle()

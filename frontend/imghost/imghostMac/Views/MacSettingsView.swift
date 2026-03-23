@@ -12,6 +12,7 @@ struct MacSettingsView: View {
     @State private var selectedQuality: UploadQuality
     @State private var confirmBeforeUpload: Bool
     @State private var showExportView = false
+    @State private var showPaywall = false
 
     private let linkFormatService = LinkFormatService.shared
     private let qualityService = UploadQualityService.shared
@@ -71,6 +72,11 @@ struct MacSettingsView: View {
             Button(String(localized: "settings.alert.delete_account.button.confirm"), role: .destructive) { deleteAccount() }
         } message: {
             Text("settings.alert.delete_account.message")
+        }
+        .sheet(isPresented: $showPaywall) {
+            MacPaywallView(allowDismiss: true)
+                .environmentObject(subscriptionState)
+                .frame(width: 540, height: 620)
         }
     }
 
@@ -147,6 +153,17 @@ struct MacSettingsView: View {
             .background(Color.brutalSurface)
             .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
 
+            // Free tier limits notice
+            if subscriptionState.isFree {
+                HStack(spacing: 6) {
+                    Image(systemName: "clock.fill")
+                        .font(.system(size: 11))
+                    Text(String(localized: "free.tier.limits"))
+                        .font(.system(size: 11, design: .monospaced))
+                }
+                .foregroundStyle(Color.brutalTextSecondary)
+            }
+
             if subscriptionState.status == .subscribed || subscriptionState.status == .trialing {
                 Button(action: {
                     MacURLOpener.open("https://apps.apple.com/account/subscriptions")
@@ -161,12 +178,28 @@ struct MacSettingsView: View {
                 }
                 .buttonStyle(.plain)
             }
+
+            // Upgrade button for free / expired
+            if subscriptionState.isFree || subscriptionState.shouldShowPaywall {
+                Button(action: { showPaywall = true }) {
+                    Text("settings.subscription.button.upgrade")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(Color.black)
+                        .tracking(1)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.white)
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 
     @ViewBuilder
     private var subscriptionBadge: some View {
         switch subscriptionState.status {
+        case .free:
+            BrutalBadge(text: String(localized: "settings.badge.free"), style: .default)
         case .trialing:
             BrutalBadge(text: String(localized: "settings.badge.trial"), style: .warning)
         case .subscribed:
@@ -389,18 +422,26 @@ struct MacSettingsView: View {
         VStack(alignment: .leading, spacing: 12) {
             BrutalSectionHeader(title: String(localized: "settings.section.data"))
 
-            Button(action: { showExportView = true }) {
+            Button(action: {
+                if subscriptionState.isFree {
+                    showPaywall = true
+                } else {
+                    showExportView = true
+                }
+            }) {
                 HStack(spacing: 8) {
-                    Image(systemName: "arrow.down.doc")
+                    Image(systemName: subscriptionState.isFree ? "lock.fill" : "arrow.down.doc")
                         .font(.system(size: 12))
-                    Text("settings.data.button.export")
+                    Text(subscriptionState.isFree
+                         ? String(localized: "free.tier.export_blocked")
+                         : String(localized: "settings.data.button.export"))
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .tracking(1)
                 }
-                .foregroundStyle(Color.white)
+                .foregroundStyle(subscriptionState.isFree ? Color.brutalTextTertiary : Color.white)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
+                .overlay(Rectangle().stroke(subscriptionState.isFree ? Color.brutalBorder.opacity(0.5) : Color.brutalBorder, lineWidth: 1))
             }
             .buttonStyle(.plain)
         }

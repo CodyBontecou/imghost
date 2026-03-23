@@ -590,9 +590,17 @@ struct MacMediaView: View {
                     Task { await subscriptionState.checkStatus() }
                     showBanner(message: String(localized: "media.banner.subscription_required"), isError: true)
                 } else if failed.isEmpty {
-                    let msg = successful.count == 1
-                        ? String(format: String(localized: "media.banner.upload_success_singular"), successful.count)
-                        : String(format: String(localized: "media.banner.upload_success_plural"), successful.count)
+                    let hasTTL = successful.compactMap(\.record).contains { $0.isTemporary }
+                    let msg: String
+                    if successful.count == 1 {
+                        msg = hasTTL
+                            ? String(format: String(localized: "media.banner.upload_success_singular_ttl"), successful.count)
+                            : String(format: String(localized: "media.banner.upload_success_singular"), successful.count)
+                    } else {
+                        msg = hasTTL
+                            ? String(format: String(localized: "media.banner.upload_success_plural_ttl"), successful.count)
+                            : String(format: String(localized: "media.banner.upload_success_plural"), successful.count)
+                    }
                     showBanner(message: msg, isError: false)
                 } else if successful.isEmpty {
                     let msg = failed.count == 1
@@ -667,9 +675,17 @@ struct MacMediaView: View {
                     Task { await subscriptionState.checkStatus() }
                     showBanner(message: String(localized: "media.banner.subscription_required"), isError: true)
                 } else if failed.isEmpty {
-                    let msg = successful.count == 1
-                        ? String(format: String(localized: "media.banner.upload_success_singular"), successful.count)
-                        : String(format: String(localized: "media.banner.upload_success_plural"), successful.count)
+                    let hasTTL = successful.compactMap(\.record).contains { $0.isTemporary }
+                    let msg: String
+                    if successful.count == 1 {
+                        msg = hasTTL
+                            ? String(format: String(localized: "media.banner.upload_success_singular_ttl"), successful.count)
+                            : String(format: String(localized: "media.banner.upload_success_singular"), successful.count)
+                    } else {
+                        msg = hasTTL
+                            ? String(format: String(localized: "media.banner.upload_success_plural_ttl"), successful.count)
+                            : String(format: String(localized: "media.banner.upload_success_plural"), successful.count)
+                    }
                     showBanner(message: msg, isError: false)
                 } else if successful.isEmpty {
                     let msg = failed.count == 1

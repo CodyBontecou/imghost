@@ -15,6 +15,7 @@ struct OnboardingView: View {
         OnboardingPage(titleKey: "onboarding.page2.title", subtitleKey: "onboarding.page2.subtitle"),
         OnboardingPage(titleKey: "onboarding.page3.title", subtitleKey: "onboarding.page3.subtitle"),
         OnboardingPage(titleKey: "onboarding.page4.title", subtitleKey: "onboarding.page4.subtitle"),
+        OnboardingPage(titleKey: "onboarding.page5.title", subtitleKey: "onboarding.page5.subtitle"),
     ]
 
     var body: some View {
@@ -38,12 +39,18 @@ struct OnboardingView: View {
                 // Main content
                 TabView(selection: $currentPage) {
                     ForEach(Array(pages.enumerated()), id: \.element.id) { index, page in
-                        BrutalOnboardingPageView(
-                            page: page,
-                            pageNumber: index + 1,
-                            totalPages: pages.count
-                        )
-                        .tag(index)
+                        if index == pages.count - 1 {
+                            // Last page: tier comparison
+                            OnboardingTierComparisonView()
+                                .tag(index)
+                        } else {
+                            BrutalOnboardingPageView(
+                                page: page,
+                                pageNumber: index + 1,
+                                totalPages: pages.count
+                            )
+                            .tag(index)
+                        }
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -61,11 +68,22 @@ struct OnboardingView: View {
                     }
 
                     // Action buttons
-                    HStack(spacing: GoogleSpacing.sm) {
-                        if currentPage < pages.count - 1 {
-                            Button(action: {
-                                hasCompletedOnboarding = true
-                            }) {
+                    if currentPage == pages.count - 1 {
+                        // Final page: two clear CTAs
+                        VStack(spacing: GoogleSpacing.sm) {
+                            Button(action: { hasCompletedOnboarding = true }) {
+                                Text("onboarding.button.start")
+                                    .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                    .foregroundStyle(.black)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 48)
+                                    .background(Color.white)
+                            }
+                        }
+                        .padding(.horizontal, GoogleSpacing.lg)
+                    } else {
+                        HStack(spacing: GoogleSpacing.sm) {
+                            Button(action: { hasCompletedOnboarding = true }) {
                                 Text("onboarding.button.skip")
                                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                                     .foregroundStyle(.white.opacity(0.5))
@@ -76,28 +94,22 @@ struct OnboardingView: View {
                                             .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                     )
                             }
-                        }
 
-                        Button(action: {
-                            if currentPage == pages.count - 1 {
-                                hasCompletedOnboarding = true
-                            } else {
+                            Button(action: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     currentPage += 1
                                 }
+                            }) {
+                                Text("onboarding.button.next")
+                                    .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                    .foregroundStyle(.black)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 48)
+                                    .background(Color.white)
                             }
-                        }) {
-                            Text(currentPage == pages.count - 1
-                                 ? "onboarding.button.start"
-                                 : "onboarding.button.next")
-                                .font(.system(size: 13, weight: .bold, design: .monospaced))
-                                .foregroundStyle(.black)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 48)
-                                .background(Color.white)
                         }
+                        .padding(.horizontal, GoogleSpacing.lg)
                     }
-                    .padding(.horizontal, GoogleSpacing.lg)
                 }
                 .padding(.bottom, GoogleSpacing.xxl)
             }
@@ -145,6 +157,81 @@ struct BrutalOnboardingPageView: View {
                     .textCase(.uppercase)
             }
             .padding(.bottom, GoogleSpacing.xxxl)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, GoogleSpacing.lg)
+    }
+}
+
+// MARK: - Tier Comparison (final onboarding page)
+
+struct OnboardingTierComparisonView: View {
+    private let rows: [(label: String, free: String, pro: String)] = [
+        ("Storage",       "50 MB",      "10 GB"),
+        ("Max File",      "5 MB",       "500 MB"),
+        ("Links",         "7 days",     "Permanent"),
+        ("Export ZIP",    "✕",          "✓"),
+        ("Transforms",    "✕",          "✓"),
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: GoogleSpacing.xl)
+
+            Text("FREE\nTO\nSTART")
+                .font(.system(size: 64, weight: .black))
+                .foregroundStyle(.white)
+                .minimumScaleFactor(0.7)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, GoogleSpacing.lg)
+
+            // Tier comparison table
+            VStack(spacing: 0) {
+                // Header row
+                HStack {
+                    Text("")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("FREE")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.5))
+                        .tracking(2)
+                        .frame(width: 80, alignment: .center)
+                    Text("PRO")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.white)
+                        .tracking(2)
+                        .frame(width: 80, alignment: .center)
+                }
+                .padding(.bottom, 8)
+
+                Rectangle()
+                    .fill(Color.white.opacity(0.15))
+                    .frame(height: 1)
+
+                ForEach(rows, id: \.label) { row in
+                    HStack {
+                        Text(row.label)
+                            .font(.system(size: 12, weight: .medium, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.6))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text(row.free)
+                            .font(.system(size: 12, weight: .medium, design: .monospaced))
+                            .foregroundStyle(row.free == "✕" ? .white.opacity(0.3) : .white.opacity(0.5))
+                            .frame(width: 80, alignment: .center)
+                        Text(row.pro)
+                            .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            .foregroundStyle(row.pro == "✓" ? Color.green : .white)
+                            .frame(width: 80, alignment: .center)
+                    }
+                    .padding(.vertical, 10)
+
+                    Rectangle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(height: 1)
+                }
+            }
+
+            Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, GoogleSpacing.lg)
