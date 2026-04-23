@@ -73,7 +73,8 @@ export async function handleVerifyPurchase(request: Request, env: Env): Promise<
 
     // Determine tier and status
     const isTrialPeriod = result.isTrialPeriod;
-    const tier = isTrialPeriod ? 'trial' : 'pro';
+    const productTier = appleIAP.getTierFromProductId(transaction.productId);
+    const tier = isTrialPeriod ? 'trial' : productTier;
     const status = isTrialPeriod ? 'trialing' : 'active';
     const trialEndsAt = isTrialPeriod ? transaction.expiresDate : undefined;
 
@@ -281,7 +282,8 @@ export async function handleRestorePurchases(request: Request, env: Env): Promis
     }
 
     // Determine tier and status
-    const tier = isTrialPeriod ? 'trial' : 'pro';
+    const productTier = appleIAP.getTierFromProductId(transaction.productId);
+    const tier = isTrialPeriod ? 'trial' : productTier;
     const status = isTrialPeriod ? 'trialing' : 'active';
     const trialEndsAt = isTrialPeriod ? transaction.expiresDate : undefined;
 

@@ -96,11 +96,10 @@ export interface Env {
   DMCA_API_KEY?: string;
 }
 
-const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (paid tier / Cloudflare Workers limit)
-const FREE_MAX_FILE_SIZE = 5_000_000;           // 5MB max per file (decimal, displays as "5 MB")
-const FREE_STORAGE_LIMIT = 50_000_000;          // 50MB total for free tier (decimal, displays as "50 MB")
-const FREE_TTL_MS = 7 * 24 * 60 * 60 * 1000;  // 7 days TTL for free-tier images
-const FREE_DAILY_UPLOADS = 5;                   // max uploads per 24h for free tier
+const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (Cloudflare Workers limit)
+const FREE_MAX_FILE_SIZE = 50_000_000;          // 50MB max per file for free tier
+const FREE_STORAGE_LIMIT = 1_000_000_000;       // 1GB total for free tier
+const FREE_DAILY_UPLOADS = 20;                  // max uploads per 24h for free tier (storage is the real cap)
 
 function generateId(): string {
   return crypto.randomUUID().slice(0, 8);
@@ -347,7 +346,7 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
     const usage = await db.getStorageUsage(user.id);
     return json({
       error: isFreeUser
-        ? 'Free tier storage limit reached (50MB). Upgrade to Pro for 10GB.'
+        ? 'Free tier storage limit reached (1 GB). Upgrade to Starter for 10 GB.'
         : 'Storage limit exceeded',
       upgrade_required: isFreeUser,
       current_usage: usage.total_bytes_used,
@@ -373,8 +372,8 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
     },
   });
 
-  // Free-tier images expire after 7 days; paid images are permanent
-  const expiresAt = isFreeUser ? Date.now() + FREE_TTL_MS : null;
+  // All images are permanent; storage quota is the limiting factor for free users
+  const expiresAt = null;
 
   // Save image metadata to database
   const image = await db.createImage(

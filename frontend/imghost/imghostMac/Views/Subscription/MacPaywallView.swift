@@ -6,6 +6,7 @@ struct MacPaywallView: View {
     @EnvironmentObject var subscriptionState: SubscriptionState
     @Environment(\.dismiss) private var dismiss
     @State private var selectedProduct: Product?
+    @State private var isYearly = false
     @State private var isPurchasing = false
     @State private var isRestoring = false
     @State private var errorMessage: String?
@@ -54,7 +55,6 @@ struct MacPaywallView: View {
                             Text("paywall.error.loading")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.brutalError)
-
                             Button(action: { Task { await storeKit.reloadProducts() } }) {
                                 Text("paywall.button.retry")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
@@ -67,20 +67,53 @@ struct MacPaywallView: View {
                             .buttonStyle(.plain)
                         }
                     } else {
-                        HStack(spacing: 16) {
-                            if let monthly = storeKit.monthlyProduct {
-                                MacProductCard(product: monthly, isSelected: selectedProduct?.id == monthly.id, badge: nil) {
-                                    selectedProduct = monthly
-                                }
+                        // Tier selector
+                        HStack(spacing: 12) {
+                            MacTierButton(label: String(localized: "paywall.tier.starter.name"), storage: "10 GB",
+                                          product: storeKit.starterMonthlyProduct,
+                                          isSelected: selectedProduct?.id == storeKit.starterMonthlyProduct?.id ||
+                                                      selectedProduct?.id == storeKit.starterYearlyProduct?.id) {
+                                selectedProduct = isYearly ? storeKit.starterYearlyProduct : storeKit.starterMonthlyProduct
                             }
-
-                            if let annual = storeKit.annualProduct {
-                                MacProductCard(product: annual, isSelected: selectedProduct?.id == annual.id, badge: String(localized: "paywall.badge.save")) {
-                                    selectedProduct = annual
-                                }
+                            MacTierButton(label: String(localized: "paywall.tier.pro.name"), storage: "100 GB",
+                                          product: storeKit.proMonthlyProduct,
+                                          isSelected: selectedProduct?.id == storeKit.proMonthlyProduct?.id ||
+                                                      selectedProduct?.id == storeKit.proYearlyProduct?.id) {
+                                selectedProduct = isYearly ? storeKit.proYearlyProduct : storeKit.proMonthlyProduct
+                            }
+                            MacTierButton(label: String(localized: "paywall.tier.ultimate.name"), storage: "1 TB",
+                                          product: storeKit.ultimateMonthlyProduct,
+                                          isSelected: selectedProduct?.id == storeKit.ultimateMonthlyProduct?.id ||
+                                                      selectedProduct?.id == storeKit.ultimateYearlyProduct?.id) {
+                                selectedProduct = isYearly ? storeKit.ultimateYearlyProduct : storeKit.ultimateMonthlyProduct
                             }
                         }
                         .frame(maxWidth: 500)
+
+                        // Billing toggle
+                        HStack(spacing: 0) {
+                            Button(action: { isYearly = false; updateProductForBilling() }) {
+                                Text(String(localized: "paywall.billing.monthly"))
+                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                    .foregroundStyle(!isYearly ? Color.black : Color.brutalTextSecondary)
+                                    .padding(.horizontal, 20).padding(.vertical, 8)
+                                    .background(!isYearly ? Color.white : Color.brutalSurface)
+                                    .overlay(Rectangle().stroke(!isYearly ? Color.white : Color.brutalBorder, lineWidth: 1))
+                            }.buttonStyle(.plain)
+                            Button(action: { isYearly = true; updateProductForBilling() }) {
+                                HStack(spacing: 6) {
+                                    Text(String(localized: "paywall.billing.yearly"))
+                                    Text(String(localized: "paywall.badge.save"))
+                                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                                        .foregroundStyle(isYearly ? Color.brutalSuccess : Color.brutalTextTertiary)
+                                }
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundStyle(isYearly ? Color.black : Color.brutalTextSecondary)
+                                .padding(.horizontal, 20).padding(.vertical, 8)
+                                .background(isYearly ? Color.white : Color.brutalSurface)
+                                .overlay(Rectangle().stroke(isYearly ? Color.white : Color.brutalBorder, lineWidth: 1))
+                            }.buttonStyle(.plain)
+                        }
 
                         // Subscribe button
                         Button(action: { Task { await purchase() } }) {
@@ -90,7 +123,7 @@ struct MacPaywallView: View {
                                         .progressViewStyle(CircularProgressViewStyle(tint: .black))
                                         .scaleEffect(0.7)
                                 } else {
-                                    Text("paywall.button.start_trial")
+                                    Text("paywall.button.subscribe")
                                         .font(.system(size: 13, weight: .bold, design: .monospaced))
                                         .tracking(1)
                                 }
@@ -162,7 +195,7 @@ struct MacPaywallView: View {
                 await storeKit.reloadProducts()
             }
             if selectedProduct == nil {
-                selectedProduct = storeKit.monthlyProduct
+                selectedProduct = storeKit.starterMonthlyProduct
             }
         }
         .alert(String(localized: "paywall.error.alert.title"), isPresented: $showError) {
@@ -170,6 +203,14 @@ struct MacPaywallView: View {
         } message: {
             Text(verbatim: errorMessage ?? String(localized: "paywall.error.alert.message_fallback"))
         }
+    }
+
+    private func updateProductForBilling() {
+        guard let current = selectedProduct else { return }
+        let tier = StoreKitManager.backendTier(for: current.id)
+        selectedProduct = isYearly
+            ? storeKit.yearlyProduct(for: tier)
+            : storeKit.monthlyProduct(for: tier)
     }
 
     private func purchase() async {
@@ -202,15 +243,16 @@ struct MacPaywallView: View {
     }
 }
 
-// MARK: - Tier Comparison Grid
+// MARK: - Tier Comparison Grid (4 columns: Free | Starter | Pro | Ultimate)
 
 struct MacTierComparisonView: View {
-    private let rows: [(label: String, freeKey: String, proKey: String)] = [
-        ("paywall.comparison.row.storage",    "paywall.comparison.free.storage",    "paywall.comparison.pro.storage"),
-        ("paywall.comparison.row.file_size",  "paywall.comparison.free.file_size",  "paywall.comparison.pro.file_size"),
-        ("paywall.comparison.row.link_ttl",   "paywall.comparison.free.link_ttl",   "paywall.comparison.pro.link_ttl"),
-        ("paywall.comparison.row.export",     "paywall.comparison.free.export",     "paywall.comparison.pro.export"),
-        ("paywall.comparison.row.transforms", "paywall.comparison.free.transforms", "paywall.comparison.pro.transforms"),
+    // (label, free, starter, pro, ultimate)
+    private let rows: [(String, String, String, String, String)] = [
+        ("paywall.comparison.row.storage",    "1 GB",  "10 GB",   "100 GB",    "1 TB"),
+        ("paywall.comparison.row.file_size",  "50 MB", "500 MB",  "500 MB",   "500 MB"),
+        ("paywall.comparison.row.link_ttl",   "•",     "•",       "•",         "•"),
+        ("paywall.comparison.row.export",     "✕",     "✓",       "✓",         "✓"),
+        ("paywall.comparison.row.transforms", "✕",     "✓",       "✓",         "✓"),
     ]
 
     var body: some View {
@@ -218,44 +260,84 @@ struct MacTierComparisonView: View {
             // Column headers
             HStack {
                 Text("").frame(maxWidth: .infinity, alignment: .leading)
-                Text(String(localized: "paywall.comparison.free.label"))
-                    .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .foregroundStyle(Color.white.opacity(0.4))
-                    .tracking(2)
-                    .frame(width: 72, alignment: .center)
-                Text(String(localized: "paywall.comparison.pro.label"))
-                    .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .foregroundStyle(Color.white)
-                    .tracking(2)
-                    .frame(width: 72, alignment: .center)
+                colHeader(String(localized: "paywall.comparison.free.label"),    dim: true)
+                colHeader(String(localized: "paywall.tier.starter.name"),        dim: false)
+                colHeader(String(localized: "paywall.tier.pro.name"),            dim: false)
+                colHeader(String(localized: "paywall.tier.ultimate.name"),       dim: false)
             }
             .padding(.bottom, 6)
 
             Rectangle().fill(Color.white.opacity(0.15)).frame(height: 1)
 
-            ForEach(rows, id: \.label) { row in
-                let free = String(localized: String.LocalizationValue(row.freeKey))
-                let pro  = String(localized: String.LocalizationValue(row.proKey))
-                let label = String(localized: String.LocalizationValue(row.label))
+            ForEach(rows, id: \.0) { row in
+                let label = String(localized: String.LocalizationValue(row.0))
+                let isLinkRow = (row.2 == "•")
                 HStack {
                     Text(label)
                         .font(.system(size: 11, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(free)
-                        .font(.system(size: 11, design: .monospaced))
-                        .foregroundStyle(free == "✕" ? Color.white.opacity(0.2) : Color.brutalTextSecondary)
-                        .frame(width: 72, alignment: .center)
-                    Text(pro)
-                        .font(.system(size: 11, weight: .bold, design: .monospaced))
-                        .foregroundStyle(pro == "✓" ? Color.green : Color.white)
-                        .frame(width: 72, alignment: .center)
+                    cell(row.1)
+                    cell(row.2)
+                    cell(row.3)
+                    cell(row.4)
                 }
                 .padding(.vertical, 7)
                 Rectangle().fill(Color.white.opacity(0.07)).frame(height: 1)
             }
         }
-        .frame(maxWidth: 420)
+        .frame(maxWidth: 520)
+    }
+
+    private func colHeader(_ text: String, dim: Bool) -> some View {
+        Text(text)
+            .font(.system(size: 9, weight: .bold, design: .monospaced))
+            .foregroundStyle(dim ? Color.white.opacity(0.35) : Color.white)
+            .tracking(1)
+            .frame(width: 60, alignment: .center)
+    }
+
+    private func cell(_ value: String) -> some View {
+        let color: Color = value == "✕" ? Color.white.opacity(0.2)
+                         : value == "✓" ? Color.green
+                         : Color.brutalTextSecondary
+        return Text(value)
+            .font(.system(size: 11, weight: value == "✓" ? .bold : .regular, design: .monospaced))
+            .foregroundStyle(color)
+            .frame(width: 60, alignment: .center)
+    }
+}
+
+// MARK: - MacTierButton
+
+struct MacTierButton: View {
+    let label: String
+    let storage: String
+    let product: Product?
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Text(label)
+                    .font(.system(size: 11, weight: .bold, design: .monospaced))
+                    .foregroundStyle(isSelected ? Color.white : Color.brutalTextSecondary)
+                Text(storage)
+                    .font(.system(size: 16, weight: .black))
+                    .foregroundStyle(isSelected ? Color.white : Color.brutalTextTertiary)
+                if let product = product {
+                    Text(product.displayPrice + "/mo")
+                        .font(.system(size: 10, design: .monospaced))
+                        .foregroundStyle(isSelected ? Color.brutalTextSecondary : Color.brutalTextTertiary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(isSelected ? Color.brutalSurfaceElevated : Color.brutalSurface)
+            .overlay(Rectangle().stroke(isSelected ? Color.white : Color.brutalBorder, lineWidth: isSelected ? 2 : 1))
+        }
+        .buttonStyle(.plain)
     }
 }
 

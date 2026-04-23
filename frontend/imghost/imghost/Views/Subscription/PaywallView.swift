@@ -1,32 +1,83 @@
 import SwiftUI
 import StoreKit
 
+// MARK: - Tier model
+
+private enum PaidTier: String, CaseIterable, Identifiable {
+    case starter  = "pro"         // backend name
+    case pro      = "enterprise"  // backend name
+    case ultimate = "ultimate"    // backend name
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .starter:  return String(localized: "paywall.tier.starter.name")
+        case .pro:      return String(localized: "paywall.tier.pro.name")
+        case .ultimate: return String(localized: "paywall.tier.ultimate.name")
+        }
+    }
+
+    var storageLabel: String {
+        switch self {
+        case .starter:  return "10 GB"
+        case .pro:      return "100 GB"
+        case .ultimate: return "1 TB"
+        }
+    }
+
+    /// Approximate monthly price label shown before StoreKit loads
+    var monthlyPriceHint: String {
+        switch self {
+        case .starter:  return "$2"
+        case .pro:      return "$7.50"
+        case .ultimate: return "$25"
+        }
+    }
+
+    var accentColor: Color {
+        switch self {
+        case .starter:  return .brutalAccent
+        case .pro:      return .brutalSuccess
+        case .ultimate: return Color.orange
+        }
+    }
+}
+
+// MARK: - PaywallView
+
 struct PaywallView: View {
     @StateObject private var storeKit = StoreKitManager.shared
     @EnvironmentObject var subscriptionState: SubscriptionState
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedProduct: Product?
+
+    @State private var selectedTier: PaidTier = .starter
+    @State private var isYearly = false
     @State private var isPurchasing = false
     @State private var isRestoring = false
     @State private var errorMessage: String?
     @State private var showError = false
 
-    /// When true the user can dismiss to stay on free tier (shown from onboarding/settings upgrade)
     var allowDismiss: Bool = false
+
+    // MARK: - Selected StoreKit product
+
+    private var selectedProduct: Product? {
+        isYearly
+            ? storeKit.yearlyProduct(for: selectedTier.rawValue)
+            : storeKit.monthlyProduct(for: selectedTier.rawValue)
+    }
+
+    // MARK: - Body
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // Hero Section
                 heroSection
-
-                // Tier Comparison Section
-                tierComparisonSection
-
-                // Pricing Section
-                pricingSection
-
-                // Legal Section
+                tierPickerSection
+                billingToggleSection
+                comparisonTableSection
+                ctaSection
                 legalSection
             }
         }
@@ -34,10 +85,6 @@ struct PaywallView: View {
         .task {
             if storeKit.products.isEmpty {
                 await storeKit.reloadProducts()
-            }
-            // Default select monthly
-            if selectedProduct == nil {
-                selectedProduct = storeKit.monthlyProduct
             }
         }
         .alert(String(localized: "paywall.error.alert.title"), isPresented: $showError) {
@@ -47,10 +94,10 @@ struct PaywallView: View {
         }
     }
 
-    // MARK: - Hero Section
+    // MARK: - Hero
 
     private var heroSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             Text("paywall.title.unlock")
                 .brutalTypography(.displaySmall)
                 .tracking(4)
@@ -58,27 +105,79 @@ struct PaywallView: View {
             Text("paywall.title.pro")
                 .brutalTypography(.displayLarge)
                 .tracking(8)
-
-            Text("paywall.title.trial")
-                .brutalTypography(.mono, color: .brutalSuccess)
-                .tracking(2)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(
-                    Rectangle()
-                        .stroke(Color.brutalSuccess, lineWidth: 1)
-                )
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 48)
+        .padding(.vertical, 40)
         .padding(.horizontal, 24)
     }
 
-    // MARK: - Tier Comparison Section
+    // MARK: - Tier picker
 
-    private var tierComparisonSection: some View {
+    private var tierPickerSection: some View {
         VStack(spacing: 0) {
-            // Section header
+            HStack {
+                Text("paywall.section.plans")
+                    .brutalTypography(.monoSmall, color: .brutalTextSecondary)
+                    .tracking(2)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.brutalSurface)
+            .overlay(Rectangle().frame(height: 1).foregroundColor(.brutalBorder), alignment: .bottom)
+
+            HStack(spacing: 10) {
+                ForEach(PaidTier.allCases) { tier in
+                    TierCard(
+                        tier: tier,
+                        isSelected: selectedTier == tier,
+                        product: storeKit.monthlyProduct(for: tier.rawValue)
+                    ) {
+                        selectedTier = tier
+                    }
+                }
+            }
+            .padding(16)
+        }
+    }
+
+    // MARK: - Billing toggle
+
+    private var billingToggleSection: some View {
+        HStack(spacing: 0) {
+            billingButton(title: String(localized: "paywall.billing.monthly"), isActive: !isYearly) {
+                isYearly = false
+            }
+            billingButton(title: String(localized: "paywall.billing.yearly"), badge: String(localized: "paywall.badge.save"), isActive: isYearly) {
+                isYearly = true
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
+
+    private func billingButton(title: String, badge: String? = nil, isActive: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Text(title)
+                    .brutalTypography(.mono, color: isActive ? .black : .brutalTextSecondary)
+                if let badge = badge {
+                    Text(badge)
+                        .brutalTypography(.monoSmall, color: isActive ? Color.brutalSuccess : .brutalTextTertiary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(isActive ? Color.white : Color.brutalSurface)
+            .overlay(Rectangle().stroke(isActive ? Color.white : Color.brutalBorder, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Comparison table
+
+    private var comparisonTableSection: some View {
+        VStack(spacing: 0) {
             HStack {
                 Text("paywall.section.comparison")
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
@@ -95,147 +194,96 @@ struct PaywallView: View {
                 Text("").frame(maxWidth: .infinity, alignment: .leading)
                 Text("paywall.comparison.free.label")
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
-                    .tracking(2)
-                    .frame(width: 88, alignment: .center)
-                Text("paywall.comparison.pro.label")
-                    .brutalTypography(.mono, color: .white)
-                    .tracking(2)
-                    .frame(width: 88, alignment: .center)
+                    .tracking(1)
+                    .frame(width: 68, alignment: .center)
+                Text(selectedTier.displayName.uppercased())
+                    .brutalTypography(.mono, color: selectedTier.accentColor)
+                    .tracking(1)
+                    .frame(width: 68, alignment: .center)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(Color.brutalBackground)
             .overlay(Rectangle().frame(height: 1).foregroundColor(.brutalBorder), alignment: .bottom)
 
-            let rows: [(label: String, freeKey: String, proKey: String)] = [
-                ("paywall.comparison.row.storage",   "paywall.comparison.free.storage",   "paywall.comparison.pro.storage"),
-                ("paywall.comparison.row.file_size", "paywall.comparison.free.file_size", "paywall.comparison.pro.file_size"),
-                ("paywall.comparison.row.link_ttl",  "paywall.comparison.free.link_ttl",  "paywall.comparison.pro.link_ttl"),
-                ("paywall.comparison.row.export",    "paywall.comparison.free.export",    "paywall.comparison.pro.export"),
-                ("paywall.comparison.row.transforms","paywall.comparison.free.transforms","paywall.comparison.pro.transforms"),
-            ]
-
-            ForEach(rows, id: \.label) { row in
-                ComparisonRow(
-                    labelKey: row.label,
-                    freeValueKey: row.freeKey,
-                    proValueKey: row.proKey
-                )
-            }
+            // Rows
+            comparisonRow("paywall.comparison.row.storage",    free: "1 GB",       paid: selectedTier.storageLabel)
+            comparisonRow("paywall.comparison.row.file_size",  free: "50 MB",      paid: "500 MB")
+            comparisonRow("paywall.comparison.row.link_ttl",   free: "paywall.comparison.free.link_ttl", paid: "paywall.comparison.pro.link_ttl", localizeValues: true)
+            comparisonRow("paywall.comparison.row.export",     free: "✕",          paid: "✓")
+            comparisonRow("paywall.comparison.row.transforms", free: "✕",          paid: "✓")
         }
         .padding(.horizontal, 16)
         .padding(.bottom, 8)
     }
 
-    // MARK: - Pricing Section
+    private func comparisonRow(_ labelKey: String, free: String, paid: String, localizeValues: Bool = false) -> some View {
+        let freeText  = localizeValues ? String(localized: String.LocalizationValue(free))  : free
+        let paidText  = localizeValues ? String(localized: String.LocalizationValue(paid))  : paid
+        let labelText = String(localized: String.LocalizationValue(labelKey))
+        return HStack {
+            Text(labelText)
+                .brutalTypography(.bodySmall, color: .brutalTextSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text(freeText)
+                .brutalTypography(.monoSmall, color: freeText == "✕" ? .brutalTextTertiary : .brutalTextSecondary)
+                .frame(width: 68, alignment: .center)
+            Text(paidText)
+                .brutalTypography(.mono, color: paidText == "✓" ? selectedTier.accentColor : .white)
+                .frame(width: 68, alignment: .center)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color.brutalBackground)
+        .overlay(Rectangle().frame(height: 1).foregroundColor(.brutalBorder), alignment: .bottom)
+    }
 
-    private var pricingSection: some View {
-        VStack(spacing: 16) {
-            // Header
-            HStack {
-                Text("paywall.section.plans")
-                    .brutalTypography(.monoSmall, color: .brutalTextSecondary)
-                    .tracking(2)
-                Spacer()
-            }
-            .padding(.top, 32)
+    // MARK: - CTA
 
+    private var ctaSection: some View {
+        VStack(spacing: 12) {
             if storeKit.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .padding(.vertical, 32)
-            } else if storeKit.products.isEmpty {
-                VStack(spacing: 16) {
-                    Text("paywall.error.loading")
-                        .brutalTypography(.bodyMedium, color: .brutalError)
-
-                    if let error = storeKit.error {
-                        Text(error.localizedDescription)
-                            .brutalTypography(.bodySmall, color: .brutalTextSecondary)
-                            .multilineTextAlignment(.center)
-                    }
-
-                    Button {
-                        Task {
-                            await storeKit.reloadProducts()
-                            if selectedProduct == nil {
-                                selectedProduct = storeKit.monthlyProduct
-                            }
-                        }
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "arrow.clockwise")
-                            Text("paywall.button.retry")
-                        }
-                        .brutalTypography(.mono, color: .brutalAccent)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 10)
-                        .background(
-                            Rectangle()
-                                .stroke(Color.brutalAccent, lineWidth: 1)
-                        )
-                    }
-                }
-                .padding(.vertical, 32)
+                    .padding(.vertical, 20)
             } else {
-                // Product Options
-                VStack(spacing: 12) {
-                    if let monthly = storeKit.monthlyProduct {
-                        ProductCard(
-                            product: monthly,
-                            isSelected: selectedProduct?.id == monthly.id,
-                            badge: nil
-                        ) {
-                            selectedProduct = monthly
-                        }
-                    }
-
-                    if let annual = storeKit.annualProduct {
-                        ProductCard(
-                            product: annual,
-                            isSelected: selectedProduct?.id == annual.id,
-                            badge: String(localized: "paywall.badge.save")
-                        ) {
-                            selectedProduct = annual
-                        }
+                // Price summary
+                if let product = selectedProduct {
+                    VStack(spacing: 2) {
+                        Text(product.displayPrice)
+                            .brutalTypography(.titleMedium)
+                        Text(isYearly
+                             ? String(format: String(localized: "paywall.price.per_month_format"),
+                                      (product.price / 12).formatted(.currency(code: product.priceFormatStyle.currencyCode ?? "USD")))
+                             : String(localized: "paywall.price.per_month_fallback"))
+                            .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                     }
                 }
 
-                // Subscribe Button
                 BrutalPrimaryButton(
-                    title: String(localized: "paywall.button.start_trial"),
-                    action: {
-                        Task {
-                            await purchase()
-                        }
-                    },
+                    title: String(localized: "paywall.button.subscribe"),
+                    action: { Task { await purchase() } },
                     isLoading: isPurchasing,
                     isDisabled: selectedProduct == nil
                 )
-                .padding(.top, 8)
 
-                // Restore Purchases
                 BrutalTextButton(title: String(localized: "paywall.button.restore")) {
-                    Task {
-                        await restore()
-                    }
+                    Task { await restore() }
                 }
-                .padding(.top, 8)
                 .opacity(isRestoring ? 0.5 : 1)
 
-                // Continue with Free (only shown from soft-upgrade contexts)
                 if allowDismiss || subscriptionState.isFree {
                     BrutalTextButton(title: String(localized: "paywall.button.continue_free")) {
                         dismiss()
                     }
-                    .padding(.top, 4)
                 }
             }
         }
         .padding(.horizontal, 16)
+        .padding(.vertical, 24)
     }
 
-    // MARK: - Legal Section
+    // MARK: - Legal
 
     private var legalSection: some View {
         VStack(spacing: 12) {
@@ -246,10 +294,8 @@ struct PaywallView: View {
             HStack(spacing: 16) {
                 Link(String(localized: "paywall.legal.button.terms"), destination: URL(string: "https://imghost.isolated.tech/terms")!)
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
-
                 Text("paywall.legal.separator")
                     .brutalTypography(.monoSmall, color: .brutalTextTertiary)
-
                 Link(String(localized: "paywall.legal.button.privacy"), destination: URL(string: "https://imghost.isolated.tech/privacy")!)
                     .brutalTypography(.monoSmall, color: .brutalTextSecondary)
             }
@@ -262,26 +308,21 @@ struct PaywallView: View {
 
     private func purchase() async {
         guard let product = selectedProduct else { return }
-
         isPurchasing = true
         errorMessage = nil
-
         do {
             _ = try await storeKit.purchase(product)
-            // Check subscription status after purchase
             await subscriptionState.checkStatus()
         } catch {
             errorMessage = error.localizedDescription
             showError = true
         }
-
         isPurchasing = false
     }
 
     private func restore() async {
         isRestoring = true
         errorMessage = nil
-
         do {
             try await storeKit.restorePurchases()
             await subscriptionState.checkStatus()
@@ -289,146 +330,45 @@ struct PaywallView: View {
             errorMessage = error.localizedDescription
             showError = true
         }
-
         isRestoring = false
     }
 }
 
-// MARK: - Comparison Row
+// MARK: - TierCard
 
-private struct ComparisonRow: View {
-    let labelKey: String
-    let freeValueKey: String
-    let proValueKey: String
-
-    private var freeValue: String { String(localized: String.LocalizationValue(freeValueKey)) }
-    private var proValue: String { String(localized: String.LocalizationValue(proValueKey)) }
-    private var label: String { String(localized: String.LocalizationValue(labelKey)) }
-
-    var body: some View {
-        HStack {
-            Text(label)
-                .brutalTypography(.bodySmall, color: .brutalTextSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Text(freeValue)
-                .brutalTypography(.monoSmall, color: freeValue == "✕" ? .brutalTextTertiary : .brutalTextSecondary)
-                .frame(width: 88, alignment: .center)
-            Text(proValue)
-                .brutalTypography(.mono, color: proValue == "✓" ? .brutalSuccess : .white)
-                .frame(width: 88, alignment: .center)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color.brutalBackground)
-        .overlay(Rectangle().frame(height: 1).foregroundColor(.brutalBorder), alignment: .bottom)
-    }
-}
-
-// MARK: - Feature Row
-
-private struct FeatureRow: View {
-    let icon: String
-    let title: String
-    let description: String
-
-    var body: some View {
-        HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 20))
-                .foregroundColor(.brutalAccent)
-                .frame(width: 32)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .brutalTypography(.bodyLarge)
-                Text(description)
-                    .brutalTypography(.bodySmall, color: .brutalTextSecondary)
-            }
-
-            Spacer()
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(Color.brutalBackground)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(.brutalBorder),
-            alignment: .bottom
-        )
-    }
-}
-
-// MARK: - Product Card
-
-private struct ProductCard: View {
-    let product: Product
+private struct TierCard: View {
+    let tier: PaidTier
     let isSelected: Bool
-    let badge: String?
+    let product: Product?
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
-                // Selection indicator
-                Circle()
-                    .stroke(isSelected ? Color.white : Color.brutalBorder, lineWidth: 2)
-                    .frame(width: 24, height: 24)
-                    .overlay(
-                        Circle()
-                            .fill(isSelected ? Color.white : Color.clear)
-                            .frame(width: 12, height: 12)
-                    )
+            VStack(spacing: 6) {
+                Text(tier.displayName)
+                    .brutalTypography(.mono, color: isSelected ? tier.accentColor : .brutalTextSecondary)
+                    .tracking(1)
 
-                // Product info
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 8) {
-                        Text(product.displayName)
-                            .brutalTypography(.titleSmall)
+                Text(tier.storageLabel)
+                    .brutalTypography(.titleMedium, color: isSelected ? .white : .brutalTextTertiary)
 
-                        if let badge = badge {
-                            Text(badge)
-                                .brutalTypography(.monoSmall, color: .brutalSuccess)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 2)
-                                .background(
-                                    Rectangle()
-                                        .stroke(Color.brutalSuccess, lineWidth: 1)
-                                )
-                        }
-                    }
-
-                    Text(product.description)
-                        .brutalTypography(.bodySmall, color: .brutalTextSecondary)
-                        .lineLimit(1)
-                }
-
-                Spacer()
-
-                // Price
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text(product.displayPrice)
-                        .brutalTypography(.titleMedium)
-                    Text(pricePerMonth(product))
-                        .brutalTypography(.monoSmall, color: .brutalTextSecondary)
+                if let product = product {
+                    Text(product.displayPrice + String(localized: "paywall.price.per_month_fallback"))
+                        .brutalTypography(.monoSmall, color: isSelected ? .brutalTextSecondary : .brutalTextTertiary)
+                } else {
+                    Text(tier.monthlyPriceHint + "/mo")
+                        .brutalTypography(.monoSmall, color: .brutalTextTertiary)
                 }
             }
-            .padding(16)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
             .background(isSelected ? Color.brutalSurfaceElevated : Color.brutalSurface)
             .overlay(
                 Rectangle()
-                    .stroke(isSelected ? Color.white : Color.brutalBorder, lineWidth: isSelected ? 2 : 1)
+                    .stroke(isSelected ? tier.accentColor : Color.brutalBorder, lineWidth: isSelected ? 2 : 1)
             )
         }
         .buttonStyle(.plain)
-    }
-
-    private func pricePerMonth(_ product: Product) -> String {
-        if product.id == StoreKitManager.annualProductID {
-            let monthlyPrice = product.price / 12
-            return String(format: String(localized: "paywall.price.per_month_format"), monthlyPrice.formatted(.currency(code: product.priceFormatStyle.currencyCode ?? "USD")))
-        }
-        return String(localized: "paywall.price.per_month_fallback")
     }
 }
 

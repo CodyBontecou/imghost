@@ -1,6 +1,6 @@
 // Type definitions for the imghost API
 
-export type SubscriptionTier = 'free' | 'trial' | 'pro' | 'enterprise';
+export type SubscriptionTier = 'free' | 'trial' | 'pro' | 'enterprise' | 'ultimate';
 
 export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due' | 'trialing';
 

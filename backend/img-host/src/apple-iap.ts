@@ -186,16 +186,20 @@ export class AppleIAP {
   }
 
   /**
-   * Determine the tier based on product ID
+   * Determine the tier based on product ID.
+   * imghost.pro.*       → 'pro'       (Starter, 10 GB, $2/mo)
+   * imghost.enterprise.* → 'enterprise' (Pro plan, 100 GB, $7.50/mo)
+   * imghost.ultimate.*  → 'ultimate'  (Ultimate, 1 TB, $25/mo)
    */
-  getTierFromProductId(productId: string): 'trial' | 'pro' {
-    // During trial period, use 'trial' tier
-    // After trial, use 'pro' tier
-    // Product IDs: imghost.pro.monthly, imghost.pro.yearly
-    if (productId.includes('pro')) {
-      return 'pro';
+  getTierFromProductId(productId: string): 'pro' | 'enterprise' | 'ultimate' {
+    if (productId.startsWith('imghost.ultimate')) {
+      return 'ultimate';
     }
-    return 'trial';
+    if (productId.startsWith('imghost.enterprise')) {
+      return 'enterprise';
+    }
+    // imghost.pro.monthly / imghost.pro.yearly (legacy → Starter 10 GB)
+    return 'pro';
   }
 
   /**
@@ -216,10 +220,17 @@ export class AppleIAP {
   }
 }
 
-// Product IDs for the subscription plans
+// Product IDs for all subscription plans
 export const PRODUCT_IDS = {
-  MONTHLY: 'imghost.pro.monthly',
-  YEARLY: 'imghost.pro.yearly',
+  // Starter — 10 GB @ $2/mo (legacy product IDs kept for existing subscribers)
+  STARTER_MONTHLY: 'imghost.pro.monthly',
+  STARTER_YEARLY: 'imghost.pro.yearly',
+  // Pro — 100 GB @ $7.50/mo
+  PRO_MONTHLY: 'imghost.enterprise.monthly',
+  PRO_YEARLY: 'imghost.enterprise.yearly',
+  // Ultimate — 1 TB @ $25/mo
+  ULTIMATE_MONTHLY: 'imghost.ultimate.monthly',
+  ULTIMATE_YEARLY: 'imghost.ultimate.yearly',
 } as const;
 
 // Trial period duration (7 days)

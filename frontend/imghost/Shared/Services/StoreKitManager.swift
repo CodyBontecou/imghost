@@ -7,9 +7,25 @@ final class StoreKitManager: ObservableObject {
     static let shared = StoreKitManager()
 
     // Product IDs configured in App Store Connect
-    static let monthlyProductID = "imghost.pro.monthly"
-    static let annualProductID = "imghost.pro.yearly"
-    static let allProductIDs: Set<String> = [monthlyProductID, annualProductID]
+    // Starter — 10 GB @ $2/mo (legacy IDs kept for existing subscribers)
+    static let starterMonthlyID = "imghost.pro.monthly"
+    static let starterYearlyID  = "imghost.pro.yearly"
+    // Pro — 100 GB @ $7.50/mo
+    static let proMonthlyID     = "imghost.enterprise.monthly"
+    static let proYearlyID      = "imghost.enterprise.yearly"
+    // Ultimate — 1 TB @ $25/mo
+    static let ultimateMonthlyID = "imghost.ultimate.monthly"
+    static let ultimateYearlyID  = "imghost.ultimate.yearly"
+
+    // Legacy aliases kept so PaywallView's `monthlyProduct` / `annualProduct` still compile
+    static let monthlyProductID = starterMonthlyID
+    static let annualProductID  = starterYearlyID
+
+    static let allProductIDs: Set<String> = [
+        starterMonthlyID, starterYearlyID,
+        proMonthlyID, proYearlyID,
+        ultimateMonthlyID, ultimateYearlyID,
+    ]
 
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchasedProductIDs: Set<String> = []
@@ -235,14 +251,49 @@ final class StoreKitManager: ObservableObject {
 
     // MARK: - Helper Properties
 
-    /// Get monthly product
-    var monthlyProduct: Product? {
-        products.first { $0.id == Self.monthlyProductID }
+    // MARK: - Per-tier product accessors
+
+    /// Starter products (10 GB)
+    var starterMonthlyProduct: Product? { products.first { $0.id == Self.starterMonthlyID } }
+    var starterYearlyProduct:  Product? { products.first { $0.id == Self.starterYearlyID  } }
+
+    /// Pro products (100 GB)
+    var proMonthlyProduct: Product? { products.first { $0.id == Self.proMonthlyID } }
+    var proYearlyProduct:  Product? { products.first { $0.id == Self.proYearlyID  } }
+
+    /// Ultimate products (1 TB)
+    var ultimateMonthlyProduct: Product? { products.first { $0.id == Self.ultimateMonthlyID } }
+    var ultimateYearlyProduct:  Product? { products.first { $0.id == Self.ultimateYearlyID  } }
+
+    /// Legacy aliases (used by old PaywallView code; resolve to Starter)
+    var monthlyProduct: Product? { starterMonthlyProduct }
+    var annualProduct:  Product? { starterYearlyProduct  }
+
+    /// Returns the monthly product for the given tier string (as returned by the backend)
+    func monthlyProduct(for tier: String) -> Product? {
+        switch tier {
+        case "pro":        return starterMonthlyProduct
+        case "enterprise": return proMonthlyProduct
+        case "ultimate":   return ultimateMonthlyProduct
+        default:           return starterMonthlyProduct
+        }
     }
 
-    /// Get annual product
-    var annualProduct: Product? {
-        products.first { $0.id == Self.annualProductID }
+    /// Returns the yearly product for the given tier string
+    func yearlyProduct(for tier: String) -> Product? {
+        switch tier {
+        case "pro":        return starterYearlyProduct
+        case "enterprise": return proYearlyProduct
+        case "ultimate":   return ultimateYearlyProduct
+        default:           return starterYearlyProduct
+        }
+    }
+
+    /// Maps a StoreKit product ID to the backend tier name
+    static func backendTier(for productID: String) -> String {
+        if productID.hasPrefix("imghost.ultimate")   { return "ultimate"   }
+        if productID.hasPrefix("imghost.enterprise") { return "enterprise" }
+        return "pro" // imghost.pro.* → Starter (internal name "pro")
     }
 
     /// Check if user has any active subscription
