@@ -690,6 +690,7 @@ struct MacShareView: View {
 
         var loadedFiles: [ShareFile] = []
         var loadErrors: [String] = []
+        let videoTypes: [UTType] = [.mpeg4Movie, .quickTimeMovie, .movie, .video]
 
         for (itemIndex, item) in items.enumerated() {
             guard let attachments = item.attachments else {
@@ -703,6 +704,8 @@ struct MacShareView: View {
                 let typeIds = attachment.registeredTypeIdentifiers
                 logger.info("Attachment \(attIndex) types: \(typeIds)")
 
+                var didLoadAttachment = false
+
                 // Try file URL first
                 if attachment.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
                     do {
@@ -712,7 +715,7 @@ struct MacShareView: View {
                             let fileSize = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0
                             let thumbnail = MacImageHelper.generateThumbnail(from: (try? Data(contentsOf: url)) ?? Data(), maxSize: 80)
                             loadedFiles.append(ShareFile(url: url, filename: filename, thumbnailData: thumbnail, fileSize: fileSize))
-                            continue
+                            didLoadAttachment = true
                         } else {
                             logger.warning("Loaded item was not a URL for fileURL type")
                         }
@@ -721,6 +724,8 @@ struct MacShareView: View {
                         loadErrors.append("File \(attIndex): \(error.localizedDescription)")
                     }
                 }
+
+                if didLoadAttachment { continue }
 
                 // Try image type
                 if attachment.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
@@ -732,14 +737,15 @@ struct MacShareView: View {
                             let fileSize = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0
                             let thumbnail = MacImageHelper.generateThumbnail(from: (try? Data(contentsOf: url)) ?? Data(), maxSize: 80)
                             loadedFiles.append(ShareFile(url: url, filename: filename, thumbnailData: thumbnail, fileSize: fileSize))
+                            didLoadAttachment = true
                         } else if let data = loadedItem as? Data {
                             logger.info("Loaded image as Data (\(data.count) bytes)")
-                            // Write to temp file for upload
                             let tempDir = FileManager.default.temporaryDirectory
                             let tempURL = tempDir.appendingPathComponent("share_\(UUID().uuidString).jpg")
                             try data.write(to: tempURL)
                             let thumbnail = MacImageHelper.generateThumbnail(from: data, maxSize: 80)
                             loadedFiles.append(ShareFile(url: tempURL, filename: tempURL.lastPathComponent, thumbnailData: thumbnail, fileSize: Int64(data.count)))
+                            didLoadAttachment = true
                         } else if let image = loadedItem as? NSImage {
                             logger.info("Loaded image as NSImage")
                             if let data = MacImageHelper.jpegData(from: image) {
@@ -748,6 +754,7 @@ struct MacShareView: View {
                                 try data.write(to: tempURL)
                                 let thumbnail = MacImageHelper.generateThumbnail(from: data, maxSize: 80)
                                 loadedFiles.append(ShareFile(url: tempURL, filename: tempURL.lastPathComponent, thumbnailData: thumbnail, fileSize: Int64(data.count)))
+                                didLoadAttachment = true
                             }
                         } else {
                             logger.warning("Loaded image item was unexpected type: \(type(of: loadedItem))")
@@ -759,12 +766,44 @@ struct MacShareView: View {
                     }
                 }
 
-                // Try URL type (e.g., URL to a remote image)
-                if loadedFiles.isEmpty && attachment.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+                if didLoadAttachment { continue }
+
+                // Try explicit movie/video types (some apps do not expose them as file URLs)
+                for videoType in videoTypes where attachment.hasItemConformingToTypeIdentifier(videoType.identifier) {
+                    do {
+                        let loadedItem = try await attachment.loadItem(forTypeIdentifier: videoType.identifier)
+                        if let url = loadedItem as? URL {
+                            logger.info("Loaded video URL: \(url.path)")
+                            let filename = url.lastPathComponent
+                            let fileSize = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0
+                            loadedFiles.append(ShareFile(url: url, filename: filename, thumbnailData: nil, fileSize: fileSize))
+                            didLoadAttachment = true
+                            break
+                        } else if let data = loadedItem as? Data {
+                            logger.info("Loaded video as Data (\(data.count) bytes)")
+                            let ext = videoType == .quickTimeMovie ? "mov" : "mp4"
+                            let tempDir = FileManager.default.temporaryDirectory
+                            let tempURL = tempDir.appendingPathComponent("share_\(UUID().uuidString).\(ext)")
+                            try data.write(to: tempURL)
+                            loadedFiles.append(ShareFile(url: tempURL, filename: tempURL.lastPathComponent, thumbnailData: nil, fileSize: Int64(data.count)))
+                            didLoadAttachment = true
+                            break
+                        } else {
+                            logger.warning("Loaded video item was unexpected type: \(type(of: loadedItem))")
+                        }
+                    } catch {
+                        logger.error("Failed to load video attachment: \(error.localizedDescription)")
+                        loadErrors.append("Video \(attIndex): \(error.localizedDescription)")
+                    }
+                }
+
+                if didLoadAttachment { continue }
+
+                // Try URL type (file URLs only)
+                if attachment.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
                     do {
                         if let url = try await attachment.loadItem(forTypeIdentifier: UTType.url.identifier) as? URL {
                             logger.info("Loaded URL: \(url.absoluteString)")
-                            // Only handle file URLs
                             if url.isFileURL {
                                 let filename = url.lastPathComponent
                                 let fileSize = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0

@@ -233,6 +233,7 @@ struct MacAutoUploadView: View {
             return []
         }
 
+        let videoTypes: [UTType] = [.mpeg4Movie, .quickTimeMovie, .movie, .video]
         var loadedFiles: [AutoShareFile] = []
 
         for item in items {
@@ -256,20 +257,48 @@ struct MacAutoUploadView: View {
                             let filename = url.lastPathComponent
                             let fileSize = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0
                             loadedFiles.append(AutoShareFile(url: url, filename: filename, fileSize: fileSize, isTempFile: false))
+                            continue
                         } else if let data = loaded as? Data {
                             let tempURL = FileManager.default.temporaryDirectory
                                 .appendingPathComponent("share_\(UUID().uuidString).jpg")
                             try? data.write(to: tempURL)
                             loadedFiles.append(AutoShareFile(url: tempURL, filename: tempURL.lastPathComponent, fileSize: Int64(data.count), isTempFile: true))
-                        } else if let image = loaded as? NSImage {
-                            if let data = MacImageHelper.jpegData(from: image) {
-                                let tempURL = FileManager.default.temporaryDirectory
-                                    .appendingPathComponent("share_\(UUID().uuidString).jpg")
-                                try? data.write(to: tempURL)
-                                loadedFiles.append(AutoShareFile(url: tempURL, filename: tempURL.lastPathComponent, fileSize: Int64(data.count), isTempFile: true))
-                            }
+                            continue
+                        } else if let image = loaded as? NSImage,
+                                  let data = MacImageHelper.jpegData(from: image) {
+                            let tempURL = FileManager.default.temporaryDirectory
+                                .appendingPathComponent("share_\(UUID().uuidString).jpg")
+                            try? data.write(to: tempURL)
+                            loadedFiles.append(AutoShareFile(url: tempURL, filename: tempURL.lastPathComponent, fileSize: Int64(data.count), isTempFile: true))
+                            continue
                         }
                     }
+                }
+
+                // 3. Try explicit movie/video types (some apps don't expose videos as fileURL/image)
+                var loadedVideo = false
+                for videoType in videoTypes where attachment.hasItemConformingToTypeIdentifier(videoType.identifier) {
+                    if let loaded = try? await attachment.loadItem(forTypeIdentifier: videoType.identifier) {
+                        if let url = loaded as? URL {
+                            let filename = url.lastPathComponent
+                            let fileSize = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0
+                            loadedFiles.append(AutoShareFile(url: url, filename: filename, fileSize: fileSize, isTempFile: false))
+                            loadedVideo = true
+                            break
+                        } else if let data = loaded as? Data {
+                            let ext = videoType == .quickTimeMovie ? "mov" : "mp4"
+                            let tempURL = FileManager.default.temporaryDirectory
+                                .appendingPathComponent("share_\(UUID().uuidString).\(ext)")
+                            try? data.write(to: tempURL)
+                            loadedFiles.append(AutoShareFile(url: tempURL, filename: tempURL.lastPathComponent, fileSize: Int64(data.count), isTempFile: true))
+                            loadedVideo = true
+                            break
+                        }
+                    }
+                }
+
+                if loadedVideo {
+                    continue
                 }
             }
         }
