@@ -130,6 +130,7 @@
 		FB67617FEA76C9518F8C8BCB /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000019000 /* User.swift */; };
 		FDC654FA125E38D7EBD3B0C6 /* ImghostError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000012000 /* ImghostError.swift */; };
 		G1000001001 /* UploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G1000001000 /* UploadView.swift */; };
+		AD000001001 /* AdManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD000001000 /* AdManager.swift */; };
 		H1000001001 /* PhotosExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H1000001000 /* PhotosExportService.swift */; };
 		I1000001001 /* ImageSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = I1000001000 /* ImageSyncService.swift */; };
 		J1000001001 /* UploadQualityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = J1000001000 /* UploadQualityService.swift */; };
@@ -302,6 +303,7 @@
 		F945098B16B8B4E7F8C72EEB /* MacShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacShareView.swift; sourceTree = "<group>"; };
 		FA00000100000000000A0001 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		G1000001000 /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
+		AD000001000 /* AdManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ads/AdManager.swift; sourceTree = "<group>"; };
 		H1000001000 /* PhotosExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosExportService.swift; sourceTree = "<group>"; };
 		I1000001000 /* ImageSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSyncService.swift; sourceTree = "<group>"; };
 		J1000001000 /* UploadQualityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadQualityService.swift; sourceTree = "<group>"; };
@@ -482,6 +484,7 @@
 			children = (
 				A1000001000 /* ImghostApp.swift */,
 				A1000002000 /* ContentView.swift */,
+				AD000001000 /* AdManager.swift */,
 				A10000B1000 /* Views */,
 				A1000006000 /* Info.plist */,
 				A1000007000 /* imghost.entitlements */,
@@ -867,6 +870,7 @@
 				A1000004001 /* HistoryView.swift in Sources */,
 				A1000005001 /* UploadDetailView.swift in Sources */,
 				G1000001001 /* UploadView.swift in Sources */,
+				AD000001001 /* AdManager.swift in Sources */,
 				A100001B001 /* LoginView.swift in Sources */,
 				A100001C001 /* RegisterView.swift in Sources */,
 				A100001D001 /* EmailVerificationView.swift in Sources */,

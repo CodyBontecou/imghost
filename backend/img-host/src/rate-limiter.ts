@@ -44,7 +44,28 @@ export class RateLimiter {
       };
     }
 
-    // Get or create rate limit record
+    try {
+      return await this.checkUserRateLimitCurrentSchema(userId, endpoint, config, now, windowStart, reset);
+    } catch (error) {
+      if (!this.isLegacyRateLimitSchemaError(error)) {
+        throw error;
+      }
+
+      // Backward compatibility for deployments that still have the old 0002 schema
+      // (identifier column instead of user_id, and no created_at/updated_at).
+      console.warn('[RateLimiter] Falling back to legacy rate_limits schema');
+      return await this.checkUserRateLimitLegacySchema(userId, endpoint, config, windowStart, reset);
+    }
+  }
+
+  private async checkUserRateLimitCurrentSchema(
+    userId: string,
+    endpoint: string,
+    config: RateLimitConfig,
+    now: number,
+    windowStart: number,
+    reset: number
+  ): Promise<RateLimitResult> {
     const existing = await this.db
       .prepare(
         'SELECT * FROM rate_limits WHERE user_id = ? AND endpoint = ? AND window_start = ?'
@@ -53,7 +74,6 @@ export class RateLimiter {
       .first<{ request_count: number }>();
 
     if (!existing) {
-      // Create new record
       const id = crypto.randomUUID();
       await this.db
         .prepare(
@@ -71,7 +91,6 @@ export class RateLimiter {
       };
     }
 
-    // Check if limit exceeded
     if (existing.request_count >= config.maxRequests) {
       return {
         allowed: false,
@@ -81,7 +100,6 @@ export class RateLimiter {
       };
     }
 
-    // Increment count
     await this.db
       .prepare(
         'UPDATE rate_limits SET request_count = request_count + 1, updated_at = ? WHERE user_id = ? AND endpoint = ? AND window_start = ?'
@@ -95,6 +113,73 @@ export class RateLimiter {
       remaining: config.maxRequests - existing.request_count - 1,
       reset,
     };
+  }
+
+  private async checkUserRateLimitLegacySchema(
+    userId: string,
+    endpoint: string,
+    config: RateLimitConfig,
+    windowStart: number,
+    reset: number
+  ): Promise<RateLimitResult> {
+    const existing = await this.db
+      .prepare(
+        'SELECT * FROM rate_limits WHERE identifier = ? AND endpoint = ? AND window_start = ?'
+      )
+      .bind(userId, endpoint, windowStart)
+      .first<{ request_count: number }>();
+
+    if (!existing) {
+      const id = crypto.randomUUID();
+      await this.db
+        .prepare(
+          `INSERT INTO rate_limits (id, identifier, endpoint, request_count, window_start)
+           VALUES (?, ?, ?, 1, ?)`
+        )
+        .bind(id, userId, endpoint, windowStart)
+        .run();
+
+      return {
+        allowed: true,
+        limit: config.maxRequests,
+        remaining: config.maxRequests - 1,
+        reset,
+      };
+    }
+
+    if (existing.request_count >= config.maxRequests) {
+      return {
+        allowed: false,
+        limit: config.maxRequests,
+        remaining: 0,
+        reset,
+      };
+    }
+
+    await this.db
+      .prepare(
+        'UPDATE rate_limits SET request_count = request_count + 1 WHERE identifier = ? AND endpoint = ? AND window_start = ?'
+      )
+      .bind(userId, endpoint, windowStart)
+      .run();
+
+    return {
+      allowed: true,
+      limit: config.maxRequests,
+      remaining: config.maxRequests - existing.request_count - 1,
+      reset,
+    };
+  }
+
+  private isLegacyRateLimitSchemaError(error: unknown): boolean {
+    const message = String((error as Error | undefined)?.message ?? error ?? '').toLowerCase();
+    if (!message.includes('rate_limits')) return false;
+
+    return (
+      message.includes('user_id') ||
+      message.includes('created_at') ||
+      message.includes('updated_at')
+    );
   }
 
   /**

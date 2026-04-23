@@ -2,6 +2,161 @@
 
 export type FlagType = 'nsfw' | 'copyright' | 'malware' | 'suspicious';
 export type AbuseReason = 'nsfw' | 'copyright' | 'malware' | 'spam' | 'other';
+export type BlocklistReason = 'csam' | 'copyright' | 'malware';
+
+// ---------------------------------------------------------------------------
+// SHA-256 hashing helper (Web Crypto API — available in Cloudflare Workers)
+// ---------------------------------------------------------------------------
+
+export async function computeFileSha256(buffer: ArrayBuffer): Promise<string> {
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// ---------------------------------------------------------------------------
+// Hive Moderation Client
+// ---------------------------------------------------------------------------
+
+export interface HiveModerationResult {
+  /** True when the content should be blocked (CSAM or high-confidence NSFW) */
+  blocked: boolean;
+  csam: boolean;
+  nsfw: boolean;
+  confidence: number;
+  /** Set when the API returned an error; content is not blocked on errors */
+  error?: string;
+  /** Set when no API key is configured — call was skipped */
+  skipped?: boolean;
+}
+
+const HIVE_CSAM_THRESHOLD = 0.9;
+const HIVE_NSFW_THRESHOLD = 0.9;
+
+export class HiveModerationClient {
+  private readonly apiKey: string;
+  private readonly fetch: typeof globalThis.fetch;
+
+  constructor(apiKey: string, fetchFn: typeof globalThis.fetch = globalThis.fetch) {
+    this.apiKey = apiKey;
+    this.fetch = fetchFn;
+  }
+
+  async classify(buffer: ArrayBuffer): Promise<HiveModerationResult> {
+    if (!this.apiKey) {
+      return { blocked: false, csam: false, nsfw: false, confidence: 0, skipped: true };
+    }
+
+    try {
+      const form = new FormData();
+      form.append('media', new Blob([buffer]));
+
+      const response = await this.fetch('https://api.hivemoderation.com/api/v2/task/sync', {
+        method: 'POST',
+        headers: { Authorization: `Token ${this.apiKey}` },
+        body: form,
+      });
+
+      const data = await response.json() as {
+        status: { code: number };
+        output: Array<{ classes: Array<{ class: string; score: number }> }>;
+      };
+
+      const classes: Record<string, number> = {};
+      for (const output of data.output ?? []) {
+        for (const cls of output.classes ?? []) {
+          classes[cls.class] = Math.max(classes[cls.class] ?? 0, cls.score);
+        }
+      }
+
+      const csamScore = classes['yes_csam'] ?? 0;
+      const nsfwScore = classes['yes_sexual_activity'] ?? 0;
+
+      const csam = csamScore >= HIVE_CSAM_THRESHOLD;
+      const nsfw = nsfwScore >= HIVE_NSFW_THRESHOLD;
+      const confidence = Math.max(csamScore, nsfwScore);
+
+      return { blocked: csam || nsfw, csam, nsfw, confidence };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[HiveModeration] API error (failing open):', message);
+      return { blocked: false, csam: false, nsfw: false, confidence: 0, error: message };
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// NCMEC CyberTipline Reporter
+// ---------------------------------------------------------------------------
+
+export interface NCMECReportParams {
+  imageId: string;
+  imageHash: string;
+  uploadedAt: Date;
+  uploaderIp: string;
+}
+
+export class NCMECReporter {
+  private readonly apiKey: string;
+  private readonly fetch: typeof globalThis.fetch;
+
+  constructor(apiKey: string, fetchFn: typeof globalThis.fetch = globalThis.fetch) {
+    this.apiKey = apiKey;
+    this.fetch = fetchFn;
+  }
+
+  /** Reports suspected CSAM to NCMEC. Returns the NCMEC report ID, or null on failure. */
+  async report(params: NCMECReportParams): Promise<string | null> {
+    if (!this.apiKey) return null;
+
+    try {
+      const body = JSON.stringify({
+        imageId: params.imageId,
+        imageHash: params.imageHash,
+        uploadedAt: params.uploadedAt.toISOString(),
+        uploaderIp: params.uploaderIp,
+      });
+
+      const response = await this.fetch('https://api.ncmec.org/cybertipline/v1/report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body,
+      });
+
+      const data = await response.json() as { reportId?: string };
+      return data.reportId ?? null;
+    } catch (err) {
+      console.error('[NCMEC] Reporting failed:', err);
+      return null;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DMCA Takedown
+// ---------------------------------------------------------------------------
+
+export interface DmcaTakedownParams {
+  imageId: string;
+  reportedUrl: string;
+  complainantEmail: string;
+  description: string;
+  fileHash?: string;
+}
+
+export interface DmcaTakedown {
+  id: string;
+  image_id: string;
+  reported_url: string;
+  complainant_email: string;
+  description: string;
+  status: 'pending' | 'actioned' | 'counter_noticed' | 'dismissed';
+  created_at: number;
+}
 
 export interface ContentFlagResult {
   flagged: boolean;
@@ -557,6 +712,77 @@ export class ContentModerator {
     return {
       suspicious: reasons.length > 0,
       reasons,
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // Hash Blocklist
+  // -------------------------------------------------------------------------
+
+  /**
+   * Returns true if the given SHA-256 hash is on the blocklist.
+   * Call this before storing any uploaded file.
+   */
+  async checkHashBlocklist(hash: string): Promise<boolean> {
+    const row = await this.db
+      .prepare('SELECT hash FROM blocked_hashes WHERE hash = ?')
+      .bind(hash)
+      .first<{ hash: string }>();
+    return row !== null;
+  }
+
+  /**
+   * Permanently blocks a file hash (e.g. after CSAM detection or DMCA takedown).
+   */
+  async addToHashBlocklist(hash: string, reason: BlocklistReason): Promise<void> {
+    await this.db
+      .prepare(
+        'INSERT OR IGNORE INTO blocked_hashes (hash, reason, blocked_at) VALUES (?, ?, ?)'
+      )
+      .bind(hash, reason, Date.now())
+      .run();
+  }
+
+  // -------------------------------------------------------------------------
+  // DMCA Takedowns
+  // -------------------------------------------------------------------------
+
+  /**
+   * Records a DMCA takedown request, marks the image as taken down, and
+   * optionally adds the file hash to the blocklist.
+   */
+  async createDmcaTakedown(params: DmcaTakedownParams): Promise<DmcaTakedown> {
+    const id = crypto.randomUUID();
+    const now = Date.now();
+
+    await this.db
+      .prepare(
+        `INSERT INTO dmca_takedowns
+           (id, image_id, reported_url, complainant_email, description, status, created_at)
+         VALUES (?, ?, ?, ?, ?, 'pending', ?)`
+      )
+      .bind(id, params.imageId, params.reportedUrl, params.complainantEmail, params.description, now)
+      .run();
+
+    // Mark the image so it's served as 451 Unavailable For Legal Reasons
+    await this.db
+      .prepare('UPDATE images SET dmca_taken_down = 1 WHERE id = ?')
+      .bind(params.imageId)
+      .run();
+
+    // Blocklist the hash so the same content can never be re-uploaded
+    if (params.fileHash) {
+      await this.addToHashBlocklist(params.fileHash, 'copyright');
+    }
+
+    return {
+      id,
+      image_id: params.imageId,
+      reported_url: params.reportedUrl,
+      complainant_email: params.complainantEmail,
+      description: params.description,
+      status: 'pending',
+      created_at: now,
     };
   }
 }

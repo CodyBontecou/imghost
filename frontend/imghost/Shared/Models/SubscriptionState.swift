@@ -49,33 +49,26 @@ final class SubscriptionState: ObservableObject {
         }
     }
 
-    /// Whether user has access to app features (upload/view)
-    var hasAccess: Bool {
+    /// Whether user has access to app features (upload/view).
+    /// In the ad-supported model all authenticated users have access.
+    var hasAccess: Bool { status != .loading && status != .error }
+
+    /// Whether this is a free-tier user (limited storage, 7-day TTL on uploads, sees ads)
+    var isFree: Bool {
         switch status {
-        case .free, .trialing, .subscribed, .cancelled:
+        case .free, .noSubscription, .trialExpired, .expired:
             return true
         default:
             return false
         }
     }
 
-    /// Whether this is a free-tier user (limited storage, 7-day TTL on uploads)
-    var isFree: Bool { status == .free }
+    /// Hard paywall gate is removed — everyone can use the app.
+    /// PaywallView is still accessible as a soft upgrade sheet from Settings.
+    var shouldShowPaywall: Bool { false }
 
-    /// Whether to show the hard paywall gate
-    var shouldShowPaywall: Bool {
-        switch status {
-        case .noSubscription, .trialExpired, .expired:
-            return true
-        default:
-            return false // .free shows soft upgrade prompts, not a hard gate
-        }
-    }
-
-    /// Whether to show an upgrade nudge (softer than full paywall)
-    var shouldNudgeUpgrade: Bool {
-        status == .free
-    }
+    /// Show a soft upgrade nudge banner (not a blocking gate)
+    var shouldNudgeUpgrade: Bool { isFree }
 
     /// Check subscription status from backend (with retry for transient errors)
     func checkStatus() async {

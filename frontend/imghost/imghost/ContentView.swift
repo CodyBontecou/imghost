@@ -78,13 +78,9 @@ struct ContentView: View {
                     }
                 }
                 .preferredColorScheme(.dark)
-            } else if subscriptionState.shouldShowPaywall {
-                // Authenticated but no subscription - show paywall
-                PaywallView()
-                    .environmentObject(subscriptionState)
-                    .preferredColorScheme(.dark)
             } else {
-                // Fully authenticated with subscription access - show main app
+                // All authenticated users access the main app.
+                // Free/unsubscribed users see ads and limits; upgrade is a soft sheet.
                 TabView(selection: $selectedTab) {
                     HistoryView()
                         .tabItem {

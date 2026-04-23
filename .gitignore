@@ -1,4 +1,5 @@
 .env
+.admob-tokens.json
 
 # Node
 node_modules/
@@ -13,6 +14,7 @@ frontend/imghost/design/
 frontend/imghost/build/
 
 # Build artifacts
+/build/
 frontend/imghost/*.zip
 frontend/imghost/*.ipa
 frontend/imghost/*.pkg

@@ -5,6 +5,8 @@ import StoreKit
 
 struct UploadView: View {
     @Environment(\.requestReview) private var requestReview
+    @EnvironmentObject private var subscriptionState: SubscriptionState
+    @StateObject private var adManager = AdManager.shared
 
     @State private var selectedItem: PhotosPickerItem?
     @State private var showFilePicker = false
@@ -509,6 +511,11 @@ struct UploadView: View {
 
                 if shouldReview {
                     requestReview()
+                }
+
+                // Show interstitial ad after successful upload (free tier only)
+                if subscriptionState.isFree {
+                    adManager.showInterstitialIfReady()
                 }
             }
 

@@ -43,6 +43,7 @@ export interface Image {
   created_at: number;
   delete_token: string;
   expires_at: number | null; // null = permanent (paid tier); timestamp = free tier TTL
+  dmca_taken_down?: number;
 }
 
 export interface Subscription {

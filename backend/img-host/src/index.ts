@@ -4,7 +4,7 @@ import { resolveAuthenticatedUser } from './request-auth';
 import { ExportService } from './export';
 import { Analytics } from './analytics';
 import { RateLimiter, getIpRateLimitConfig } from './rate-limiter';
-import { ContentModerator } from './content-moderation';
+import { ContentModerator, HiveModerationClient, NCMECReporter, computeFileSha256 } from './content-moderation';
 import {
   parseTransformParams,
   isTransformableContentType,
@@ -40,7 +40,7 @@ const ALLOWED_ORIGINS = [
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const headers: Record<string, string> = {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key, X-DMCA-API-Key',
     'Access-Control-Max-Age': '86400',
   };
 
@@ -88,6 +88,12 @@ export interface Env {
   AWS_ACCESS_KEY_ID?: string;
   AWS_SECRET_ACCESS_KEY?: string;
   AWS_REGION?: string;
+  /** Hive Moderation API key for AI-powered content scanning (CSAM, NSFW) */
+  HIVE_API_KEY?: string;
+  /** NCMEC CyberTipline API key — mandatory reporting for CSAM detections */
+  NCMEC_API_KEY?: string;
+  /** Shared secret for privileged DMCA takedown API access */
+  DMCA_API_KEY?: string;
 }
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (paid tier / Cloudflare Workers limit)
@@ -279,6 +285,48 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
     }
   }
 
+  // Hash the file and check against the blocklist (catches re-uploads of removed content)
+  const fileHash = await computeFileSha256(fileBuffer);
+  const isBlocked = await moderator.checkHashBlocklist(fileHash);
+  if (isBlocked) {
+    console.warn('Blocked hash upload attempt:', { userId: user.id, fileHash });
+    return json({ error: 'File rejected', reason: 'This content has been removed' }, 451);
+  }
+
+  // AI-powered content moderation via Hive (CSAM, NSFW) — only images
+  if (file.type.startsWith('image/') && env.HIVE_API_KEY) {
+    const hiveClient = new HiveModerationClient(env.HIVE_API_KEY);
+    const hiveResult = await hiveClient.classify(fileBuffer);
+
+    if (hiveResult.csam) {
+      // Add hash to blocklist immediately so re-uploads are caught instantly
+      await moderator.addToHashBlocklist(fileHash, 'csam');
+
+      // Report to NCMEC (mandatory for US service providers — 18 USC §2258A)
+      if (env.NCMEC_API_KEY) {
+        const ncmec = new NCMECReporter(env.NCMEC_API_KEY);
+        const clientIp = getClientIp(request);
+        const reportId = await ncmec.report({
+          imageId: fileHash,
+          imageHash: fileHash,
+          uploadedAt: new Date(),
+          uploaderIp: clientIp,
+        });
+        console.error('CSAM detected — NCMEC report filed:', { fileHash, reportId });
+      }
+
+      return json({ error: 'File rejected' }, 451);
+    }
+
+    if (hiveResult.blocked && hiveResult.nsfw) {
+      // Flag for review but allow upload (NSFW is not illegal by itself)
+      await moderator.flagContent('pending_upload', 'nsfw', hiveResult.confidence, 'system', {
+        fileHash,
+        hive_confidence: hiveResult.confidence,
+      });
+    }
+  }
+
   // Validate file size — free tier has a 5MB per-file cap
   if (isFreeUser && file.size > FREE_MAX_FILE_SIZE) {
     return json({
@@ -388,6 +436,17 @@ async function handleGet(request: Request, env: Env, key: string): Promise<Respo
     return json({ error: 'Not found' }, 404);
   }
 
+  // Enforce DMCA takedowns at read-time
+  const db = new Database(env.DB);
+  const imageRecord = await db.getImageByR2Key(key) as ({ dmca_taken_down?: number } | null);
+  if (imageRecord?.dmca_taken_down === 1) {
+    return json(
+      { error: 'Unavailable for legal reasons' },
+      451,
+      { 'Access-Control-Allow-Origin': '*' }
+    );
+  }
+
   const contentType = object.httpMetadata?.contentType || 'application/octet-stream';
 
   // If transforms requested, validate content type
@@ -405,6 +464,7 @@ async function handleGet(request: Request, env: Env, key: string): Promise<Respo
     headers.set('Content-Type', contentType);
     headers.set('Cache-Control', 'public, max-age=31536000');
     headers.set('ETag', object.httpEtag);
+    headers.set('Access-Control-Allow-Origin', '*');
 
     return new Response(object.body, { headers });
   }
@@ -442,6 +502,7 @@ async function handleGet(request: Request, env: Env, key: string): Promise<Respo
       headers.set('Content-Type', contentType);
       headers.set('Cache-Control', 'public, max-age=31536000');
       headers.set('ETag', object.httpEtag);
+      headers.set('Access-Control-Allow-Origin', '*');
 
       return new Response(object.body, { headers });
     }
@@ -451,6 +512,7 @@ async function handleGet(request: Request, env: Env, key: string): Promise<Respo
     headers.set('Cache-Control', 'public, max-age=31536000');
     headers.set('Vary', 'Accept'); // Important for format=auto
     headers.set('X-Image-Optimized', 'true');
+    headers.set('Access-Control-Allow-Origin', '*');
 
     return new Response(transformedResponse.body, {
       status: 200,
@@ -464,6 +526,7 @@ async function handleGet(request: Request, env: Env, key: string): Promise<Respo
     headers.set('Content-Type', contentType);
     headers.set('Cache-Control', 'public, max-age=31536000');
     headers.set('ETag', object.httpEtag);
+    headers.set('Access-Control-Allow-Origin', '*');
 
     return new Response(object.body, { headers });
   }
@@ -807,6 +870,87 @@ async function handleAbuseReport(request: Request, env: Env): Promise<Response> 
   }
 }
 
+async function handleDmcaTakedown(request: Request, env: Env): Promise<Response> {
+  const db = new Database(env.DB);
+  const moderator = new ContentModerator(env.DB);
+  const rateLimiter = new RateLimiter(env.DB);
+  const clientIp = getClientIp(request);
+
+  // Strong abuse protection: DMCA endpoint requires a shared secret
+  if (!env.DMCA_API_KEY) {
+    return json({ error: 'DMCA endpoint is not configured' }, 503);
+  }
+
+  const providedKey = request.headers.get('X-DMCA-API-Key') ?? '';
+  if (providedKey !== env.DMCA_API_KEY) {
+    return json({ error: 'Unauthorized' }, 401);
+  }
+
+  // Additional request-level protection
+  const ipRateLimit = await rateLimiter.checkIpRateLimit(clientIp, '/api/dmca-takedown', {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 20,
+  });
+
+  if (!ipRateLimit.allowed) {
+    return json(
+      {
+        error: 'Too many DMCA requests',
+        retry_after: new Date(ipRateLimit.reset).toISOString(),
+      },
+      429,
+      {
+        'X-RateLimit-Limit': ipRateLimit.limit.toString(),
+        'X-RateLimit-Remaining': ipRateLimit.remaining.toString(),
+        'X-RateLimit-Reset': ipRateLimit.reset.toString(),
+      }
+    );
+  }
+
+  try {
+    const body = await request.json() as {
+      image_id: string;
+      reported_url: string;
+      complainant_email: string;
+      description: string;
+      file_hash?: string;
+    };
+
+    const { image_id, reported_url, complainant_email, description, file_hash } = body;
+
+    if (!image_id || !reported_url || !complainant_email || !description) {
+      return json({ error: 'image_id, reported_url, complainant_email, and description are required' }, 400);
+    }
+
+    // Basic email format check
+    if (!complainant_email.includes('@')) {
+      return json({ error: 'Invalid complainant_email' }, 400);
+    }
+
+    const image = await db.getImageById(image_id);
+    if (!image) {
+      return json({ error: 'Image not found' }, 404);
+    }
+
+    const takedown = await moderator.createDmcaTakedown({
+      imageId: image_id,
+      reportedUrl: reported_url,
+      complainantEmail: complainant_email,
+      description,
+      fileHash: file_hash,
+    });
+
+    return json({
+      takedown_id: takedown.id,
+      status: takedown.status,
+      message: 'DMCA takedown request received. The content has been removed pending review.',
+    }, 201);
+  } catch (error) {
+    console.error('DMCA takedown error:', error);
+    return json({ error: 'Invalid request body' }, 400);
+  }
+}
+
 function handleHealth(): Response {
   return json({ status: 'ok' });
 }
@@ -1122,6 +1266,11 @@ export default {
       // POST /api/abuse-report - Submit abuse report
       if (method === 'POST' && path === '/api/abuse-report') {
         return withCors(await handleAbuseReport(request, env));
+      }
+
+      // POST /api/dmca-takedown - Submit DMCA takedown request
+      if (method === 'POST' && path === '/api/dmca-takedown') {
+        return withCors(await handleDmcaTakedown(request, env));
       }
 
       // POST /api/export - Initiate export job

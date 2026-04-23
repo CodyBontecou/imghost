@@ -12,6 +12,10 @@ struct ImghostApp: App {
         Task {
             await StoreKitManager.shared.startListening()
         }
+        // Initialize AdMob + UMP consent (must run before first ad request)
+        Task { @MainActor in
+            AdManager.shared.initialize()
+        }
     }
 
     var body: some Scene {

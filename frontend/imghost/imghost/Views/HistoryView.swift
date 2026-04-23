@@ -6,6 +6,7 @@ struct HistoryView: View {
     @State private var errorMessage: String?
     @State private var deletingIds: Set<String> = []
     @State private var selectedRecord: UploadRecord?
+    @EnvironmentObject private var subscriptionState: SubscriptionState
 
     var body: some View {
         NavigationStack {
@@ -75,6 +76,13 @@ struct HistoryView: View {
                 loadHistory()
             }
             .preferredColorScheme(.dark)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                // Banner ad — shown only for free/unsubscribed users
+                if subscriptionState.isFree {
+                    AdBannerView()
+                        .background(Color.brutalBackground)
+                }
+            }
         }
     }
 
