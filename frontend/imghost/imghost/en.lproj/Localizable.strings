@@ -396,3 +396,13 @@
 "settings.section.feedback" = "Feedback";
 "settings.feedback.button.send" = "Send Feedback";
 "settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";
+"settings.feedback.discord.title" = "Join our Discord";
+"settings.feedback.discord.subtitle" = "Chat with us on Discord";
+
+// Discord banner
+"discord.banner.title" = "Join the community";
+"discord.banner.subtitle" = "Chat with us on Discord";
+"discord.banner.button.join" = "Join";
+"discord.banner.accessibility_label" = "Join the Discord community.";
+"discord.banner.button.join.accessibility_label" = "Join the Discord community.";
+"discord.banner.button.dismiss.accessibility_label" = "Dismiss Discord banner.";

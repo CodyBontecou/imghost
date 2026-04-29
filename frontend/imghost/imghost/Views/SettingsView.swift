@@ -392,15 +392,29 @@ struct SettingsView: View {
                             .padding(.bottom, 12)
 
                         BrutalCard(showBorder: true) {
-                            BrutalRow(
-                                title: String(localized: "settings.feedback.button.send"),
-                                subtitle: String(localized: "settings.feedback.button.send.subtitle"),
-                                showChevron: true
-                            ) {
-                                if FeedbackHelper.canSendMail {
-                                    showMailCompose = true
-                                } else if let url = FeedbackHelper.mailtoURL() {
-                                    UIApplication.shared.open(url)
+                            VStack(spacing: 0) {
+                                BrutalRow(
+                                    title: String(localized: "settings.feedback.button.send"),
+                                    subtitle: String(localized: "settings.feedback.button.send.subtitle"),
+                                    showChevron: true
+                                ) {
+                                    if FeedbackHelper.canSendMail {
+                                        showMailCompose = true
+                                    } else if let url = FeedbackHelper.mailtoURL() {
+                                        UIApplication.shared.open(url)
+                                    }
+                                }
+
+                                Rectangle()
+                                    .fill(Color.brutalBorder)
+                                    .frame(height: 1)
+
+                                BrutalRow(
+                                    title: String(localized: "settings.feedback.discord.title"),
+                                    subtitle: String(localized: "settings.feedback.discord.subtitle"),
+                                    showChevron: true
+                                ) {
+                                    UIApplication.shared.open(DiscordBanner.inviteURL)
                                 }
                             }
                         }

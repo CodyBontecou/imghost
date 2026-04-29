@@ -13,8 +13,11 @@ struct HistoryView: View {
             ZStack {
                 Color.brutalBackground.ignoresSafeArea()
 
-                Group {
-                    if isLoading {
+                VStack(spacing: 0) {
+                    DiscordBanner()
+
+                    Group {
+                        if isLoading {
                         BrutalLoading(text: String(localized: "state.loading"))
                     } else if let error = errorMessage {
                         BrutalEmptyState(
@@ -54,6 +57,7 @@ struct HistoryView: View {
                         .refreshable {
                             loadHistory()
                         }
+                    }
                     }
                 }
             }
