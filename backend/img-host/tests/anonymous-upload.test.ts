@@ -66,7 +66,7 @@ describe('anonymous upload gating', () => {
     expect(response.status).toBe(403);
     expect(body).toEqual({
       error: ANONYMOUS_UPLOAD_ERROR,
-      account_required: true,
+      subscription_required: true,
       upgrade_required: true,
     });
     expect(env.IMAGES.put).not.toHaveBeenCalled();

@@ -1,40 +1,29 @@
-# App Review Reply — macOS v1.4.0 (build 11) resubmission
+# App Review Reply — macOS v1.4.0 (build 13) resubmission
 
 Hi App Review Team,
 
-Thank you for the review. We addressed each item in macOS 1.4.0 build 11.
+Thank you for the review. We addressed Guideline 5.1.1(v) in macOS 1.4.0 build 13.
 
-## Demo account
+Users can now view and purchase In-App Purchase products before providing any personal information:
 
-The demo account has been created and verified with full access:
+- The welcome/sign-in screen now has a primary **View plans without account** action.
+- This creates an anonymous device session with no email, name, or other personal information.
+- After choosing that action, the app opens the upgrade/paywall sheet automatically so reviewers can purchase the submitted StoreKit products immediately.
+- Anonymous users bypass email verification; email registration is optional and described only as a way to access purchases/uploads on other devices later.
+- If an anonymous free-tier user attempts an upload, the app opens the upgrade sheet and states that no email account is required to subscribe.
+- The production backend was also updated so anonymous upload gating is returned as a subscription/upgrade prompt, not an account-registration requirement.
 
-- **Email:** `test@example.com`
-- **Password:** `test123`
-
-This account is active, email-verified, and has the Ultimate tier enabled through 2030 so all upload/export/settings features are available during review.
-
-## Account registration is no longer required before purchase
-
-The app now includes **Continue without account** on the welcome/sign-in screen. This creates an anonymous device account without collecting email, name, or other personal information. Reviewers and users can enter the app, view upgrade options, and purchase via StoreKit before providing any personal information. The UI explains that an email account can be used later only if the user wants access on other devices.
-
-## In-App Purchase references
-
-The macOS binary now only requests and displays the submitted Starter products:
+Submitted macOS products in this build:
 
 | Display Name | Product ID | Type |
 |---|---|---|
 | Starter Monthly | `imghost.pro.monthly` | Auto-Renewable Subscription |
 | Starter Yearly | `imghost.pro.yearly` | Auto-Renewable Subscription |
 
-References to the unsubmitted 100 GB / Pro macOS products were removed from the macOS paywall and comparison UI.
+Demo account, if you prefer to test with an existing account:
 
-## Main window reopening
-
-We added menu-based window reopening and fixed the menu bar action:
-
-- **File → Open imghost** reopens the main window.
-- **Window → Open imghost** reopens the main window.
-- The menu bar popover’s **Open app** action now recreates/focuses the main SwiftUI window after it has been closed.
+- **Email:** `test@example.com`
+- **Password:** `test123`
 
 Best regards,
 Cody Bontecou

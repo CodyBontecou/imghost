@@ -10,6 +10,10 @@ final class AuthState: ObservableObject {
     @Published var currentUser: User?
     @Published var isLoading = true
 
+    var isAnonymous: Bool { currentUser?.isAnonymous == true }
+    var hasVerifiedEmailOrAnonymous: Bool { isEmailVerified || isAnonymous }
+    var requiresEmailVerification: Bool { isAuthenticated && !hasVerifiedEmailOrAnonymous }
+
     private let keychainService = KeychainService.shared
 
     private init() {}
@@ -31,8 +35,8 @@ final class AuthState: ObservableObject {
         do {
             let user = try await AuthService.shared.getCurrentUser()
             currentUser = user
+            isEmailVerified = user.emailVerified || user.isAnonymous == true
             isAuthenticated = true
-            isEmailVerified = user.emailVerified
 
             // Sync images from backend after successful auth check
             await syncImagesFromBackend()
@@ -42,8 +46,8 @@ final class AuthState: ObservableObject {
                 try await AuthService.shared.refreshTokens()
                 let user = try await AuthService.shared.getCurrentUser()
                 currentUser = user
+                isEmailVerified = user.emailVerified || user.isAnonymous == true
                 isAuthenticated = true
-                isEmailVerified = user.emailVerified
 
                 // Sync images from backend after successful token refresh
                 await syncImagesFromBackend()
@@ -79,20 +83,23 @@ final class AuthState: ObservableObject {
             print("[AuthState] ⚠️ Failed to save token expiry to keychain: \(error)")
         }
 
-        // Update state
-        isAuthenticated = true
-        isEmailVerified = response.emailVerified
+        let isAnonymousAccount = response.isAnonymous == true
+        let isVerifiedOrAnonymous = response.emailVerified || isAnonymousAccount
 
         // Create user from response (subscription status comes from SubscriptionState)
         currentUser = User(
             id: response.userId,
             email: response.email,
-            emailVerified: response.emailVerified,
+            emailVerified: isVerifiedOrAnonymous,
             storageUsedBytes: 0,
             storageLimitBytes: 0,
             imageCount: nil,
             isAnonymous: response.isAnonymous
         )
+
+        // Update state after currentUser exists so views can immediately route anonymous users past email verification
+        isEmailVerified = isVerifiedOrAnonymous
+        isAuthenticated = true
 
         // Sync images from backend after login
         await syncImagesFromBackend()
@@ -129,7 +136,7 @@ final class AuthState: ObservableObject {
     /// Update current user
     func updateUser(_ user: User) {
         currentUser = user
-        isEmailVerified = user.emailVerified
+        isEmailVerified = user.emailVerified || user.isAnonymous == true
     }
 
     /// Logout and clear all tokens

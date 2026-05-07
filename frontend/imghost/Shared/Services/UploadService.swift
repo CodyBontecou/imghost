@@ -151,7 +151,7 @@ final class UploadService: NSObject {
         if accountRequired && upgradeRequired {
             return .uploadFailed(
                 statusCode: 403,
-                message: error.isEmpty ? "Create an account or subscribe to upload" : error
+                message: error.isEmpty ? "Subscribe to upload now. No email account required." : error
             )
         }
 

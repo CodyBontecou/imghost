@@ -17,7 +17,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.4.0</string>
 	<key>CFBundleVersion</key>
-	<string>12</string>
+	<string>13</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>CFBundleURLTypes</key>
@@ -58,6 +58,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>BackendURL</key>
 	<string>$(BACKEND_URL)</string>
 	<key>NSLocalNetworkUsageDescription</key>

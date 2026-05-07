@@ -10,6 +10,7 @@ struct MacLoginView: View {
     @State private var errorMessage: String?
     @State private var showRegister = false
     @State private var showForgotPassword = false
+    @AppStorage("showUpgradeAfterAnonymousAuth") private var showUpgradeAfterAnonymousAuth = false
 
     var body: some View {
         ZStack {
@@ -66,6 +67,36 @@ struct MacLoginView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
+                        // No personal information required before purchase.
+                        VStack(spacing: 8) {
+                            Button(action: continueWithoutAccount) {
+                                HStack(spacing: 8) {
+                                    if isLoading {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .black))
+                                            .scaleEffect(0.7)
+                                    } else {
+                                        Text("View plans without account")
+                                            .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                            .tracking(1)
+                                    }
+                                }
+                                .foregroundStyle(Color.black)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 44)
+                                .background(Color.white)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(isLoading)
+
+                            Text("No email required to view or purchase. Add an email later only if you want access on other devices.")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.brutalTextTertiary)
+                                .multilineTextAlignment(.center)
+                        }
+
+                        BrutalDivider(label: "OR SIGN IN")
+
                         // Form
                         VStack(spacing: 16) {
                             MacBrutalTextField(label: String(localized: "auth.login.field.email"), text: $email)
@@ -113,26 +144,6 @@ struct MacLoginView: View {
                         .signInWithAppleButtonStyle(.white)
                         .frame(height: 44)
                         .disabled(isLoading)
-
-                        // Anonymous access (no personal info required before purchase)
-                        VStack(spacing: 8) {
-                            Button(action: continueWithoutAccount) {
-                                Text("Continue without account")
-                                    .font(.system(size: 13, weight: .medium, design: .monospaced))
-                                    .tracking(1)
-                                    .foregroundStyle(Color.white)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 44)
-                                    .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(isLoading)
-
-                            Text("No email required. Create an account later if you want access on other devices.")
-                                .font(.system(size: 10))
-                                .foregroundStyle(Color.brutalTextTertiary)
-                                .multilineTextAlignment(.center)
-                        }
 
                         // Links
                         HStack(spacing: 16) {
@@ -205,6 +216,7 @@ struct MacLoginView: View {
         Task {
             do {
                 let response = try await AuthService.shared.continueAnonymously()
+                await MainActor.run { showUpgradeAfterAnonymousAuth = true }
                 await authState.setAuthenticated(response: response)
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }

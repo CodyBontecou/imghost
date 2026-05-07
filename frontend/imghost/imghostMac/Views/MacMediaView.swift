@@ -19,6 +19,7 @@ struct MacMediaView: View {
     @State private var showUploadBanner = false
     @State private var uploadBannerMessage = ""
     @State private var uploadBannerIsError = false
+    @State private var showPaywall = false
 
     @EnvironmentObject var subscriptionState: SubscriptionState
 
@@ -129,6 +130,11 @@ struct MacMediaView: View {
                 })
                 .inspectorColumnWidth(min: 260, ideal: 300, max: 360)
             }
+        }
+        .sheet(isPresented: $showPaywall) {
+            MacPaywallView(allowDismiss: true)
+                .environmentObject(subscriptionState)
+                .frame(width: 540, height: 620)
         }
         .task {
             loadRecords()
@@ -579,9 +585,9 @@ struct MacMediaView: View {
                     }
                 }
 
-                // Show the explicit anonymous/free-tier guidance instead of a generic failure count.
+                // Show upgrade immediately for anonymous/free-tier upload attempts.
                 let accountOrUpgradeMessage = failed.compactMap(\.error).first {
-                    $0.contains("Create an account or subscribe to upload")
+                    $0.localizedCaseInsensitiveContains("subscribe to upload")
                 }
 
                 // Check if any failure was subscription-related
@@ -590,12 +596,13 @@ struct MacMediaView: View {
                     result.error?.contains("active subscription") == true
                 }
 
-                if let accountOrUpgradeMessage {
-                    showBanner(message: accountOrUpgradeMessage, isError: true)
+                if accountOrUpgradeMessage != nil {
+                    showBanner(message: "Choose a plan to upload now. No email account required.", isError: true)
+                    showPaywall = true
                 } else if hasSubscriptionError {
-                    // Refresh subscription state — this will trigger the paywall gate in MacContentView
                     Task { await subscriptionState.checkStatus() }
                     showBanner(message: String(localized: "media.banner.subscription_required"), isError: true)
+                    showPaywall = true
                 } else if failed.isEmpty {
                     let hasTTL = successful.compactMap(\.record).contains { $0.isTemporary }
                     let msg: String
@@ -672,9 +679,9 @@ struct MacMediaView: View {
                     }
                 }
 
-                // Show the explicit anonymous/free-tier guidance instead of a generic failure count.
+                // Show upgrade immediately for anonymous/free-tier upload attempts.
                 let accountOrUpgradeMessage = failed.compactMap(\.error).first {
-                    $0.contains("Create an account or subscribe to upload")
+                    $0.localizedCaseInsensitiveContains("subscribe to upload")
                 }
 
                 // Check if any failure was subscription-related
@@ -683,11 +690,13 @@ struct MacMediaView: View {
                     result.error?.contains("active subscription") == true
                 }
 
-                if let accountOrUpgradeMessage {
-                    showBanner(message: accountOrUpgradeMessage, isError: true)
+                if accountOrUpgradeMessage != nil {
+                    showBanner(message: "Choose a plan to upload now. No email account required.", isError: true)
+                    showPaywall = true
                 } else if hasSubscriptionError {
                     Task { await subscriptionState.checkStatus() }
                     showBanner(message: String(localized: "media.banner.subscription_required"), isError: true)
+                    showPaywall = true
                 } else if failed.isEmpty {
                     let hasTTL = successful.compactMap(\.record).contains { $0.isTemporary }
                     let msg: String
