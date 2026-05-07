@@ -208,6 +208,27 @@ platform :mac do
     )
   end
 
+  desc "Upload macOS screenshots only"
+  lane :upload_screenshots do
+    k = app_store_connect_api_key(
+      key_id: KEY_ID,
+      issuer_id: ISSUER_ID,
+      key_filepath: KEY_PATH,
+      in_house: false
+    )
+    deliver(
+      api_key: k,
+      app_identifier: APP_ID,
+      app_version: APP_VERSION,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      overwrite_screenshots: true,
+      run_precheck_before_submit: false,
+      force: true,
+      platform: "osx"
+    )
+  end
+
   desc "Upload metadata"
   lane :upload_metadata do
     k = app_store_connect_api_key(
