@@ -208,6 +208,10 @@
 "settings.section.link_format" = "Link Format";
 "settings.section.link_format.subtitle" = "Format used when copying links";
 "settings.link_format.custom_field" = "Custom Template";
+"settings.link_format.label.width" = "DEFAULT WIDTH";
+"settings.link_format.placeholder.width" = "e.g. 600";
+"settings.link_format.unit.px" = "px";
+"settings.link_format.hint.width" = "Applied to image and video links. Leave blank for none.";
 "settings.section.upload" = "Upload";
 "settings.section.upload.subtitle" = "Default behavior for the share extension";
 "settings.upload.label.resolution" = "DEFAULT RESOLUTION";

@@ -37,6 +37,7 @@ struct Config {
     // Link Format Settings
     static let linkFormatKey = "linkFormat"
     static let customLinkFormatKey = "customLinkFormat"
+    static let linkWidthKey = "linkWidth"
 
     // Upload Quality Settings
     static let uploadQualityKey = "uploadQuality"

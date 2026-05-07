@@ -4,6 +4,7 @@ import Foundation
 enum LinkFormat: String, CaseIterable, Identifiable {
     case rawURL = "raw"
     case markdownAlt = "markdown_alt"
+    case markdownObsidian = "markdown_obsidian"
     case html = "html"
     case bbcode = "bbcode"
     case custom = "custom"
@@ -14,19 +15,10 @@ enum LinkFormat: String, CaseIterable, Identifiable {
         switch self {
         case .rawURL: return "Raw URL"
         case .markdownAlt: return "Markdown"
+        case .markdownObsidian: return "Markdown (Obsidian)"
         case .html: return "HTML"
         case .bbcode: return "BBCode"
         case .custom: return "Custom"
-        }
-    }
-
-    var template: String {
-        switch self {
-        case .rawURL: return "{url}"
-        case .markdownAlt: return "![{filename}]({url})"
-        case .html: return "<img src=\"{url}\" alt=\"{filename}\">"
-        case .bbcode: return "[img]{url}[/img]"
-        case .custom: return "{url}"
         }
     }
 
@@ -34,6 +26,7 @@ enum LinkFormat: String, CaseIterable, Identifiable {
         switch self {
         case .rawURL: return "https://example.com/img.jpg"
         case .markdownAlt: return "![photo.jpg](https://...)"
+        case .markdownObsidian: return "![photo.jpg](url) + <video> for mp4"
         case .html: return "<img src=\"https://...\">"
         case .bbcode: return "[img]https://...[/img]"
         case .custom: return "Custom format"
@@ -71,42 +64,99 @@ final class LinkFormatService {
         }
     }
 
+    /// Default media width applied to image and video templates when supported.
+    /// 0 (or absence) means no width is injected.
+    var preferredWidth: Int {
+        get {
+            Config.sharedDefaults?.integer(forKey: Config.linkWidthKey) ?? 0
+        }
+        set {
+            Config.sharedDefaults?.set(max(0, newValue), forKey: Config.linkWidthKey)
+        }
+    }
+
     /// Format a URL using the current format preference
     /// - Parameters:
-    ///   - url: The image URL
+    ///   - url: The image or video URL
     ///   - filename: Optional original filename for templates that support it
     /// - Returns: Formatted string ready for clipboard
     func format(url: String, filename: String? = nil) -> String {
-        let template = currentFormat == .custom ? customTemplate : currentFormat.template
-        return applyTemplate(template, url: url, filename: filename)
+        format(url: url, using: currentFormat, filename: filename)
     }
 
     /// Format a URL using a specific format
-    /// - Parameters:
-    ///   - url: The image URL
-    ///   - format: The format to use
-    ///   - filename: Optional original filename
-    /// - Returns: Formatted string
     func format(url: String, using format: LinkFormat, filename: String? = nil) -> String {
-        let template = format == .custom ? customTemplate : format.template
-        return applyTemplate(template, url: url, filename: filename)
+        let isVideo = LinkFormatService.isVideoURL(url)
+        let width = preferredWidth > 0 ? preferredWidth : nil
+        let template = format == .custom
+            ? customTemplate
+            : LinkFormatService.template(for: format, isVideo: isVideo, width: width)
+        return applyTemplate(template, url: url, filename: filename, width: width)
     }
 
     /// Preview what a format will look like with an example URL
     func preview(format: LinkFormat, customTemplate: String? = nil) -> String {
-        let template = format == .custom ? (customTemplate ?? self.customTemplate) : format.template
-        return applyTemplate(template, url: "https://img.example.com/abc123.jpg", filename: "photo.jpg")
+        let width = preferredWidth > 0 ? preferredWidth : nil
+        let template: String
+        if format == .custom {
+            template = customTemplate ?? self.customTemplate
+        } else {
+            template = LinkFormatService.template(for: format, isVideo: false, width: width)
+        }
+        return applyTemplate(template, url: "https://img.example.com/abc123.jpg", filename: "photo.jpg", width: width)
     }
 
     // MARK: - Private
 
-    private func applyTemplate(_ template: String, url: String, filename: String?) -> String {
+    private static let videoExtensions: Set<String> = [
+        "mp4", "mov", "m4v", "webm", "mkv", "avi"
+    ]
+
+    static func isVideoURL(_ url: String) -> Bool {
+        guard let parsed = URL(string: url) else { return false }
+        return videoExtensions.contains(parsed.pathExtension.lowercased())
+    }
+
+    private static func template(for format: LinkFormat, isVideo: Bool, width: Int?) -> String {
+        switch format {
+        case .rawURL:
+            return "{url}"
+        case .markdownAlt:
+            return "![{filename}]({url})"
+        case .markdownObsidian:
+            if isVideo {
+                return width != nil
+                    ? "<video controls src=\"{url}\" width=\"{width}\"></video>"
+                    : "<video controls src=\"{url}\"></video>"
+            }
+            return width != nil
+                ? "![{filename}|{width}]({url})"
+                : "![{filename}]({url})"
+        case .html:
+            if isVideo {
+                return width != nil
+                    ? "<video controls src=\"{url}\" width=\"{width}\"></video>"
+                    : "<video controls src=\"{url}\"></video>"
+            }
+            return width != nil
+                ? "<img src=\"{url}\" alt=\"{filename}\" width=\"{width}\">"
+                : "<img src=\"{url}\" alt=\"{filename}\">"
+        case .bbcode:
+            return isVideo ? "[video]{url}[/video]" : "[img]{url}[/img]"
+        case .custom:
+            return "{url}"
+        }
+    }
+
+    private func applyTemplate(_ template: String, url: String, filename: String?, width: Int?) -> String {
         var result = template
         result = result.replacingOccurrences(of: "{url}", with: url)
 
-        // Extract filename from URL if not provided
         let name = filename ?? URL(string: url)?.lastPathComponent ?? "image"
         result = result.replacingOccurrences(of: "{filename}", with: name)
+
+        let widthString = width.map(String.init) ?? ""
+        result = result.replacingOccurrences(of: "{width}", with: widthString)
 
         return result
     }

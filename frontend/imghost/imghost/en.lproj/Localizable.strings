@@ -199,7 +199,12 @@
 "settings.link_format.variables_label" = "Variables:";
 "settings.link_format.var.url" = "{url}";
 "settings.link_format.var.filename" = "{filename}";
+"settings.link_format.var.width" = "{width}";
 "settings.link_format.button.edit_custom" = "EDIT CUSTOM FORMAT";
+"settings.link_format.label.width" = "DEFAULT WIDTH";
+"settings.link_format.placeholder.width" = "e.g. 600";
+"settings.link_format.unit.px" = "px";
+"settings.link_format.hint.width" = "Applied to image and video links. Leave blank for none.";
 "settings.section.actions" = "Actions";
 "settings.action.clear_history.title" = "Clear Upload History";
 "settings.action.clear_history.subtitle" = "Remove local history only";
@@ -240,6 +245,8 @@
 "settings.custom_format.var.url.desc" = "- The image URL";
 "settings.custom_format.var.filename" = "{filename}";
 "settings.custom_format.var.filename.desc" = "- Original filename";
+"settings.custom_format.var.width" = "{width}";
+"settings.custom_format.var.width.desc" = "- Default width (px), if set";
 "settings.custom_format.label.preview" = "PREVIEW";
 "settings.custom_format.button.save" = "Save Format";
 "settings.custom_format.button.cancel" = "CANCEL";

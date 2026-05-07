@@ -9,6 +9,7 @@ struct MacSettingsView: View {
     @State private var errorMessage: String?
     @State private var selectedLinkFormat: LinkFormat
     @State private var customTemplate: String
+    @State private var linkWidthText: String
     @State private var selectedQuality: UploadQuality
     @State private var confirmBeforeUpload: Bool
     @State private var showExportView = false
@@ -25,6 +26,8 @@ struct MacSettingsView: View {
     init() {
         _selectedLinkFormat = State(initialValue: LinkFormatService.shared.currentFormat)
         _customTemplate = State(initialValue: LinkFormatService.shared.customTemplate)
+        let storedWidth = LinkFormatService.shared.preferredWidth
+        _linkWidthText = State(initialValue: storedWidth > 0 ? String(storedWidth) : "")
         _selectedQuality = State(initialValue: UploadQualityService.shared.currentQuality)
         _confirmBeforeUpload = State(initialValue: UploadQualityService.shared.confirmBeforeUpload)
     }
@@ -314,6 +317,37 @@ struct MacSettingsView: View {
                             linkFormatService.customTemplate = newValue
                         }
                 }
+
+                // Default media width applied to image and video templates that support it.
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("settings.link_format.label.width")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(Color.brutalTextSecondary)
+                        .tracking(1.5)
+
+                    HStack(spacing: 8) {
+                        TextField(String(localized: "settings.link_format.placeholder.width"), text: $linkWidthText)
+                            .textFieldStyle(.plain)
+                            .font(.system(size: 12, design: .monospaced))
+                            .padding(8)
+                            .background(Color.brutalSurface)
+                            .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
+                            .onChange(of: linkWidthText) { _, newValue in
+                                let digits = newValue.filter { $0.isNumber }
+                                if digits != newValue { linkWidthText = digits }
+                                linkFormatService.preferredWidth = Int(digits) ?? 0
+                            }
+
+                        Text("settings.link_format.unit.px")
+                            .font(.system(size: 11, design: .monospaced))
+                            .foregroundStyle(Color.brutalTextTertiary)
+                    }
+
+                    Text("settings.link_format.hint.width")
+                        .font(.system(size: 10, design: .monospaced))
+                        .foregroundStyle(Color.brutalTextTertiary)
+                }
+                .padding(.top, 4)
             }
         }
     }

@@ -1,6 +1,13 @@
 .env
 .admob-tokens.json
 
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local app artifacts (screenshots, etc.)
+/app/
+
 # Node
 node_modules/
 

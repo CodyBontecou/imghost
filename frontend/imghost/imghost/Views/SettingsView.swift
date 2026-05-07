@@ -14,6 +14,10 @@ struct SettingsView: View {
     @State private var selectedLinkFormat: LinkFormat = LinkFormatService.shared.currentFormat
     @State private var customLinkTemplate: String = LinkFormatService.shared.customTemplate
     @State private var showCustomFormatSheet = false
+    @State private var linkWidthText: String = {
+        let w = LinkFormatService.shared.preferredWidth
+        return w > 0 ? String(w) : ""
+    }()
     @State private var selectedUploadQuality: UploadQuality = UploadQualityService.shared.currentQuality
     @State private var confirmBeforeUpload: Bool = UploadQualityService.shared.confirmBeforeUpload
 
@@ -319,6 +323,36 @@ struct SettingsView: View {
                             .padding(.top, 12)
                         }
 
+                        // Default media width (applies to image and video templates that support it)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("settings.link_format.label.width")
+                                .brutalTypography(.monoSmall, color: .brutalTextSecondary)
+                                .tracking(2)
+
+                            HStack(spacing: 8) {
+                                TextField(String(localized: "settings.link_format.placeholder.width"), text: $linkWidthText)
+                                    .keyboardType(.numberPad)
+                                    .textFieldStyle(.plain)
+                                    .brutalTypography(.mono)
+                                    .padding(12)
+                                    .background(Color.brutalSurface)
+                                    .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
+                                    .onChange(of: linkWidthText) { _, newValue in
+                                        let digits = newValue.filter { $0.isNumber }
+                                        if digits != newValue { linkWidthText = digits }
+                                        LinkFormatService.shared.preferredWidth = Int(digits) ?? 0
+                                    }
+
+                                Text("settings.link_format.unit.px")
+                                    .brutalTypography(.mono, color: .brutalTextTertiary)
+                            }
+
+                            Text("settings.link_format.hint.width")
+                                .brutalTypography(.monoSmall, color: .brutalTextTertiary)
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 16)
+
                         // Template variables hint
                         HStack(spacing: 8) {
                             Text("settings.link_format.variables_label")
@@ -326,6 +360,8 @@ struct SettingsView: View {
                             Text("settings.link_format.var.url")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                             Text("settings.link_format.var.filename")
+                                .brutalTypography(.monoSmall, color: .brutalTextSecondary)
+                            Text("settings.link_format.var.width")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                         }
                         .padding(.top, 12)
@@ -867,6 +903,12 @@ struct CustomLinkFormatSheet: View {
                                 Text("settings.custom_format.var.filename")
                                     .brutalTypography(.mono, color: .brutalSuccess)
                                 Text("settings.custom_format.var.filename.desc")
+                                    .brutalTypography(.bodySmall, color: .brutalTextTertiary)
+                            }
+                            HStack {
+                                Text("settings.custom_format.var.width")
+                                    .brutalTypography(.mono, color: .brutalSuccess)
+                                Text("settings.custom_format.var.width.desc")
                                     .brutalTypography(.bodySmall, color: .brutalTextTertiary)
                             }
                         }

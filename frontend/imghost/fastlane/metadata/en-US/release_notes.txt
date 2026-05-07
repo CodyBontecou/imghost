@@ -1,2 +1,3 @@
-• Fixed Sign in with Apple on macOS — authentication now works correctly for all users
-• App Store review prompts: imghost now asks for a review after your 3rd successful upload — when you've had a chance to form a real opinion. No spam, no interruptions during onboarding.
+• New "Markdown (Obsidian)" link format — copy a video and paste a working <video> tag that plays in Obsidian on Mac and iOS. Images keep the familiar ![alt](url) syntax.
+• Default media width — set a width once in Settings and it's automatically applied to image and video links across all formats.
+• macOS share extension now accepts a wider range of files, including image and movie URLs from Finder and other apps.
