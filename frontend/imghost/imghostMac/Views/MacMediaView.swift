@@ -579,13 +579,20 @@ struct MacMediaView: View {
                     }
                 }
 
+                // Show the explicit anonymous/free-tier guidance instead of a generic failure count.
+                let accountOrUpgradeMessage = failed.compactMap(\.error).first {
+                    $0.contains("Create an account or subscribe to upload")
+                }
+
                 // Check if any failure was subscription-related
                 let hasSubscriptionError = results.contains { result in
                     result.error?.contains("subscription is required") == true ||
                     result.error?.contains("active subscription") == true
                 }
 
-                if hasSubscriptionError {
+                if let accountOrUpgradeMessage {
+                    showBanner(message: accountOrUpgradeMessage, isError: true)
+                } else if hasSubscriptionError {
                     // Refresh subscription state — this will trigger the paywall gate in MacContentView
                     Task { await subscriptionState.checkStatus() }
                     showBanner(message: String(localized: "media.banner.subscription_required"), isError: true)
@@ -604,7 +611,7 @@ struct MacMediaView: View {
                     showBanner(message: msg, isError: false)
                 } else if successful.isEmpty {
                     let msg = failed.count == 1
-                        ? String(format: String(localized: "media.banner.upload_failed_singular"), failed.count)
+                        ? (failed.first?.error ?? String(format: String(localized: "media.banner.upload_failed_singular"), failed.count))
                         : String(format: String(localized: "media.banner.upload_failed_plural"), failed.count)
                     showBanner(message: msg, isError: true)
                 } else {
@@ -665,13 +672,20 @@ struct MacMediaView: View {
                     }
                 }
 
+                // Show the explicit anonymous/free-tier guidance instead of a generic failure count.
+                let accountOrUpgradeMessage = failed.compactMap(\.error).first {
+                    $0.contains("Create an account or subscribe to upload")
+                }
+
                 // Check if any failure was subscription-related
                 let hasSubscriptionError = results.contains { result in
                     result.error?.contains("subscription is required") == true ||
                     result.error?.contains("active subscription") == true
                 }
 
-                if hasSubscriptionError {
+                if let accountOrUpgradeMessage {
+                    showBanner(message: accountOrUpgradeMessage, isError: true)
+                } else if hasSubscriptionError {
                     Task { await subscriptionState.checkStatus() }
                     showBanner(message: String(localized: "media.banner.subscription_required"), isError: true)
                 } else if failed.isEmpty {
@@ -689,7 +703,7 @@ struct MacMediaView: View {
                     showBanner(message: msg, isError: false)
                 } else if successful.isEmpty {
                     let msg = failed.count == 1
-                        ? String(format: String(localized: "media.banner.upload_failed_singular"), failed.count)
+                        ? (failed.first?.error ?? String(format: String(localized: "media.banner.upload_failed_singular"), failed.count))
                         : String(format: String(localized: "media.banner.upload_failed_plural"), failed.count)
                     showBanner(message: msg, isError: true)
                 } else {

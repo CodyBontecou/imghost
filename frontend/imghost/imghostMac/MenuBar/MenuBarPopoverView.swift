@@ -398,7 +398,7 @@ struct MenuBarPopoverView: View {
             isUploading = false
             uploadProgress = 0
             uploadFileName = nil
-            showStatus(String(localized: "menubar.status.upload_failed"))
+            showStatus(error.localizedDescription)
             print("[MenuBar] Upload error: \(error)")
         }
     }
@@ -438,7 +438,7 @@ struct MenuBarPopoverView: View {
             isUploading = false
             uploadProgress = 0
             uploadFileName = nil
-            showStatus(String(localized: "menubar.status.upload_failed"))
+            showStatus(error.localizedDescription)
             print("[MenuBar] Upload error: \(error)")
         }
     }
