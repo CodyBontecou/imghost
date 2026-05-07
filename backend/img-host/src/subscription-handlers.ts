@@ -343,8 +343,10 @@ export async function handleRestorePurchases(request: Request, env: Env): Promis
 }
 
 /**
- * Check if user has subscription access (helper for other handlers)
- * Free-tier users always have access (with storage/file-size/TTL limits applied at upload time).
+ * Check if user has subscription access (helper for other handlers).
+ * Registered free-tier users have access with upload-time limits; anonymous free-tier
+ * users are blocked by the upload handler so App Review can access IAP without
+ * enabling free anonymous file hosting.
  */
 export async function checkSubscriptionAccess(userId: string, db: Database): Promise<{
   hasAccess: boolean;

@@ -1,0 +1,2 @@
+{"id":"int-e90c38c8","kind":"field_change","created_at":"2026-05-07T19:52:13.611022Z","actor":"Cody Bontecou","issue_id":"imghost-xf9","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}
+{"id":"int-d3ea6171","kind":"field_change","created_at":"2026-05-07T19:52:57.486425Z","actor":"Cody Bontecou","issue_id":"imghost-xf9","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Implemented anonymous free-tier upload block, UI parsing, tests, tsc, and macOS build."}}

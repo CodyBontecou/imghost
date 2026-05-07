@@ -138,14 +138,24 @@ final class UploadService: NSObject {
         return try parseUploadResponse(data: data, imageData: imageData, filename: filename)
     }
 
-    /// Parse a 403/413 response into the appropriate ImghostError
+    /// Parse a 403 response into the appropriate ImghostError
     static func parse403Error(data: Data) -> ImghostError {
         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             return .emailVerificationRequired
         }
+
+        let error = json["error"] as? String ?? ""
+        let accountRequired = json["account_required"] as? Bool ?? false
         let upgradeRequired = json["upgrade_required"] as? Bool ?? false
+
+        if accountRequired && upgradeRequired {
+            return .uploadFailed(
+                statusCode: 403,
+                message: error.isEmpty ? "Create an account or subscribe to upload" : error
+            )
+        }
+
         if upgradeRequired {
-            let error = json["error"] as? String ?? ""
             if error.contains("storage") {
                 return .freeTierStorageFull
             }

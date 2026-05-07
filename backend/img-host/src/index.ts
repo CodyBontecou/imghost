@@ -101,6 +101,11 @@ const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (Cloudflare Workers
 const FREE_MAX_FILE_SIZE = 50_000_000;          // 50MB max per file for free tier
 const FREE_STORAGE_LIMIT = 1_000_000_000;       // 1GB total for free tier
 const FREE_DAILY_UPLOADS = 20;                  // max uploads per 24h for free tier (storage is the real cap)
+export const ANONYMOUS_UPLOAD_ERROR = 'Create an account or subscribe to upload';
+
+export function isAnonymousFreeTierUser(user: { is_anonymous?: number | null; subscription_tier: string }): boolean {
+  return user.is_anonymous === 1 && user.subscription_tier === 'free';
+}
 
 function generateId(): string {
   return crypto.randomUUID().slice(0, 8);
@@ -158,6 +163,14 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
   // Check if email is verified
   if (user.email_verified !== 1) {
     return json({ error: 'Email verification required', email_verified: false }, 403);
+  }
+
+  if (isAnonymousFreeTierUser(user)) {
+    return json({
+      error: ANONYMOUS_UPLOAD_ERROR,
+      account_required: true,
+      upgrade_required: true,
+    }, 403);
   }
 
   const isFreeUser = user.subscription_tier === 'free';

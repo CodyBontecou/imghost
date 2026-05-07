@@ -196,12 +196,24 @@ final class MacUploadService: NSObject {
 
     // MARK: - 403 Parsing
 
-    /// Parse a 403 response to distinguish subscription_required from email verification
+    /// Parse a 403 response to distinguish anonymous upload gating, subscriptions, and email verification
     static func parse403Error(data: Data) -> ImghostError {
-        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let subscriptionRequired = json["subscription_required"] as? Bool,
-           subscriptionRequired {
-            return .subscriptionRequired
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            let error = json["error"] as? String ?? ""
+            let accountRequired = json["account_required"] as? Bool ?? false
+            let upgradeRequired = json["upgrade_required"] as? Bool ?? false
+
+            if accountRequired && upgradeRequired {
+                return .uploadFailed(
+                    statusCode: 403,
+                    message: error.isEmpty ? "Create an account or subscribe to upload" : error
+                )
+            }
+
+            if let subscriptionRequired = json["subscription_required"] as? Bool,
+               subscriptionRequired {
+                return .subscriptionRequired
+            }
         }
         return .emailVerificationRequired
     }
