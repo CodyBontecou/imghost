@@ -6,8 +6,69 @@ ISSUER_ID = "6c3b3640-c6bf-40a9-b6e5-57cda2c7776e"
 KEY_PATH = "/Users/codybontecou/dev/AuthKey_T7KGDK4Y4V.p8"
 
 platform :ios do
-  desc "Submit for review"
+  desc "Build, upload, and submit for review"
   lane :submit do
+    k = app_store_connect_api_key(
+      key_id: KEY_ID,
+      issuer_id: ISSUER_ID,
+      key_filepath: KEY_PATH,
+      in_house: false
+    )
+
+    # Archive
+    xcodebuild(
+      scheme: "imghost",
+      project: "imghost.xcodeproj",
+      configuration: "Release",
+      destination: "generic/platform=iOS",
+      archive: true,
+      archive_path: "build/imghost.xcarchive",
+      xcargs: "CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM=67KC823C9A"
+    )
+
+    # Export .ipa for App Store
+    xcodebuild(
+      export_archive: true,
+      archive_path: "build/imghost.xcarchive",
+      export_path: "build/imghost-export",
+      export_options_plist: "build/imghost-export/ExportOptions.plist"
+    )
+
+    # Upload binary only
+    deliver(
+      api_key: k,
+      app_identifier: APP_ID,
+      app_version: "1.4",
+      ipa: "build/imghost-export/imghost.ipa",
+      skip_screenshots: true,
+      skip_metadata: true,
+      run_precheck_before_submit: false,
+      submit_for_review: false,
+      force: true,
+      platform: "ios"
+    )
+
+    # Submit for review (binary already uploaded)
+    deliver(
+      api_key: k,
+      app_identifier: APP_ID,
+      app_version: "1.4",
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      run_precheck_before_submit: false,
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
+      platform: "ios",
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false
+      }
+    )
+  end
+
+  desc "Submit metadata + review only (binary must already be uploaded)"
+  lane :submit_review_only do
     k = app_store_connect_api_key(
       key_id: KEY_ID,
       issuer_id: ISSUER_ID,
