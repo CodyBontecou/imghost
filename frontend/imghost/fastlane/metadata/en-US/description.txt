@@ -1,4 +1,4 @@
-Upload, host, and share your images instantly. imghost gives you direct links to your photos in seconds — no ads, no compression, no friction.
+Upload, host, and share your images instantly. imghost is fast image hosting, photo sharing, and private cloud storage in one simple app. Get direct links to your photos in seconds — no ads, no compression, no friction.
 
 SHARE FROM ANYWHERE
 Use the Share Extension to upload images from any app. Select photos, tap Share, choose imghost, and get a link copied to your clipboard instantly. It works from Photos, Safari, Messages, or any app with sharing support.

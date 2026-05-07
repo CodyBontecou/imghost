@@ -1,1 +1,1 @@
-image hosting,photo sharing,upload,share,cloud storage,direct link,screenshot,share extension
+photo,upload,cloud,storage,direct,link,screenshot,extension,url,markdown,webp,heic,gif,video,cdn,zip
