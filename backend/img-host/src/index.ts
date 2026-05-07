@@ -21,6 +21,7 @@ import {
   handleVerifyEmail,
   handleResendVerification,
   handleAppleSignIn,
+  handleAnonymousSignIn,
   handleDeleteAccount
 } from './auth-handlers';
 import {
@@ -778,6 +779,7 @@ async function handleGetUser(request: Request, env: Env): Promise<Response> {
     subscription_status: subscription?.status || 'none',
     has_subscription_access: subscriptionAccess.hasAccess,
     email_verified: currentUser.email_verified === 1,
+    is_anonymous: currentUser.is_anonymous === 1,
     storage_limit_bytes: currentUser.storage_limit_bytes,
     storage_used_bytes: usage.total_bytes_used,
     image_count: usage.image_count,
@@ -1195,6 +1197,11 @@ export default {
       // POST /auth/login - Enhanced with JWT tokens
       if (method === 'POST' && path === '/auth/login') {
         return withCors(await handleLoginV2(request, env));
+      }
+
+      // POST /auth/anonymous - Create an anonymous device account (no personal info required)
+      if (method === 'POST' && path === '/auth/anonymous') {
+        return withCors(await handleAnonymousSignIn(request, env));
       }
 
       // POST /auth/refresh - Refresh access token

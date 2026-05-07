@@ -112,6 +112,27 @@ struct MacLoginView: View {
                         }
                         .signInWithAppleButtonStyle(.white)
                         .frame(height: 44)
+                        .disabled(isLoading)
+
+                        // Anonymous access (no personal info required before purchase)
+                        VStack(spacing: 8) {
+                            Button(action: continueWithoutAccount) {
+                                Text("Continue without account")
+                                    .font(.system(size: 13, weight: .medium, design: .monospaced))
+                                    .tracking(1)
+                                    .foregroundStyle(Color.white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 44)
+                                    .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(isLoading)
+
+                            Text("No email required. Create an account later if you want access on other devices.")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.brutalTextTertiary)
+                                .multilineTextAlignment(.center)
+                        }
 
                         // Links
                         HStack(spacing: 16) {
@@ -167,6 +188,23 @@ struct MacLoginView: View {
                     email: email.trimmingCharacters(in: .whitespaces),
                     password: password
                 )
+                await authState.setAuthenticated(response: response)
+            } catch let error as AuthError {
+                await MainActor.run { errorMessage = error.errorDescription }
+            } catch {
+                await MainActor.run { errorMessage = String(localized: "auth.login.error.unexpected") }
+            }
+            await MainActor.run { isLoading = false }
+        }
+    }
+
+    private func continueWithoutAccount() {
+        isLoading = true
+        errorMessage = nil
+
+        Task {
+            do {
+                let response = try await AuthService.shared.continueAnonymously()
                 await authState.setAuthenticated(response: response)
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }

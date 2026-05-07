@@ -344,8 +344,10 @@ ALTER TABLE users ADD COLUMN email_verification_token_expires INTEGER;
 ALTER TABLE users ADD COLUMN password_reset_token TEXT;
 ALTER TABLE users ADD COLUMN password_reset_token_expires INTEGER;
 ALTER TABLE users ADD COLUMN apple_user_id TEXT;
+ALTER TABLE users ADD COLUMN is_anonymous INTEGER NOT NULL DEFAULT 0;
 
 CREATE INDEX IF NOT EXISTS idx_users_apple_user_id ON users(apple_user_id);
+CREATE INDEX IF NOT EXISTS idx_users_is_anonymous ON users(is_anonymous);
 
 -- Refresh tokens table for JWT auth
 CREATE TABLE IF NOT EXISTS refresh_tokens (

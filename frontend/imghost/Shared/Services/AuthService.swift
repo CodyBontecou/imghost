@@ -84,6 +84,30 @@ final class AuthService {
         }
     }
 
+    func continueAnonymously() async throws -> AuthResponse {
+        let url = URL(string: "\(baseURL)/auth/anonymous")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = Data("{}".utf8)
+
+        let (data, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.networkError
+        }
+
+        switch httpResponse.statusCode {
+        case 201:
+            return try JSONDecoder().decode(AuthResponse.self, from: data)
+        case 429:
+            throw AuthError.tooManyRequests
+        default:
+            let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data)
+            throw AuthError.serverError(errorResponse?.error ?? "Could not continue without an account")
+        }
+    }
+
     func signInWithApple(result: AppleSignInResult) async throws -> AuthResponse {
         let url = URL(string: "\(baseURL)/auth/apple")!
         var request = URLRequest(url: url)

@@ -158,7 +158,60 @@ export async function handleRegisterV2(request: Request, env: Env): Promise<Resp
     email: user.email,
     subscription_tier: user.subscription_tier,
     email_verified: false,
+    is_anonymous: false,
     message: 'Registration successful. Please check your email to verify your account.'
+  }, 201);
+}
+
+/**
+ * Anonymous device account sign-in.
+ * Lets users access free features and purchase IAPs without sharing personal information.
+ * POST /auth/anonymous
+ */
+export async function handleAnonymousSignIn(request: Request, env: Env): Promise<Response> {
+  const db = new Database(env.DB);
+  const rateLimiter = new RateLimiter(env.DB);
+
+  const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rateLimitCheck = await rateLimiter.checkIpRateLimit(clientIp, '/auth/anonymous', { windowMs: 3600000, maxRequests: 20 });
+
+  if (!rateLimitCheck.allowed) {
+    return json({
+      error: 'Too many anonymous sign-ins. Please try again later.',
+      retry_after: Math.ceil((rateLimitCheck.reset - Date.now()) / 1000)
+    }, 429);
+  }
+
+  const user = await db.createAnonymousUser('free');
+  await db.createSubscription(user.id, 'free', 'active');
+
+  const jwtSecret = env.JWT_SECRET || 'default-secret-change-in-production';
+  const accessToken = await Auth.createJWT(
+    {
+      sub: user.id,
+      email: user.email,
+      tier: user.subscription_tier,
+      type: 'access'
+    },
+    3600,
+    jwtSecret
+  );
+
+  const refreshToken = Auth.generateSecureToken();
+  await db.createRefreshToken(user.id, refreshToken, 30 * 24 * 60 * 60 * 1000);
+
+  return json({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    api_token: user.api_token,
+    expires_in: 3600,
+    token_type: 'Bearer',
+    user_id: user.id,
+    email: user.email,
+    subscription_tier: user.subscription_tier,
+    email_verified: true,
+    is_anonymous: true,
+    message: 'Anonymous device account created. You can add an email later to use your account on other devices.'
   }, 201);
 }
 
@@ -227,7 +280,8 @@ export async function handleLoginV2(request: Request, env: Env): Promise<Respons
       user_id: user.id,
       email: user.email,
       subscription_tier: user.subscription_tier,
-      email_verified: user.email_verified === 1
+      email_verified: user.email_verified === 1,
+      is_anonymous: user.is_anonymous === 1
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -288,7 +342,8 @@ export async function handleRefreshToken(request: Request, env: Env): Promise<Re
       token_type: 'Bearer',
       user_id: user.id,
       email: user.email,
-      subscription_tier: user.subscription_tier
+      subscription_tier: user.subscription_tier,
+      is_anonymous: user.is_anonymous === 1
     });
   } catch (error) {
     console.error('Refresh token error:', error);
@@ -719,7 +774,8 @@ export async function handleAppleSignIn(request: Request, env: Env): Promise<Res
       user_id: user.id,
       email: user.email,
       subscription_tier: user.subscription_tier,
-      email_verified: true // Always true for Apple Sign-In
+      email_verified: true, // Always true for Apple Sign-In
+      is_anonymous: false
     });
   } catch (error) {
     console.error('Apple Sign-In error:', error);

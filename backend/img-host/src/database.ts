@@ -14,6 +14,7 @@ export interface User {
   password_reset_token?: string | null;
   password_reset_token_expires?: number | null;
   apple_user_id?: string | null;
+  is_anonymous?: number;
 }
 
 export interface RefreshToken {
@@ -173,6 +174,37 @@ export class Database {
       .prepare('UPDATE users SET apple_user_id = ? WHERE id = ?')
       .bind(appleUserId, userId)
       .run();
+  }
+
+  async createAnonymousUser(
+    tier: 'free' | 'trial' | 'pro' | 'enterprise' | 'ultimate' = 'free'
+  ): Promise<User> {
+    const id = crypto.randomUUID();
+    const createdAt = Date.now();
+    const storageLimitBytes = this.getStorageLimitForTier(tier);
+    const apiToken = crypto.randomUUID();
+    const email = `anonymous+${id}@imghost.local`;
+    const passwordHash = 'ANONYMOUS_DEVICE_ACCOUNT';
+
+    await this.db
+      .prepare(
+        `INSERT INTO users (id, email, password_hash, created_at, subscription_tier, api_token, storage_limit_bytes, email_verified, is_anonymous)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1)`
+      )
+      .bind(id, email, passwordHash, createdAt, tier, apiToken, storageLimitBytes)
+      .run();
+
+    return {
+      id,
+      email,
+      password_hash: passwordHash,
+      created_at: createdAt,
+      subscription_tier: tier,
+      api_token: apiToken,
+      storage_limit_bytes: storageLimitBytes,
+      email_verified: 1,
+      is_anonymous: 1,
+    };
   }
 
   async createAppleUser(

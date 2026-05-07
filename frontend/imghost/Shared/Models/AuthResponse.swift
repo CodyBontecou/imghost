@@ -9,6 +9,7 @@ struct AuthResponse: Codable {
     let email: String
     let subscriptionTier: String
     let emailVerified: Bool
+    let isAnonymous: Bool?
     let message: String?
 
     enum CodingKeys: String, CodingKey {
@@ -20,6 +21,7 @@ struct AuthResponse: Codable {
         case email
         case subscriptionTier = "subscription_tier"
         case emailVerified = "email_verified"
+        case isAnonymous = "is_anonymous"
         case message
     }
 }
@@ -32,6 +34,7 @@ struct RefreshResponse: Codable {
     let userId: String
     let email: String
     let subscriptionTier: String
+    let isAnonymous: Bool?
 
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
@@ -41,6 +44,7 @@ struct RefreshResponse: Codable {
         case userId = "user_id"
         case email
         case subscriptionTier = "subscription_tier"
+        case isAnonymous = "is_anonymous"
     }
 }
 

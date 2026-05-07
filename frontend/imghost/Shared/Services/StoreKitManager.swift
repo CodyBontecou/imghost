@@ -21,11 +21,17 @@ final class StoreKitManager: ObservableObject {
     static let monthlyProductID = starterMonthlyID
     static let annualProductID  = starterYearlyID
 
+    #if os(macOS)
+    // The current macOS App Store submission only references the submitted Starter products.
+    // Higher tiers stay available to iOS builds until their macOS IAPs are submitted for review.
+    static let allProductIDs: Set<String> = [starterMonthlyID, starterYearlyID]
+    #else
     static let allProductIDs: Set<String> = [
         starterMonthlyID, starterYearlyID,
         proMonthlyID, proYearlyID,
         ultimateMonthlyID, ultimateYearlyID,
     ]
+    #endif
 
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchasedProductIDs: Set<String> = []

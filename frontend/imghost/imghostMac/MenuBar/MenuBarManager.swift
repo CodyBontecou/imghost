@@ -9,26 +9,33 @@ final class MenuBarManager: ObservableObject {
     private var statusItem: NSStatusItem?
     private let popover = NSPopover()
     private var eventMonitor: Any?
+    private var openMainWindowHandler: (() -> Void)?
 
     private init() {}
 
-    func setup() {
-        // Create status item
-        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-
-        if let button = item.button {
-            // Use the app icon for the menu bar
-            if let image = NSImage(named: "MenuBarIcon") {
-                image.size = NSSize(width: 18, height: 18)
-                button.image = image
-            }
-            button.action = #selector(togglePopover(_:))
-            button.target = self
+    func setup(openMainWindow: (() -> Void)? = nil) {
+        if let openMainWindow {
+            openMainWindowHandler = openMainWindow
         }
 
-        statusItem = item
+        if statusItem == nil {
+            // Create status item once. WindowGroup.onAppear can fire again when the window is reopened.
+            let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
-        // Configure popover
+            if let button = item.button {
+                // Use the app icon for the menu bar
+                if let image = NSImage(named: "MenuBarIcon") {
+                    image.size = NSSize(width: 18, height: 18)
+                    button.image = image
+                }
+                button.action = #selector(togglePopover(_:))
+                button.target = self
+            }
+
+            statusItem = item
+        }
+
+        // Configure/update popover
         popover.contentSize = NSSize(width: 320, height: 440)
         popover.behavior = .transient
         popover.animates = true
@@ -74,17 +81,18 @@ final class MenuBarManager: ObservableObject {
 
     private func showMainWindow() {
         NSApp.activate(ignoringOtherApps: true)
-        // Open/focus the main window
-        if let window = NSApp.windows.first(where: { $0.title != "" || $0.contentViewController is NSHostingController<MacContentView> }) {
+
+        if let window = NSApp.windows.first(where: { window in
+            window.level == .normal &&
+            window.canBecomeMain &&
+            !window.title.localizedCaseInsensitiveContains("Settings") &&
+            window.contentView != nil
+        }) {
             window.makeKeyAndOrderFront(nil)
-        } else {
-            // Fallback: just activate the app which should show the window group
-            for window in NSApp.windows {
-                if !window.title.contains("Settings") && window.contentView != nil {
-                    window.makeKeyAndOrderFront(nil)
-                    break
-                }
-            }
+            return
         }
+
+        // If the user closed the SwiftUI WindowGroup window, ask the App scene to recreate it.
+        openMainWindowHandler?()
     }
 }

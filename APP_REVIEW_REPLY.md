@@ -1,51 +1,40 @@
-# App Review Reply — Guideline 2.1 (Submission ca85f673)
-
-## Reply to App Review
+# App Review Reply — macOS v1.4.0 (build 11) resubmission
 
 Hi App Review Team,
 
-Thank you for your review. Here are the steps to locate the in-app purchases in the app:
+Thank you for the review. We addressed each item in macOS 1.4.0 build 11.
 
-### Steps to Find In-App Purchases
+## Demo account
 
-**Option A — Using the demo account (recommended):**
+The demo account has been created and verified with full access:
 
-1. Launch the app
-2. Swipe through onboarding or tap "SKIP", then tap "START"
-3. On the login screen, enter:
-   - **Email:** `review@imghost.isolated.tech`
-   - **Password:** `AppReview2026!`
-4. Tap "Sign In"
-5. **The subscription paywall appears immediately** with both plans:
-   - **Pro Monthly** — $2.99/month (7-day free trial)
-   - **Pro Annual** — $24.99/year (7-day free trial, "SAVE 30%" badge)
-6. Select a plan and tap **"Start Free Trial"** to begin the purchase
-7. There is also a **"Restore Purchases"** link at the bottom
+- **Email:** `test@example.com`
+- **Password:** `test123`
 
-**Option B — Creating a new account:**
+This account is active, email-verified, and has the Ultimate tier enabled through 2030 so all upload/export/settings features are available during review.
 
-1. Launch the app
-2. Complete onboarding
-3. Tap "Create Account" and register with email/password
-4. Verify email (check inbox for verification link)
-5. After verification, new users receive a 7-day free trial
-6. During the trial, the paywall is accessible via:
-   - **Settings tab → "Upgrade to Pro"** button
+## Account registration is no longer required before purchase
 
-### Product IDs
+The app now includes **Continue without account** on the welcome/sign-in screen. This creates an anonymous device account without collecting email, name, or other personal information. Reviewers and users can enter the app, view upgrade options, and purchase via StoreKit before providing any personal information. The UI explains that an email account can be used later only if the user wants access on other devices.
 
-| Display Name | Product ID | Type | Price |
-|---|---|---|---|
-| Pro Monthly | `imghost.pro.monthly` | Auto-Renewable | $2.99/mo |
-| Pro Annual | `imghost.pro.yearly` | Auto-Renewable | $24.99/yr |
+## In-App Purchase references
 
-Both products are in the **"Pro"** subscription group and include a 7-day introductory free trial offer.
+The macOS binary now only requests and displays the submitted Starter products:
 
-### Sandbox Support
+| Display Name | Product ID | Type |
+|---|---|---|
+| Starter Monthly | `imghost.pro.monthly` | Auto-Renewable Subscription |
+| Starter Yearly | `imghost.pro.yearly` | Auto-Renewable Subscription |
 
-The app fully supports Apple's sandbox testing environment. Both Production and Sandbox StoreKit transactions are accepted and verified by our backend server.
+References to the unsubmitted 100 GB / Pro macOS products were removed from the macOS paywall and comparison UI.
 
-Please let me know if you need any additional information.
+## Main window reopening
+
+We added menu-based window reopening and fixed the menu bar action:
+
+- **File → Open imghost** reopens the main window.
+- **Window → Open imghost** reopens the main window.
+- The menu bar popover’s **Open app** action now recreates/focuses the main SwiftUI window after it has been closed.
 
 Best regards,
 Cody Bontecou

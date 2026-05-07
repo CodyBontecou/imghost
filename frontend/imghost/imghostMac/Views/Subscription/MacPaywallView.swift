@@ -75,20 +75,8 @@ struct MacPaywallView: View {
                                                       selectedProduct?.id == storeKit.starterYearlyProduct?.id) {
                                 selectedProduct = isYearly ? storeKit.starterYearlyProduct : storeKit.starterMonthlyProduct
                             }
-                            MacTierButton(label: String(localized: "paywall.tier.pro.name"), storage: "100 GB",
-                                          product: storeKit.proMonthlyProduct,
-                                          isSelected: selectedProduct?.id == storeKit.proMonthlyProduct?.id ||
-                                                      selectedProduct?.id == storeKit.proYearlyProduct?.id) {
-                                selectedProduct = isYearly ? storeKit.proYearlyProduct : storeKit.proMonthlyProduct
-                            }
-                            MacTierButton(label: String(localized: "paywall.tier.ultimate.name"), storage: "1 TB",
-                                          product: storeKit.ultimateMonthlyProduct,
-                                          isSelected: selectedProduct?.id == storeKit.ultimateMonthlyProduct?.id ||
-                                                      selectedProduct?.id == storeKit.ultimateYearlyProduct?.id) {
-                                selectedProduct = isYearly ? storeKit.ultimateYearlyProduct : storeKit.ultimateMonthlyProduct
-                            }
                         }
-                        .frame(maxWidth: 500)
+                        .frame(maxWidth: 220)
 
                         // Billing toggle
                         HStack(spacing: 0) {
@@ -243,16 +231,16 @@ struct MacPaywallView: View {
     }
 }
 
-// MARK: - Tier Comparison Grid (4 columns: Free | Starter | Pro | Ultimate)
+// MARK: - Tier Comparison Grid (Free | Starter)
 
 struct MacTierComparisonView: View {
-    // (label, free, starter, pro, ultimate)
-    private let rows: [(String, String, String, String, String)] = [
-        ("paywall.comparison.row.storage",    "1 GB",  "10 GB",   "100 GB",    "1 TB"),
-        ("paywall.comparison.row.file_size",  "50 MB", "500 MB",  "500 MB",   "500 MB"),
-        ("paywall.comparison.row.link_ttl",   "•",     "•",       "•",         "•"),
-        ("paywall.comparison.row.export",     "✕",     "✓",       "✓",         "✓"),
-        ("paywall.comparison.row.transforms", "✕",     "✓",       "✓",         "✓"),
+    // (label, free, starter)
+    private let rows: [(String, String, String)] = [
+        ("paywall.comparison.row.storage",    "1 GB",  "10 GB"),
+        ("paywall.comparison.row.file_size",  "50 MB", "500 MB"),
+        ("paywall.comparison.row.link_ttl",   "•",     "•"),
+        ("paywall.comparison.row.export",     "✕",     "✓"),
+        ("paywall.comparison.row.transforms", "✕",     "✓"),
     ]
 
     var body: some View {
@@ -262,8 +250,6 @@ struct MacTierComparisonView: View {
                 Text("").frame(maxWidth: .infinity, alignment: .leading)
                 colHeader(String(localized: "paywall.comparison.free.label"),    dim: true)
                 colHeader(String(localized: "paywall.tier.starter.name"),        dim: false)
-                colHeader(String(localized: "paywall.tier.pro.name"),            dim: false)
-                colHeader(String(localized: "paywall.tier.ultimate.name"),       dim: false)
             }
             .padding(.bottom, 6)
 
@@ -271,7 +257,6 @@ struct MacTierComparisonView: View {
 
             ForEach(rows, id: \.0) { row in
                 let label = String(localized: String.LocalizationValue(row.0))
-                let isLinkRow = (row.2 == "•")
                 HStack {
                     Text(label)
                         .font(.system(size: 11, design: .monospaced))
@@ -279,8 +264,6 @@ struct MacTierComparisonView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     cell(row.1)
                     cell(row.2)
-                    cell(row.3)
-                    cell(row.4)
                 }
                 .padding(.vertical, 7)
                 Rectangle().fill(Color.white.opacity(0.07)).frame(height: 1)

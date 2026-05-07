@@ -106,21 +106,30 @@ struct MacSettingsView: View {
 
             if let user = authState.currentUser {
                 HStack(spacing: 12) {
-                    BrutalAvatar(text: user.email, size: 36)
+                    BrutalAvatar(text: user.displayEmail, size: 36)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(user.email)
+                        Text(user.displayEmail)
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(Color.white)
 
                         HStack(spacing: 6) {
                             Circle()
-                                .fill(user.emailVerified ? Color.brutalSuccess : Color.brutalWarning)
+                                .fill((user.emailVerified || user.isAnonymous == true) ? Color.brutalSuccess : Color.brutalWarning)
                                 .frame(width: 6, height: 6)
-                            Text(user.emailVerified ? String(localized: "settings.account.status.verified") : String(localized: "settings.account.status.unverified"))
+                            Text(user.isAnonymous == true
+                                 ? "No email required"
+                                 : (user.emailVerified ? String(localized: "settings.account.status.verified") : String(localized: "settings.account.status.unverified")))
                                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                                 .foregroundStyle(Color.brutalTextSecondary)
                                 .tracking(1)
+                        }
+
+                        if user.isAnonymous == true {
+                            Text("Sign in with an email account whenever you want to use purchases and uploads on another device.")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.brutalTextTertiary)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }

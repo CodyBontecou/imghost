@@ -9,6 +9,11 @@ struct User: Codable, Equatable {
     let storageUsedBytes: Int
     let storageLimitBytes: Int
     let imageCount: Int?
+    let isAnonymous: Bool?
+
+    var displayEmail: String {
+        isAnonymous == true ? "Anonymous device account" : email
+    }
 
     var storageUsedFormatted: String {
         ByteCountFormatter.string(fromByteCount: Int64(storageUsedBytes), countStyle: .file)
@@ -42,5 +47,6 @@ struct User: Codable, Equatable {
         case storageUsedBytes = "storage_used_bytes"
         case storageLimitBytes = "storage_limit_bytes"
         case imageCount = "image_count"
+        case isAnonymous = "is_anonymous"
     }
 }

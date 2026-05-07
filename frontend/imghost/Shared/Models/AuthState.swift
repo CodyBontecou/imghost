@@ -90,7 +90,8 @@ final class AuthState: ObservableObject {
             emailVerified: response.emailVerified,
             storageUsedBytes: 0,
             storageLimitBytes: 0,
-            imageCount: nil
+            imageCount: nil,
+            isAnonymous: response.isAnonymous
         )
 
         // Sync images from backend after login
@@ -119,7 +120,8 @@ final class AuthState: ObservableObject {
                 emailVerified: verified,
                 storageUsedBytes: user.storageUsedBytes,
                 storageLimitBytes: user.storageLimitBytes,
-                imageCount: user.imageCount
+                imageCount: user.imageCount,
+                isAnonymous: user.isAnonymous
             )
         }
     }
