@@ -287,6 +287,23 @@
 "paywall.legal.button.terms" = "Términos";
 "paywall.legal.button.privacy" = "Privacidad";
 
+// MARK: - Paywall Purchase Options
+"paywall.section.comparison" = "GRATIS VS PRO";
+"paywall.comparison.free.label" = "GRATIS";
+"paywall.comparison.pro.label" = "PRO";
+"paywall.comparison.row.storage" = "Almacenamiento";
+"paywall.comparison.row.file_size" = "Archivo máx.";
+"paywall.comparison.row.link_ttl" = "Enlaces";
+"paywall.comparison.row.export" = "Exportar";
+"paywall.comparison.row.transforms" = "Transformaciones";
+"paywall.button.subscribe" = "SUSCRIBIRSE";
+"paywall.button.continue_free" = "CONTINUAR GRATIS";
+"paywall.tier.starter.name" = "STARTER";
+"paywall.tier.pro.name" = "PRO";
+"paywall.tier.ultimate.name" = "ULTIMATE";
+"paywall.billing.monthly" = "Mensual";
+"paywall.billing.yearly" = "Anual";
+
 // MARK: - Subscription Status
 "subscription.title" = "SUSCRIPCIÓN";
 "subscription.section.current_plan" = "PLAN ACTUAL";

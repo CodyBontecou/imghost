@@ -1,5 +1,6 @@
 import SwiftUI
 import StoreKit
+import AppKit
 
 struct MacPaywallView: View {
     @StateObject private var storeKit = StoreKitManager.shared
@@ -11,6 +12,7 @@ struct MacPaywallView: View {
     @State private var isRestoring = false
     @State private var errorMessage: String?
     @State private var showError = false
+    @State private var hostWindow: NSWindow?
 
     var allowDismiss: Bool = false
 
@@ -186,6 +188,7 @@ struct MacPaywallView: View {
                 selectedProduct = storeKit.starterMonthlyProduct
             }
         }
+        .background(MacWindowAccessor(window: $hostWindow).frame(width: 0, height: 0))
         .alert(String(localized: "paywall.error.alert.title"), isPresented: $showError) {
             Button(String(localized: "paywall.error.alert.button.ok")) { showError = false }
         } message: {
@@ -207,13 +210,25 @@ struct MacPaywallView: View {
         errorMessage = nil
 
         do {
-            _ = try await storeKit.purchase(product)
+            _ = try await storeKit.purchase(product, confirmIn: purchaseConfirmationWindow)
             await subscriptionState.checkStatus()
         } catch {
             errorMessage = error.localizedDescription
             showError = true
         }
         isPurchasing = false
+    }
+
+    private var purchaseConfirmationWindow: NSWindow? {
+        if let window = hostWindow {
+            return window.sheetParent ?? window
+        }
+
+        if let keyWindow = NSApplication.shared.keyWindow {
+            return keyWindow.sheetParent ?? keyWindow
+        }
+
+        return NSApplication.shared.mainWindow
     }
 
     private func restore() async {
@@ -228,6 +243,20 @@ struct MacPaywallView: View {
             showError = true
         }
         isRestoring = false
+    }
+}
+
+private struct MacWindowAccessor: NSViewRepresentable {
+    @Binding var window: NSWindow?
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView(frame: .zero)
+        DispatchQueue.main.async { window = view.window }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async { window = nsView.window }
     }
 }
 
@@ -372,7 +401,7 @@ struct MacProductCard: View {
 
                 if product.id == StoreKitManager.annualProductID {
                     let monthlyPrice = product.price / 12
-                    Text(verbatim: String(format: String(localized: "paywall.price.per_month_format"), monthlyPrice.formatted(.currency(code: product.priceFormatStyle.currencyCode ?? "USD"))))
+                    Text(verbatim: String(format: String(localized: "paywall.price.per_month_format"), monthlyPrice.formatted(.currency(code: product.priceFormatStyle.currencyCode))))
                         .font(.system(size: 10, design: .monospaced))
                         .foregroundStyle(Color.brutalTextSecondary)
                 } else {

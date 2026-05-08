@@ -287,6 +287,23 @@
 "paywall.legal.button.terms" = "利用規約";
 "paywall.legal.button.privacy" = "プライバシー";
 
+// MARK: - Paywall Purchase Options
+"paywall.section.comparison" = "無料 VS PRO";
+"paywall.comparison.free.label" = "無料";
+"paywall.comparison.pro.label" = "PRO";
+"paywall.comparison.row.storage" = "ストレージ";
+"paywall.comparison.row.file_size" = "最大ファイル";
+"paywall.comparison.row.link_ttl" = "リンク";
+"paywall.comparison.row.export" = "エクスポート";
+"paywall.comparison.row.transforms" = "変換";
+"paywall.button.subscribe" = "登録する";
+"paywall.button.continue_free" = "無料で続ける";
+"paywall.tier.starter.name" = "STARTER";
+"paywall.tier.pro.name" = "PRO";
+"paywall.tier.ultimate.name" = "ULTIMATE";
+"paywall.billing.monthly" = "月額";
+"paywall.billing.yearly" = "年額";
+
 // MARK: - Subscription Status
 "subscription.title" = "サブスクリプション";
 "subscription.section.current_plan" = "現在のプラン";

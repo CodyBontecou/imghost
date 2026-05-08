@@ -487,3 +487,20 @@
 "settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";
 "settings.feedback.diagnostics.title" = "Diagnostics";
 "settings.feedback.diagnostics.description" = "The following info will be included automatically:";
+
+// MARK: - Paywall Purchase Options
+"paywall.section.comparison" = "免费 VS PRO";
+"paywall.comparison.free.label" = "免费";
+"paywall.comparison.pro.label" = "PRO";
+"paywall.comparison.row.storage" = "存储空间";
+"paywall.comparison.row.file_size" = "最大文件";
+"paywall.comparison.row.link_ttl" = "链接";
+"paywall.comparison.row.export" = "导出";
+"paywall.comparison.row.transforms" = "转换";
+"paywall.button.subscribe" = "订阅";
+"paywall.button.continue_free" = "继续免费使用";
+"paywall.tier.starter.name" = "STARTER";
+"paywall.tier.pro.name" = "PRO";
+"paywall.tier.ultimate.name" = "ULTIMATE";
+"paywall.billing.monthly" = "每月";
+"paywall.billing.yearly" = "每年";

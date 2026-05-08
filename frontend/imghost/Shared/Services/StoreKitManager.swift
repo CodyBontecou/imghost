@@ -1,5 +1,8 @@
 import Foundation
 import StoreKit
+#if os(macOS)
+import AppKit
+#endif
 
 /// Manages StoreKit 2 subscriptions for the app
 @MainActor
@@ -106,13 +109,40 @@ final class StoreKitManager: ObservableObject {
         await loadProducts()
     }
 
-    /// Purchase a subscription product
+    /// Purchase a subscription product.
     func purchase(_ product: Product) async throws -> Transaction? {
+        try await purchase(product) {
+            try await product.purchase()
+        }
+    }
+
+    #if os(macOS)
+    /// Purchase a subscription product and explicitly anchor StoreKit's confirmation UI.
+    ///
+    /// App Review tests macOS purchases from a sandbox environment, often while the
+    /// paywall is presented as a SwiftUI sheet. On macOS 15.2+, StoreKit provides a
+    /// `confirmIn` overload so apps can pass the active `NSWindow` instead of relying
+    /// on StoreKit to infer one. This avoids "no UI context"/generic sandbox failures
+    /// when multiple windows or sheets are on screen.
+    func purchase(_ product: Product, confirmIn window: NSWindow?) async throws -> Transaction? {
+        try await purchase(product) {
+            if #available(macOS 15.2, *), let window {
+                return try await product.purchase(confirmIn: window)
+            }
+            return try await product.purchase()
+        }
+    }
+    #endif
+
+    private func purchase(
+        _ product: Product,
+        action: () async throws -> Product.PurchaseResult
+    ) async throws -> Transaction? {
         isLoading = true
         error = nil
 
         do {
-            let result = try await product.purchase()
+            let result = try await action()
 
             switch result {
             case .success(let verification):

@@ -287,6 +287,23 @@
 "paywall.legal.button.terms" = "이용약관";
 "paywall.legal.button.privacy" = "개인정보";
 
+// MARK: - Paywall Purchase Options
+"paywall.section.comparison" = "무료 VS PRO";
+"paywall.comparison.free.label" = "무료";
+"paywall.comparison.pro.label" = "PRO";
+"paywall.comparison.row.storage" = "저장 공간";
+"paywall.comparison.row.file_size" = "최대 파일";
+"paywall.comparison.row.link_ttl" = "링크";
+"paywall.comparison.row.export" = "내보내기";
+"paywall.comparison.row.transforms" = "변환";
+"paywall.button.subscribe" = "구독하기";
+"paywall.button.continue_free" = "무료로 계속";
+"paywall.tier.starter.name" = "STARTER";
+"paywall.tier.pro.name" = "PRO";
+"paywall.tier.ultimate.name" = "ULTIMATE";
+"paywall.billing.monthly" = "월간";
+"paywall.billing.yearly" = "연간";
+
 // MARK: - Subscription Status
 "subscription.title" = "구독";
 "subscription.section.current_plan" = "현재 요금제";

@@ -254,7 +254,7 @@ struct PaywallView: View {
                             .brutalTypography(.titleMedium)
                         Text(isYearly
                              ? String(format: String(localized: "paywall.price.per_month_format"),
-                                      (product.price / 12).formatted(.currency(code: product.priceFormatStyle.currencyCode ?? "USD")))
+                                      (product.price / 12).formatted(.currency(code: product.priceFormatStyle.currencyCode)))
                              : String(localized: "paywall.price.per_month_fallback"))
                             .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                     }

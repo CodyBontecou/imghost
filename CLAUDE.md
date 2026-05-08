@@ -88,5 +88,5 @@ No Worker redeploy needed - changes are immediate.
 - **Main App Bundle ID**: `com.codybontecou.imghost`
 - **Share Extension Bundle ID**: `com.codybontecou.imghost.ShareExtension`
 - **App Group**: `group.com.imghost.shared`
-- **IAP Products**: `com.imghost.pro.monthly`, `com.imghost.pro.annual`
+- **IAP Products**: `imghost.pro.monthly`, `imghost.pro.yearly` (approved Starter subscriptions in App Store Connect)
 - **D1 Database**: `imghost`

@@ -287,6 +287,23 @@
 "paywall.legal.button.terms" = "Voorwaarden";
 "paywall.legal.button.privacy" = "Privacy";
 
+// MARK: - Paywall Purchase Options
+"paywall.section.comparison" = "GRATIS VS PRO";
+"paywall.comparison.free.label" = "GRATIS";
+"paywall.comparison.pro.label" = "PRO";
+"paywall.comparison.row.storage" = "Opslag";
+"paywall.comparison.row.file_size" = "Max. bestand";
+"paywall.comparison.row.link_ttl" = "Links";
+"paywall.comparison.row.export" = "Export";
+"paywall.comparison.row.transforms" = "Transformaties";
+"paywall.button.subscribe" = "ABONNEREN";
+"paywall.button.continue_free" = "DOORGAAN MET GRATIS";
+"paywall.tier.starter.name" = "STARTER";
+"paywall.tier.pro.name" = "PRO";
+"paywall.tier.ultimate.name" = "ULTIMATE";
+"paywall.billing.monthly" = "Maandelijks";
+"paywall.billing.yearly" = "Jaarlijks";
+
 // MARK: - Subscription Status
 "subscription.title" = "ABONNEMENT";
 "subscription.section.current_plan" = "HUIDIG ABONNEMENT";
