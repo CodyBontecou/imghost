@@ -2,6 +2,7 @@
   "name": "imghost-landing",
   "version": "1.0.0",
   "description": "Marketing landing page for imghost iOS app",
+  "license": "AGPL-3.0-only",
   "scripts": {
     "start": "npx serve .",
     "build": "echo 'Static site - no build needed'"

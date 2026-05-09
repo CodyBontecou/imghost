@@ -1,4 +1,6 @@
 {
+  "name": "imghost",
+  "license": "AGPL-3.0-only",
   "devDependencies": {
     "wrangler": "^4.60.0"
   }
