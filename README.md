@@ -19,12 +19,6 @@ imghost is a fast image hosting and file sharing app for iOS, iPadOS, and macOS.
 |---|---|---|
 | ![imghost iPhone App Store screenshot: Host your images](screenshots/app-store/iphone-host-your-images.png) | ![imghost iPhone App Store screenshot: Share Extension](screenshots/app-store/iphone-share-extension.png) | ![imghost iPhone App Store screenshot: Direct Links](screenshots/app-store/iphone-direct-links.png) |
 
-### iPad
-
-| Host your images | Share from anywhere | Get direct links |
-|---|---|---|
-| ![imghost iPad App Store screenshot: Host your images](screenshots/app-store/ipad-host-your-images.png) | ![imghost iPad App Store screenshot: Share Extension](screenshots/app-store/ipad-share-extension.png) | ![imghost iPad App Store screenshot: Direct Links](screenshots/app-store/ipad-direct-links.png) |
-
 ## Features
 
 ### Share Extension
