@@ -13,7 +13,7 @@ FAST & SECURE
 • Cloud-hosted on a global CDN for fast delivery
 • Private by default — your images, your links
 • Encrypted storage keeps your data safe
-• No tracking, no ads, no data selling
+• No third-party tracking SDKs, no ads, no data selling
 
 FLEXIBLE UPLOADS
 • Upload photos, screenshots, and images up to 500MB
