@@ -35,6 +35,6 @@ Start with a 7-day free trial, then choose:
 Both plans include 10GB storage, 500MB file size limit, and all features.
 
 PRIVACY
-imghost respects your privacy. We don't track you, sell your data, or show ads. Your images are stored securely and only accessible through the links you share. Read our full privacy policy at https://imghost.isolated.tech/privacy
+imghost respects your privacy. We don't sell your data or show ads. We collect limited, privacy-safe product analytics to improve onboarding, uploads, subscriptions, and reliability. Your images are stored securely and only accessible through the links you share. Read our full privacy policy at https://imghost.isolated.tech/privacy
 
 Terms of Use: https://imghost.isolated.tech/terms

@@ -1,3 +1,3 @@
-• New "Markdown (Obsidian)" link format — copy a video and paste an Obsidian-compatible video embed that plays on Mac and iOS. Images keep the familiar Markdown image-link style.
-• Default media width — set a width once in Settings and it's automatically applied to image and video links across all formats.
-• macOS share extension now accepts a wider range of files, including image and movie URLs from Finder and other apps.
+• Added privacy-safe product analytics to help improve onboarding, upload reliability, and subscription flows.
+• Improved paywall, onboarding, upload, and subscription diagnostics so we can find and fix conversion issues faster.
+• No ads, no third-party tracking SDKs, and no filenames, URLs, emails, IPs, or media contents are collected in analytics.

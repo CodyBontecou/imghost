@@ -1,8 +1,8 @@
 default_platform(:ios)
 
 APP_ID = "com.codybontecou.imghost"
-APP_VERSION = "1.4.0"
-APP_BUILD_NUMBER = "14"
+APP_VERSION = "1.4.2"
+APP_BUILD_NUMBER = "16"
 KEY_ID = "T7KGDK4Y4V"
 ISSUER_ID = "6c3b3640-c6bf-40a9-b6e5-57cda2c7776e"
 KEY_PATH = "/Users/codybontecou/dev/AuthKey_T7KGDK4Y4V.p8"
@@ -33,7 +33,7 @@ platform :ios do
       export_archive: true,
       archive_path: "build/imghost.xcarchive",
       export_path: "build/imghost-export",
-      export_options_plist: "build/imghost-export/ExportOptions.plist"
+      export_options_plist: "ExportOptions-iOS.plist"
     )
 
     # Upload binary only
@@ -144,7 +144,7 @@ platform :mac do
       export_archive: true,
       export_archive_path: "build/imghostMac.xcarchive",
       export_path: "build/imghostMac-export",
-      export_options_plist: "build/imghostMac-export/ExportOptions.plist"
+      export_options_plist: "ExportOptions-macOS.plist"
     )
 
     # Upload binary only
