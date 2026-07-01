@@ -100,6 +100,7 @@ final class SubscriptionState: ObservableObject {
                     print("[SubscriptionState] All attempts failed, showing error state")
                     // Show error state instead of paywall — transient errors shouldn't block the user
                     status = .error
+                    AppAnalytics.shared.trackSubscriptionStatusError(error)
                 }
             }
         }
@@ -143,6 +144,12 @@ final class SubscriptionState: ObservableObject {
         if let trialEndsAtString = response.trialEndsAt {
             trialEndsAt = ISO8601DateFormatter().date(from: trialEndsAtString)
         }
+
+        AppAnalytics.shared.trackSubscriptionStatus(
+            status: status.analyticsStatus,
+            tier: tier,
+            trialDaysRemaining: trialDaysRemaining
+        )
     }
 
     /// Reset state on logout
@@ -154,6 +161,22 @@ final class SubscriptionState: ObservableObject {
         trialEndsAt = nil
         willRenew = false
         error = nil
+    }
+}
+
+extension SubscriptionState.Status {
+    var analyticsStatus: AppAnalyticsSubscriptionStatus {
+        switch self {
+        case .loading: return .loading
+        case .free: return .free
+        case .noSubscription: return .noSubscription
+        case .trialing: return .trialing
+        case .trialExpired: return .trialExpired
+        case .subscribed: return .subscribed
+        case .expired: return .expired
+        case .cancelled: return .cancelled
+        case .error: return .error
+        }
     }
 }
 

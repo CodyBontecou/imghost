@@ -208,7 +208,14 @@ struct MacSettingsView: View {
 
             // Upgrade button for free / expired
             if subscriptionState.isFree || subscriptionState.shouldShowPaywall {
-                Button(action: { showPaywall = true }) {
+                Button(action: {
+                    AppAnalytics.shared.trackSettingsUpgradeTapped(
+                        context: .settings,
+                        status: subscriptionState.status.analyticsStatus,
+                        tier: subscriptionState.tier
+                    )
+                    showPaywall = true
+                }) {
                     Text("settings.subscription.button.upgrade")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(Color.black)
@@ -482,6 +489,11 @@ struct MacSettingsView: View {
 
             Button(action: {
                 if subscriptionState.isFree {
+                    AppAnalytics.shared.trackSettingsUpgradeTapped(
+                        context: .exportLimit,
+                        status: subscriptionState.status.analyticsStatus,
+                        tier: subscriptionState.tier
+                    )
                     showPaywall = true
                 } else {
                     showExportView = true

@@ -13,8 +13,13 @@ struct MacPaywallView: View {
     @State private var errorMessage: String?
     @State private var showError = false
     @State private var hostWindow: NSWindow?
+    @State private var hasTrackedPaywallShown = false
 
     var allowDismiss: Bool = false
+
+    private var analyticsContext: AppAnalyticsPaywallContext {
+        allowDismiss ? .postAuth : .settings
+    }
 
     var body: some View {
         ZStack {
@@ -76,13 +81,18 @@ struct MacPaywallView: View {
                                           isSelected: selectedProduct?.id == storeKit.starterMonthlyProduct?.id ||
                                                       selectedProduct?.id == storeKit.starterYearlyProduct?.id) {
                                 selectedProduct = isYearly ? storeKit.starterYearlyProduct : storeKit.starterMonthlyProduct
+                                AppAnalytics.shared.trackPaywallTierSelected("pro", context: analyticsContext)
                             }
                         }
                         .frame(maxWidth: 220)
 
                         // Billing toggle
                         HStack(spacing: 0) {
-                            Button(action: { isYearly = false; updateProductForBilling() }) {
+                            Button(action: {
+                                isYearly = false
+                                updateProductForBilling()
+                                AppAnalytics.shared.trackPaywallBillingSelected(.monthly, context: analyticsContext)
+                            }) {
                                 Text(String(localized: "paywall.billing.monthly"))
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .foregroundStyle(!isYearly ? Color.black : Color.brutalTextSecondary)
@@ -90,7 +100,11 @@ struct MacPaywallView: View {
                                     .background(!isYearly ? Color.white : Color.brutalSurface)
                                     .overlay(Rectangle().stroke(!isYearly ? Color.white : Color.brutalBorder, lineWidth: 1))
                             }.buttonStyle(.plain)
-                            Button(action: { isYearly = true; updateProductForBilling() }) {
+                            Button(action: {
+                                isYearly = true
+                                updateProductForBilling()
+                                AppAnalytics.shared.trackPaywallBillingSelected(.yearly, context: analyticsContext)
+                            }) {
                                 HStack(spacing: 6) {
                                     Text(String(localized: "paywall.billing.yearly"))
                                     Text(String(localized: "paywall.badge.save"))
@@ -137,7 +151,10 @@ struct MacPaywallView: View {
 
                         // Continue with Free
                         if allowDismiss || subscriptionState.isFree {
-                            Button(action: { dismiss() }) {
+                            Button(action: {
+                                AppAnalytics.shared.trackPaywallContinueFreeTapped(context: analyticsContext)
+                                dismiss()
+                            }) {
                                 Text("paywall.button.continue_free")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .foregroundStyle(Color.brutalTextTertiary)
@@ -187,6 +204,14 @@ struct MacPaywallView: View {
             if selectedProduct == nil {
                 selectedProduct = storeKit.starterMonthlyProduct
             }
+            if !hasTrackedPaywallShown {
+                hasTrackedPaywallShown = true
+                AppAnalytics.shared.trackPaywallShown(
+                    context: analyticsContext,
+                    status: subscriptionState.status.analyticsStatus,
+                    tier: subscriptionState.tier
+                )
+            }
         }
         .background(MacWindowAccessor(window: $hostWindow).frame(width: 0, height: 0))
         .alert(String(localized: "paywall.error.alert.title"), isPresented: $showError) {
@@ -206,6 +231,12 @@ struct MacPaywallView: View {
 
     private func purchase() async {
         guard let product = selectedProduct else { return }
+        AppAnalytics.shared.trackPaywallCTATapped(
+            .subscribe,
+            productId: product.id,
+            billingPeriod: isYearly ? .yearly : .monthly,
+            context: analyticsContext
+        )
         isPurchasing = true
         errorMessage = nil
 
@@ -232,6 +263,12 @@ struct MacPaywallView: View {
     }
 
     private func restore() async {
+        AppAnalytics.shared.trackPaywallCTATapped(
+            .restore,
+            productId: selectedProduct?.id,
+            billingPeriod: isYearly ? .yearly : .monthly,
+            context: analyticsContext
+        )
         isRestoring = true
         errorMessage = nil
 

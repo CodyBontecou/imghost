@@ -9,6 +9,7 @@ struct OnboardingPage: Identifiable {
 struct OnboardingView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var currentPage = 0
+    @State private var hasTrackedStart = false
 
     private let pages: [OnboardingPage] = [
         OnboardingPage(titleKey: "onboarding.page1.title", subtitleKey: "onboarding.page1.subtitle"),
@@ -71,7 +72,7 @@ struct OnboardingView: View {
                     if currentPage == pages.count - 1 {
                         // Final page: two clear CTAs
                         VStack(spacing: GoogleSpacing.sm) {
-                            Button(action: { hasCompletedOnboarding = true }) {
+                            Button(action: { completeOnboarding() }) {
                                 Text("onboarding.button.start")
                                     .font(.system(size: 13, weight: .bold, design: .monospaced))
                                     .foregroundStyle(.black)
@@ -83,7 +84,7 @@ struct OnboardingView: View {
                         .padding(.horizontal, GoogleSpacing.lg)
                     } else {
                         HStack(spacing: GoogleSpacing.sm) {
-                            Button(action: { hasCompletedOnboarding = true }) {
+                            Button(action: { skipOnboarding() }) {
                                 Text("onboarding.button.skip")
                                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                                     .foregroundStyle(.white.opacity(0.5))
@@ -115,6 +116,29 @@ struct OnboardingView: View {
             }
         }
         .preferredColorScheme(.dark)
+        .onAppear {
+            guard !hasTrackedStart else { return }
+            hasTrackedStart = true
+            AppAnalytics.shared.trackOnboardingStarted(step: analyticsStep)
+            AppAnalytics.shared.trackOnboardingStepViewed(analyticsStep)
+        }
+        .onChange(of: currentPage) { _, _ in
+            AppAnalytics.shared.trackOnboardingStepViewed(analyticsStep)
+        }
+    }
+
+    private var analyticsStep: AppAnalyticsOnboardingStep {
+        AppAnalyticsOnboardingStep.step(forPage: currentPage)
+    }
+
+    private func skipOnboarding() {
+        AppAnalytics.shared.trackOnboardingSkipped(step: analyticsStep)
+        hasCompletedOnboarding = true
+    }
+
+    private func completeOnboarding() {
+        AppAnalytics.shared.trackOnboardingCompleted(step: analyticsStep)
+        hasCompletedOnboarding = true
     }
 }
 

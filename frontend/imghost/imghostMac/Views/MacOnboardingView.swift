@@ -64,6 +64,7 @@ struct MacOnboardingTierView: View {
 struct MacOnboardingView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var currentPage = 0
+    @State private var hasTrackedStart = false
 
     private let pages: [(titleKey: String, subtitleKey: String)] = [
         ("onboarding.page1.title", "onboarding.page1.subtitle"),
@@ -144,7 +145,7 @@ struct MacOnboardingView: View {
 
                     HStack(spacing: 12) {
                         if currentPage < pages.count - 1 {
-                            Button(action: { hasCompletedOnboarding = true }) {
+                            Button(action: { skipOnboarding() }) {
                                 Text("onboarding.button.skip")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .foregroundStyle(Color.brutalTextSecondary)
@@ -158,7 +159,7 @@ struct MacOnboardingView: View {
 
                         Button(action: {
                             if currentPage == pages.count - 1 {
-                                hasCompletedOnboarding = true
+                                completeOnboarding()
                             } else {
                                 currentPage += 1
                             }
@@ -180,5 +181,28 @@ struct MacOnboardingView: View {
                 .padding(.bottom, 32)
             }
         }
+        .onAppear {
+            guard !hasTrackedStart else { return }
+            hasTrackedStart = true
+            AppAnalytics.shared.trackOnboardingStarted(step: analyticsStep)
+            AppAnalytics.shared.trackOnboardingStepViewed(analyticsStep)
+        }
+        .onChange(of: currentPage) { _, _ in
+            AppAnalytics.shared.trackOnboardingStepViewed(analyticsStep)
+        }
+    }
+
+    private var analyticsStep: AppAnalyticsOnboardingStep {
+        AppAnalyticsOnboardingStep.step(forPage: currentPage)
+    }
+
+    private func skipOnboarding() {
+        AppAnalytics.shared.trackOnboardingSkipped(step: analyticsStep)
+        hasCompletedOnboarding = true
+    }
+
+    private func completeOnboarding() {
+        AppAnalytics.shared.trackOnboardingCompleted(step: analyticsStep)
+        hasCompletedOnboarding = true
     }
 }

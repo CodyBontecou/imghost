@@ -9,6 +9,8 @@ struct ImghostMacApp: App {
     @StateObject private var storeKit = StoreKitManager.shared
     @StateObject private var menuBarManager = MenuBarManager.shared
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var didTrackLaunch = false
 
     var body: some Scene {
         WindowGroup("imghost", id: "main") {
@@ -18,6 +20,11 @@ struct ImghostMacApp: App {
                 .environmentObject(storeKit)
                 .frame(minWidth: 960, minHeight: 560)
                 .onAppear {
+                    if !didTrackLaunch {
+                        didTrackLaunch = true
+                        AppAnalytics.shared.trackAppLaunched()
+                    }
+
                     // Set up menu bar icon and make its Open App item recreate the window if closed.
                     menuBarManager.setup(openMainWindow: openMainWindow)
 
@@ -35,6 +42,11 @@ struct ImghostMacApp: App {
                     }
                 }
                 .preferredColorScheme(.dark)
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .background {
+                        AppAnalytics.shared.flush()
+                    }
+                }
         }
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 1000, height: 680)

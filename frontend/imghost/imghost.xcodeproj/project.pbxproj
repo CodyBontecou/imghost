@@ -136,6 +136,10 @@
 		I1000001001 /* ImageSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = I1000001000 /* ImageSyncService.swift */; };
 		J1000001001 /* UploadQualityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = J1000001000 /* UploadQualityService.swift */; };
 		J1000002001 /* UploadQualityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = J1000001000 /* UploadQualityService.swift */; };
+		AN0000000000000000000011 /* AppAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
+		AN0000000000000000000012 /* AppAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
+		AN0000000000000000000013 /* AppAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
+		AN0000000000000000000014 /* AppAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -309,6 +313,7 @@
 		H1000001000 /* PhotosExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosExportService.swift; sourceTree = "<group>"; };
 		I1000001000 /* ImageSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSyncService.swift; sourceTree = "<group>"; };
 		J1000001000 /* UploadQualityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadQualityService.swift; sourceTree = "<group>"; };
+		AN0000000000000000000001 /* AppAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnalytics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -543,11 +548,20 @@
 			isa = PBXGroup;
 			children = (
 				A1000010000 /* Config.swift */,
+				AN0000000000000000000020 /* Analytics */,
 				A10000D1000 /* Models */,
 				A10000D2000 /* Services */,
 				FB000003000 /* Utilities */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		AN0000000000000000000020 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				AN0000000000000000000001 /* AppAnalytics.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		A10000D1000 /* Models */ = {
@@ -799,6 +813,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AN0000000000000000000012 /* AppAnalytics.swift in Sources */,
 				750710B4F36F86B6F3351CB8 /* MacBrutalComponents.swift in Sources */,
 				05595FAF81C8CA4BB650EBB6 /* ImghostMacApp.swift in Sources */,
 				B9584D08A4CF9EE53295496B /* MacContentView.swift in Sources */,
@@ -843,6 +858,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AN0000000000000000000014 /* AppAnalytics.swift in Sources */,
 				9F6C823755755D3F6E7AB141 /* Config.swift in Sources */,
 				45A1649480A61B106680165B /* AuthResponse.swift in Sources */,
 				66239299ECF9E9145E0607CB /* AuthState.swift in Sources */,
@@ -867,6 +883,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AN0000000000000000000011 /* AppAnalytics.swift in Sources */,
 				A1000001001 /* ImghostApp.swift in Sources */,
 				A1000002001 /* ContentView.swift in Sources */,
 				A1000003001 /* SettingsView.swift in Sources */,
@@ -917,6 +934,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AN0000000000000000000013 /* AppAnalytics.swift in Sources */,
 				A1000020001 /* ShareViewController.swift in Sources */,
 				A1000021001 /* ShareView.swift in Sources */,
 				A1000030001 /* Config.swift in Sources */,

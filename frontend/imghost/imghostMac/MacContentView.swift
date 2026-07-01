@@ -64,6 +64,9 @@ struct MacContentView: View {
         .onChange(of: authState.currentUser?.isAnonymous) { _, _ in
             presentAnonymousUpgradeIfNeeded()
         }
+        .onChange(of: selectedItem) { _, item in
+            AppAnalytics.shared.trackTabSelected(item == .settings ? .settings : .media)
+        }
         .sheet(isPresented: $showPostAnonymousPaywall, onDismiss: {
             showUpgradeAfterAnonymousAuth = false
         }) {

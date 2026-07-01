@@ -105,6 +105,12 @@ struct ContentView: View {
                 .tint(.white)
                 .preferredColorScheme(.dark)
                 .environmentObject(subscriptionState)
+                .onAppear {
+                    AppAnalytics.shared.trackTabSelected(AppAnalyticsTab(index: selectedTab))
+                }
+                .onChange(of: selectedTab) { _, newValue in
+                    AppAnalytics.shared.trackTabSelected(AppAnalyticsTab(index: newValue))
+                }
             }
         }
         .task {

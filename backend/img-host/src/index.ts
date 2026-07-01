@@ -31,6 +31,7 @@ import {
   checkSubscriptionAccess
 } from './subscription-handlers';
 import type { ExportJobResponse } from './types';
+import { appAnalyticsCorsHeaders, handleAppAnalyticsIngest } from './app-analytics';
 
 // CORS configuration
 const ALLOWED_ORIGINS = [
@@ -95,6 +96,10 @@ export interface Env {
   NCMEC_API_KEY?: string;
   /** Shared secret for privileged DMCA takedown API access */
   DMCA_API_KEY?: string;
+  /** Optional bearer token for native app analytics ingestion */
+  APP_ANALYTICS_INGEST_TOKEN?: string;
+  /** Optional cap for native app analytics batch size (max 50) */
+  APP_ANALYTICS_MAX_BATCH_SIZE?: string;
 }
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (Cloudflare Workers limit)
@@ -1154,6 +1159,11 @@ export default {
     const method = request.method;
     const origin = request.headers.get('Origin');
 
+    // Handle public analytics CORS before the app's authenticated API CORS rules.
+    if (method === 'OPTIONS' && path === '/v1/events') {
+      return new Response(null, { status: 204, headers: appAnalyticsCorsHeaders() });
+    }
+
     // Handle CORS preflight requests
     if (method === 'OPTIONS') {
       return handleOptions(request);
@@ -1163,6 +1173,11 @@ export default {
     const withCors = (response: Response) => addCorsHeaders(response, origin);
 
     try {
+      // POST /v1/events - Privacy-safe native app analytics ingestion.
+      if (method === 'POST' && path === '/v1/events') {
+        return handleAppAnalyticsIngest(request, env);
+      }
+
       // GET / - Serve landing page (no CORS needed for HTML)
       if (method === 'GET' && path === '/') {
         return await handleLanding(env);

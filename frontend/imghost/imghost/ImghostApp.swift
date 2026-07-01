@@ -5,9 +5,12 @@ import StoreKit
 struct ImghostApp: App {
     @StateObject private var authState = AuthState.shared
     @StateObject private var subscriptionState = SubscriptionState.shared
+    @Environment(\.scenePhase) private var scenePhase
     @State private var deepLinkToLogin = false
 
     init() {
+        AppAnalytics.shared.trackAppLaunched()
+
         // Start listening for StoreKit transactions immediately
         Task {
             await StoreKitManager.shared.startListening()
@@ -41,6 +44,11 @@ struct ImghostApp: App {
                 }
                 .onOpenURL { url in
                     handleDeepLink(url)
+                }
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .background {
+                        AppAnalytics.shared.flush()
+                    }
                 }
         }
     }

@@ -27,6 +27,7 @@ final class AuthService {
     // MARK: - Authentication
 
     func register(email: String, password: String) async throws -> AuthResponse {
+        AppAnalytics.shared.trackAuthStarted(method: .emailRegister)
         let url = URL(string: "\(baseURL)/auth/register")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -43,7 +44,9 @@ final class AuthService {
 
         switch httpResponse.statusCode {
         case 201:
-            return try JSONDecoder().decode(AuthResponse.self, from: data)
+            let response = try JSONDecoder().decode(AuthResponse.self, from: data)
+            AppAnalytics.shared.trackAuthFinished(method: .emailRegister, outcome: .succeeded)
+            return response
         case 409:
             throw AuthError.emailAlreadyRegistered
         case 429:
@@ -55,6 +58,7 @@ final class AuthService {
     }
 
     func login(email: String, password: String) async throws -> AuthResponse {
+        AppAnalytics.shared.trackAuthStarted(method: .emailLogin)
         let url = URL(string: "\(baseURL)/auth/login")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -71,7 +75,9 @@ final class AuthService {
 
         switch httpResponse.statusCode {
         case 200:
-            return try JSONDecoder().decode(AuthResponse.self, from: data)
+            let response = try JSONDecoder().decode(AuthResponse.self, from: data)
+            AppAnalytics.shared.trackAuthFinished(method: .emailLogin, outcome: .succeeded)
+            return response
         case 401:
             throw AuthError.invalidCredentials
         case 403:
@@ -85,6 +91,7 @@ final class AuthService {
     }
 
     func continueAnonymously() async throws -> AuthResponse {
+        AppAnalytics.shared.trackAuthStarted(method: .anonymous)
         let url = URL(string: "\(baseURL)/auth/anonymous")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -99,7 +106,9 @@ final class AuthService {
 
         switch httpResponse.statusCode {
         case 201:
-            return try JSONDecoder().decode(AuthResponse.self, from: data)
+            let response = try JSONDecoder().decode(AuthResponse.self, from: data)
+            AppAnalytics.shared.trackAuthFinished(method: .anonymous, outcome: .succeeded)
+            return response
         case 429:
             throw AuthError.tooManyRequests
         default:
@@ -109,6 +118,7 @@ final class AuthService {
     }
 
     func signInWithApple(result: AppleSignInResult) async throws -> AuthResponse {
+        AppAnalytics.shared.trackAuthStarted(method: .apple)
         let url = URL(string: "\(baseURL)/auth/apple")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -146,7 +156,9 @@ final class AuthService {
 
         switch httpResponse.statusCode {
         case 200:
-            return try JSONDecoder().decode(AuthResponse.self, from: data)
+            let response = try JSONDecoder().decode(AuthResponse.self, from: data)
+            AppAnalytics.shared.trackAuthFinished(method: .apple, outcome: .succeeded)
+            return response
         case 401:
             // Parse actual error from server for Apple Sign-In
             let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data)

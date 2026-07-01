@@ -126,6 +126,11 @@ struct SettingsView: View {
                                 ? String(localized: "settings.subscription.button.upgrade")
                                 : String(localized: "settings.subscription.button.subscribe")
                         ) {
+                            AppAnalytics.shared.trackSettingsUpgradeTapped(
+                                context: .settings,
+                                status: subscriptionState.status.analyticsStatus,
+                                tier: subscriptionState.tier
+                            )
                             showPaywall = true
                         }
                         .padding(.horizontal, 24)
@@ -397,6 +402,11 @@ struct SettingsView: View {
                                     showChevron: true
                                 ) {
                                     if subscriptionState.isFree {
+                                        AppAnalytics.shared.trackSettingsUpgradeTapped(
+                                            context: .exportLimit,
+                                            status: subscriptionState.status.analyticsStatus,
+                                            tier: subscriptionState.tier
+                                        )
                                         showPaywall = true
                                     } else {
                                         showingExportSheet = true

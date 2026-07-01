@@ -23,6 +23,7 @@ struct UploadView: View {
     @State private var confirmMessage = ""
     @State private var pendingPhotoItem: PhotosPickerItem? = nil
     @State private var pendingFileURL: URL? = nil
+    @State private var currentUploadSource: AppAnalyticsUploadSource = .unknown
 
     // Supported file types
     private static let supportedTypes: [UTType] = [
@@ -89,9 +90,11 @@ struct UploadView: View {
             .confirmationDialog(confirmMessage, isPresented: $showUploadConfirm, titleVisibility: .visible) {
                 Button(String(localized: "upload.confirm.button.upload")) {
                     if let item = pendingPhotoItem {
+                        AppAnalytics.shared.trackUploadConfirmed(source: .photoLibrary)
                         pendingPhotoItem = nil
                         processSelectedPhotoItem(item)
                     } else if let url = pendingFileURL {
+                        AppAnalytics.shared.trackUploadConfirmed(source: .filePicker, filename: url.lastPathComponent)
                         pendingFileURL = nil
                         processSelectedFile(url)
                     }
@@ -150,12 +153,16 @@ struct UploadView: View {
                 }
                 .onChange(of: selectedItem) { _, newItem in
                     if let item = newItem {
+                        currentUploadSource = .photoLibrary
+                        AppAnalytics.shared.trackUploadSourceSelected(.photoLibrary)
                         requestUploadConfirmation(photoItem: item)
                     }
                 }
 
                 // File picker for documents
                 Button {
+                    currentUploadSource = .filePicker
+                    AppAnalytics.shared.trackUploadSourceSelected(.filePicker)
                     showFilePicker = true
                 } label: {
                     HStack(spacing: 12) {
@@ -421,8 +428,14 @@ struct UploadView: View {
 
     private func requestUploadConfirmation(photoItem: PhotosPickerItem? = nil, fileURL: URL? = nil) {
         guard UploadQualityService.shared.confirmBeforeUpload else {
-            if let item = photoItem { processSelectedPhotoItem(item) }
-            else if let url = fileURL { processSelectedFile(url) }
+            if let item = photoItem {
+                AppAnalytics.shared.trackUploadConfirmed(source: .photoLibrary)
+                processSelectedPhotoItem(item)
+            }
+            else if let url = fileURL {
+                AppAnalytics.shared.trackUploadConfirmed(source: .filePicker, filename: url.lastPathComponent)
+                processSelectedFile(url)
+            }
             return
         }
 
@@ -472,6 +485,10 @@ struct UploadView: View {
     }
 
     private func performUpload(data: Data, filename: String) async {
+        let source = currentUploadSource
+        let byteCount = data.count
+        AppAnalytics.shared.trackUploadStarted(source: source, filename: filename, byteCount: byteCount)
+
         await MainActor.run {
             uploadState = .uploading
             uploadProgress = 0
@@ -504,6 +521,7 @@ struct UploadView: View {
             try? HistoryService.shared.save(record)
 
             let shouldReview = ReviewRequestService.shared.recordSuccessfulUpload()
+            AppAnalytics.shared.trackUploadFinished(source: source, filename: filename, byteCount: byteCount)
 
             await MainActor.run {
                 uploadedRecord = record
@@ -520,6 +538,7 @@ struct UploadView: View {
             }
 
         } catch {
+            AppAnalytics.shared.trackUploadFailed(source: source, error: error, filename: filename, byteCount: byteCount)
             await MainActor.run {
                 errorMessage = error.localizedDescription
                 uploadState = .error

@@ -140,6 +140,7 @@ final class StoreKitManager: ObservableObject {
     ) async throws -> Transaction? {
         isLoading = true
         error = nil
+        AppAnalytics.shared.trackPurchaseStarted(productId: product.id)
 
         do {
             let result = try await action()
@@ -159,23 +160,28 @@ final class StoreKitManager: ObservableObject {
                 await updatePurchasedProducts()
 
                 isLoading = false
+                AppAnalytics.shared.trackPurchaseFinished(productId: product.id, outcome: .succeeded)
                 return transaction
 
             case .userCancelled:
                 isLoading = false
+                AppAnalytics.shared.trackPurchaseFinished(productId: product.id, outcome: .cancelled)
                 return nil
 
             case .pending:
                 isLoading = false
+                AppAnalytics.shared.trackPurchaseFinished(productId: product.id, outcome: .pending)
                 return nil
 
             @unknown default:
                 isLoading = false
+                AppAnalytics.shared.trackPurchaseFinished(productId: product.id, outcome: .failed)
                 return nil
             }
         } catch {
             self.error = error
             isLoading = false
+            AppAnalytics.shared.trackPurchaseFinished(productId: product.id, outcome: .failed, error: error)
             throw error
         }
     }
@@ -184,6 +190,7 @@ final class StoreKitManager: ObservableObject {
     func restorePurchases() async throws {
         isLoading = true
         error = nil
+        AppAnalytics.shared.trackRestoreStarted()
 
         do {
             // Sync with App Store
@@ -207,9 +214,11 @@ final class StoreKitManager: ObservableObject {
             }
 
             isLoading = false
+            AppAnalytics.shared.trackRestoreFinished(outcome: .succeeded)
         } catch {
             self.error = error
             isLoading = false
+            AppAnalytics.shared.trackRestoreFinished(outcome: .failed, error: error)
             throw error
         }
     }

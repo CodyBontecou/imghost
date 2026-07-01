@@ -14,6 +14,7 @@ struct MacUploadView: View {
     @State private var pendingImageData: [(Data, String)]? = nil
     @State private var showUploadConfirm = false
     @State private var confirmMessage = ""
+    @State private var currentUploadSource: AppAnalyticsUploadSource = .unknown
 
     private let uploadService = MacUploadService.shared
     private let qualityService = UploadQualityService.shared
@@ -74,9 +75,11 @@ struct MacUploadView: View {
         .alert(confirmMessage, isPresented: $showUploadConfirm) {
             Button(String(localized: "upload.confirm.button.upload"), role: .none) {
                 if let urls = pendingFileURLs {
+                    urls.forEach { AppAnalytics.shared.trackUploadConfirmed(source: currentUploadSource, filename: $0.lastPathComponent) }
                     pendingFileURLs = nil
                     uploadFiles(urls)
                 } else if let data = pendingImageData {
+                    data.forEach { AppAnalytics.shared.trackUploadConfirmed(source: currentUploadSource, filename: $0.1, byteCount: $0.0.count) }
                     pendingImageData = nil
                     uploadImageData(data)
                 }
@@ -127,10 +130,14 @@ struct MacUploadView: View {
                 }
                 .frame(maxWidth: 480, maxHeight: 280)
                 .onDrop(of: [.fileURL], isTargeted: $isDragOver) { providers in
+                    currentUploadSource = .dragDrop
+                    AppAnalytics.shared.trackUploadSourceSelected(.dragDrop)
                     handleDrop(providers: providers)
                     return true
                 }
                 .onTapGesture {
+                    currentUploadSource = .filePicker
+                    AppAnalytics.shared.trackUploadSourceSelected(.filePicker)
                     showFileImporter = true
                 }
             }
@@ -153,6 +160,8 @@ struct MacUploadView: View {
         }
         .frame(maxWidth: .infinity)
         .onPasteCommand(of: [.fileURL, .image, .png, .jpeg]) { providers in
+            currentUploadSource = .paste
+            AppAnalytics.shared.trackUploadSourceSelected(.paste)
             handlePaste(providers: providers)
         }
     }
@@ -269,6 +278,8 @@ struct MacUploadView: View {
     private func handleFileImport(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):
+            currentUploadSource = .filePicker
+            AppAnalytics.shared.trackUploadSourceSelected(.filePicker)
             requestUploadConfirmation(fileURLs: urls)
         case .failure(let error):
             errorMessage = error.localizedDescription
@@ -304,8 +315,14 @@ struct MacUploadView: View {
     /// Gate uploads through the confirmation dialog when the setting is enabled.
     private func requestUploadConfirmation(fileURLs: [URL]? = nil, imageData: [(Data, String)]? = nil) {
         guard qualityService.confirmBeforeUpload else {
-            if let urls = fileURLs { uploadFiles(urls) }
-            else if let data = imageData { uploadImageData(data) }
+            if let urls = fileURLs {
+                urls.forEach { AppAnalytics.shared.trackUploadConfirmed(source: currentUploadSource, filename: $0.lastPathComponent) }
+                uploadFiles(urls)
+            }
+            else if let data = imageData {
+                data.forEach { AppAnalytics.shared.trackUploadConfirmed(source: currentUploadSource, filename: $0.1, byteCount: $0.0.count) }
+                uploadImageData(data)
+            }
             return
         }
 
@@ -333,6 +350,8 @@ struct MacUploadView: View {
         uploadResults.removeAll()
         errorMessage = nil
 
+        let source = currentUploadSource
+
         Task {
             var results: [UploadResult] = []
             let totalFiles = urls.count
@@ -341,6 +360,8 @@ struct MacUploadView: View {
             for (index, url) in urls.enumerated() {
                 let filename = url.lastPathComponent
                 let baseProgress = Double(index) / Double(totalFiles)
+                let byteCount = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize)
+                AppAnalytics.shared.trackUploadStarted(source: source, filename: filename, byteCount: byteCount)
 
                 do {
                     let accessing = url.startAccessingSecurityScopedResource()
@@ -372,8 +393,10 @@ struct MacUploadView: View {
 
                     // Save to history
                     try? HistoryService.shared.save(record)
+                    AppAnalytics.shared.trackUploadFinished(source: source, filename: filename, byteCount: byteCount)
                     results.append(UploadResult(record: record, filename: filename, error: nil))
                 } catch {
+                    AppAnalytics.shared.trackUploadFailed(source: source, error: error, filename: filename, byteCount: byteCount)
                     results.append(UploadResult(record: nil, filename: filename, error: error.localizedDescription))
                 }
             }
@@ -391,12 +414,15 @@ struct MacUploadView: View {
         uploadProgress = 0
         uploadResults.removeAll()
 
+        let source = currentUploadSource
+
         Task {
             var results: [UploadResult] = []
             let totalFiles = images.count
 
             for (index, (data, filename)) in images.enumerated() {
                 let baseProgress = Double(index) / Double(totalFiles)
+                AppAnalytics.shared.trackUploadStarted(source: source, filename: filename, byteCount: data.count)
 
                 do {
                     // Apply quality processing (processForUpload returns original data for .original quality)
@@ -411,8 +437,10 @@ struct MacUploadView: View {
                         Task { @MainActor in self.uploadProgress = totalProgress }
                     }
                     try? HistoryService.shared.save(record)
+                    AppAnalytics.shared.trackUploadFinished(source: source, filename: filename, byteCount: data.count)
                     results.append(UploadResult(record: record, filename: filename, error: nil))
                 } catch {
+                    AppAnalytics.shared.trackUploadFailed(source: source, error: error, filename: filename, byteCount: data.count)
                     results.append(UploadResult(record: nil, filename: filename, error: error.localizedDescription))
                 }
             }

@@ -57,8 +57,13 @@ struct PaywallView: View {
     @State private var isRestoring = false
     @State private var errorMessage: String?
     @State private var showError = false
+    @State private var hasTrackedPaywallShown = false
 
     var allowDismiss: Bool = false
+
+    private var analyticsContext: AppAnalyticsPaywallContext {
+        allowDismiss ? .postAuth : .settings
+    }
 
     // MARK: - Selected StoreKit product
 
@@ -86,6 +91,15 @@ struct PaywallView: View {
             if storeKit.products.isEmpty {
                 await storeKit.reloadProducts()
             }
+        }
+        .onAppear {
+            guard !hasTrackedPaywallShown else { return }
+            hasTrackedPaywallShown = true
+            AppAnalytics.shared.trackPaywallShown(
+                context: analyticsContext,
+                status: subscriptionState.status.analyticsStatus,
+                tier: subscriptionState.tier
+            )
         }
         .alert(String(localized: "paywall.error.alert.title"), isPresented: $showError) {
             Button(String(localized: "paywall.error.alert.button.ok")) { showError = false }
@@ -134,6 +148,7 @@ struct PaywallView: View {
                         product: storeKit.monthlyProduct(for: tier.rawValue)
                     ) {
                         selectedTier = tier
+                        AppAnalytics.shared.trackPaywallTierSelected(tier.rawValue, context: analyticsContext)
                     }
                 }
             }
@@ -147,9 +162,11 @@ struct PaywallView: View {
         HStack(spacing: 0) {
             billingButton(title: String(localized: "paywall.billing.monthly"), isActive: !isYearly) {
                 isYearly = false
+                AppAnalytics.shared.trackPaywallBillingSelected(.monthly, context: analyticsContext)
             }
             billingButton(title: String(localized: "paywall.billing.yearly"), badge: String(localized: "paywall.badge.save"), isActive: isYearly) {
                 isYearly = true
+                AppAnalytics.shared.trackPaywallBillingSelected(.yearly, context: analyticsContext)
             }
         }
         .padding(.horizontal, 16)
@@ -274,6 +291,7 @@ struct PaywallView: View {
 
                 if allowDismiss || subscriptionState.isFree {
                     BrutalTextButton(title: String(localized: "paywall.button.continue_free")) {
+                        AppAnalytics.shared.trackPaywallContinueFreeTapped(context: analyticsContext)
                         dismiss()
                     }
                 }
@@ -308,6 +326,12 @@ struct PaywallView: View {
 
     private func purchase() async {
         guard let product = selectedProduct else { return }
+        AppAnalytics.shared.trackPaywallCTATapped(
+            .subscribe,
+            productId: product.id,
+            billingPeriod: isYearly ? .yearly : .monthly,
+            context: analyticsContext
+        )
         isPurchasing = true
         errorMessage = nil
         do {
@@ -321,6 +345,12 @@ struct PaywallView: View {
     }
 
     private func restore() async {
+        AppAnalytics.shared.trackPaywallCTATapped(
+            .restore,
+            productId: selectedProduct?.id,
+            billingPeriod: isYearly ? .yearly : .monthly,
+            context: analyticsContext
+        )
         isRestoring = true
         errorMessage = nil
         do {
