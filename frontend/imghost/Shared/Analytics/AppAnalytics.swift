@@ -96,19 +96,26 @@ extension AppAnalytics {
     }
 
     func trackOnboardingStarted(step: AppAnalyticsOnboardingStep) {
-        track(.onboardingStarted, properties: ["onboardingStep": step.rawValue])
+        track(.onboardingStarted, properties: onboardingProperties(step: step))
     }
 
     func trackOnboardingStepViewed(_ step: AppAnalyticsOnboardingStep) {
-        track(.onboardingStepViewed, properties: ["onboardingStep": step.rawValue])
+        track(.onboardingStepViewed, properties: onboardingProperties(step: step))
     }
 
     func trackOnboardingSkipped(step: AppAnalyticsOnboardingStep) {
-        track(.onboardingSkipped, properties: ["onboardingStep": step.rawValue])
+        track(.onboardingSkipped, properties: onboardingProperties(step: step))
     }
 
     func trackOnboardingCompleted(step: AppAnalyticsOnboardingStep = .startFree) {
-        track(.onboardingCompleted, properties: ["onboardingStep": step.rawValue])
+        track(.onboardingCompleted, properties: onboardingProperties(step: step))
+    }
+
+    private func onboardingProperties(step: AppAnalyticsOnboardingStep) -> [String: String] {
+        [
+            "onboardingStep": step.rawValue,
+            "onboardingVersion": AppAnalyticsOnboardingVersion.current.rawValue,
+        ]
     }
 
     func trackAuthScreenViewed(method: AppAnalyticsAuthMethod) {
@@ -326,6 +333,10 @@ nonisolated enum AppAnalyticsPlatform: String, Sendable {
         return .iOS
         #endif
     }
+}
+
+nonisolated enum AppAnalyticsOnboardingVersion: String, Sendable {
+    case current = "v1"
 }
 
 nonisolated enum AppAnalyticsOnboardingStep: String, CaseIterable, Sendable {

@@ -57,6 +57,7 @@ const PROPERTY_KEYS = new Set([
   'buildNumber',
   'platform',
   'onboardingStep',
+  'onboardingVersion',
   'paywallContext',
   'subscriptionStatus',
   'tier',
@@ -77,6 +78,7 @@ const PROPERTY_KEYS = new Set([
 
 const PLATFORMS = new Set(['ios', 'macos']);
 const ONBOARDING_STEPS = new Set(['host_images', 'share_anywhere', 'direct_links', 'organized', 'start_free']);
+const ONBOARDING_VERSION_RE = /^v\d{1,3}$/;
 const PAYWALL_CONTEXTS = new Set(['onboarding', 'settings', 'post_auth', 'subscription_gate', 'upload_limit', 'export_limit', 'unknown']);
 const SUBSCRIPTION_STATUSES = new Set(['loading', 'free', 'no_subscription', 'trialing', 'trial_expired', 'subscribed', 'expired', 'cancelled', 'error']);
 const TIERS = new Set(['free', 'trial', 'pro', 'enterprise', 'ultimate', 'unknown']);
@@ -174,6 +176,7 @@ export async function handleAppAnalyticsIngest(request: Request, env: AppAnalyti
       build_number,
       platform,
       onboarding_step,
+      onboarding_version,
       paywall_context,
       subscription_status,
       tier,
@@ -191,7 +194,7 @@ export async function handleAppAnalyticsIngest(request: Request, env: AppAnalyti
       cta,
       tab,
       payload_json
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   await env.DB.batch(rows.map((row) => insert.bind(
@@ -202,6 +205,7 @@ export async function handleAppAnalyticsIngest(request: Request, env: AppAnalyti
     property(row.properties, 'buildNumber'),
     property(row.properties, 'platform'),
     property(row.properties, 'onboardingStep'),
+    property(row.properties, 'onboardingVersion'),
     property(row.properties, 'paywallContext'),
     property(row.properties, 'subscriptionStatus'),
     property(row.properties, 'tier'),
@@ -278,6 +282,9 @@ function validateProperty(key: string, value: unknown): string {
       return validateSetValue(key, value, PLATFORMS);
     case 'onboardingStep':
       return validateSetValue(key, value, ONBOARDING_STEPS);
+    case 'onboardingVersion':
+      if (!ONBOARDING_VERSION_RE.test(value)) throw new Error(`invalid_property:${key}`);
+      return value;
     case 'paywallContext':
       return validateSetValue(key, value, PAYWALL_CONTEXTS);
     case 'subscriptionStatus':
