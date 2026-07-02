@@ -40,9 +40,7 @@ Enhance the SettingsView to provide a better UX for SaaS mode vs Self-Hosted mod
 3. Conditionally render UI based on mode
 4. Update `loadSettings()` to handle mode appropriately
 5. Test in simulator with both modes
-6. Update `bd update ios-share-1ht --status=in_progress` when starting
-7. Run `bd close ios-share-1ht` when complete
-8. Commit with message: "Implement SaaS-aware SettingsView UI"
+6. Commit with message: "Implement SaaS-aware SettingsView UI"
 
 ### Success Criteria
 - ✅ SaaS mode shows read-only URL with visual indicator
@@ -128,9 +126,7 @@ Create `frontend/ImageHost/Shared/Services/ExportService.swift` with:
 8. Add comprehensive error handling
 9. Write inline documentation
 10. Test with backend API
-11. Update `bd update ios-share-4ky --status=in_progress` when starting
-12. Run `bd close ios-share-4ky` when complete
-13. Commit with message: "Implement ExportService for bulk image downloads"
+11. Commit with message: "Implement ExportService for bulk image downloads"
 
 ### Success Criteria
 - ✅ Can start export job and get job ID
@@ -198,9 +194,7 @@ Add UI in HistoryView to initiate and track bulk export operations.
 7. Implement share sheet for completed export
 8. Handle error states with user-friendly messages
 9. Test complete flow in simulator
-10. Update `bd update ios-share-3r6 --status=in_progress` when starting
-11. Run `bd close ios-share-3r6` when complete
-12. Commit with message: "Add bulk export UI to HistoryView"
+10. Commit with message: "Add bulk export UI to HistoryView"
 
 ### Success Criteria
 - ✅ Export button appears in HistoryView
@@ -242,7 +236,7 @@ After all agents complete:
 2. ✅ Working export service with backend integration
 3. ✅ Complete export feature in HistoryView
 4. ✅ All code committed to git
-5. ✅ All beads issues closed
+5. ✅ Implementation tasks completed
 6. ✅ Ready for user testing
 
 ## Testing Checklist
@@ -260,8 +254,6 @@ Run this checklist:
 cd /Users/codybontecou/dev/ios-share
 git status                              # Check changes
 git add frontend/ImageHost/             # Stage iOS changes
-bd sync                                 # Sync beads
 git commit -m "Implement Phase 1: Export feature and SaaS UI polish"
-bd sync                                 # Sync again after commit
 git push                                # Push to remote
 ```

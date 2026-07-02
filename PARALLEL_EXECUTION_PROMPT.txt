@@ -22,8 +22,6 @@ Steps:
 - Add conditional UI based on Config.hostingMode
 - Update loadSettings() for mode handling
 - Test in simulator
-- Run: bd update ios-share-1ht --status=in_progress (when starting)
-- Run: bd close ios-share-1ht (when done)
 - Commit: "Implement SaaS-aware SettingsView UI"
 
 Success Criteria:
@@ -75,8 +73,6 @@ Steps:
 - Add error handling
 - Write documentation
 - Test with backend
-- Run: bd update ios-share-4ky --status=in_progress (when starting)
-- Run: bd close ios-share-4ky (when done)
 - Commit: "Implement ExportService for bulk image downloads"
 
 Success Criteria:
@@ -127,8 +123,6 @@ Steps:
 - Implement share sheet
 - Handle error states
 - Test complete flow
-- Run: bd update ios-share-3r6 --status=in_progress (when starting)
-- Run: bd close ios-share-3r6 (when done)
 - Commit: "Add bulk export UI to HistoryView"
 
 Success Criteria:
@@ -161,7 +155,5 @@ Post-completion checklist:
 [ ] Test SettingsView in SaaS mode
 [ ] Test export flow end-to-end
 [ ] Run: git add frontend/ImageHost/
-[ ] Run: bd sync
 [ ] Run: git commit -m "Implement Phase 1: Export feature and SaaS UI polish"
-[ ] Run: bd sync
 [ ] Run: git push
