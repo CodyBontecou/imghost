@@ -3,17 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>imghost — BRUTAL IMAGE HOSTING</title>
-    <meta name="description" content="Cloud image hosting for iOS. Upload. Share. Done. No fluff. Just links.">
+    <title>imghost — Instant image links from iPhone</title>
+    <meta name="description" content="Upload images from the iOS Share Sheet and copy direct, Markdown, HTML, BBCode, or custom links instantly. Pro includes 10GB storage, 500MB uploads, and bulk export.">
+    <link rel="canonical" href="https://imghost.isolated.tech/">
+    <link rel="sitemap" type="application/xml" href="https://imghost.isolated.tech/sitemap.xml">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="imghost">
+    <meta property="og:title" content="imghost — Instant image links from iPhone">
+    <meta property="og:description" content="Share Sheet to direct links. Raw URL, Markdown, HTML, BBCode, and custom formats. Built by isolated.tech.">
+    <meta property="og:url" content="https://imghost.isolated.tech/">
+    <meta property="og:image" content="https://imghost.isolated.tech/demo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="imghost — Instant image links from iPhone">
+    <meta name="twitter:description" content="Upload from iPhone. Copy direct, Markdown, HTML, BBCode, or custom links. Export your library anytime on Pro.">
+    <meta name="twitter:image" content="https://imghost.isolated.tech/demo.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://imghost.isolated.tech/#software",
+          "name": "imghost",
+          "applicationCategory": "MultimediaApplication",
+          "operatingSystem": "iOS, iPadOS, macOS",
+          "url": "https://imghost.isolated.tech/",
+          "downloadUrl": "https://apps.apple.com/us/app/imghost/id6758588596",
+          "image": "https://imghost.isolated.tech/demo.png",
+          "description": "Native image hosting for iPhone: upload from the iOS Share Sheet and copy direct, Markdown, HTML, BBCode, or custom links.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "isolated.tech",
+            "url": "https://isolated.tech"
+          },
+          "offers": [
+            {
+              "@type": "Offer",
+              "name": "imghost Pro Monthly",
+              "price": "2.99",
+              "priceCurrency": "USD",
+              "description": "After a 7-day free trial. Billed through the App Store."
+            },
+            {
+              "@type": "Offer",
+              "name": "imghost Pro Annual",
+              "price": "24.99",
+              "priceCurrency": "USD",
+              "description": "After a 7-day free trial. Billed through the App Store."
+            }
+          ],
+          "sameAs": [
+            "https://apps.apple.com/us/app/imghost/id6758588596",
+            "https://github.com/CodyBontecou/ios-share"
+          ]
+        },
+        {
+          "@type": "Product",
+          "@id": "https://imghost.isolated.tech/#product",
+          "name": "imghost Pro",
+          "brand": {
+            "@type": "Brand",
+            "name": "isolated.tech"
+          },
+          "description": "Hosted image and file links with 10GB Pro storage, 500MB uploads, direct URLs, native share extensions, and bulk export.",
+          "image": "https://imghost.isolated.tech/demo.png",
+          "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "USD",
+            "lowPrice": "2.99",
+            "highPrice": "24.99",
+            "offerCount": "2"
+          }
+        }
+      ]
+    }
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="/demo-640.webp" type="image/webp" fetchpriority="high">
 
     <style>
         :root {
@@ -23,12 +96,12 @@
             --brutal-border: #333333;
             --brutal-text-primary: #FFFFFF;
             --brutal-text-secondary: #999999;
-            --brutal-text-tertiary: #666666;
+            --brutal-text-tertiary: #8A8A8A;
             --brutal-error: #FF453A;
             --brutal-success: #30D158;
             --brutal-warning: #FFD60A;
 
-            --font-mono: 'JetBrains Mono', monospace;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
             --tracking-wide: 0.15em;
             --tracking-wider: 0.25em;
         }
@@ -214,6 +287,86 @@
             z-index: 1;
         }
 
+        .hero-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+            gap: 64px;
+            align-items: center;
+        }
+
+        .hero-copy {
+            min-width: 0;
+        }
+
+        .hero-visual {
+            position: relative;
+            justify-self: end;
+            width: min(420px, 100%);
+        }
+
+        .screenshot-shell {
+            border: 1px solid var(--brutal-border);
+            background: #050505;
+            padding: 10px;
+            box-shadow: 14px 14px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .screenshot-shell img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--brutal-border);
+        }
+
+        .link-receipt {
+            position: absolute;
+            left: -48px;
+            bottom: 36px;
+            width: 310px;
+            background: rgba(0, 0, 0, 0.92);
+            border: 1px solid var(--brutal-text-primary);
+            padding: 18px;
+        }
+
+        .receipt-label {
+            font-size: 9px;
+            color: var(--brutal-text-tertiary);
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .receipt-line {
+            display: block;
+            font-size: 11px;
+            color: var(--brutal-text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 6px;
+        }
+
+        .receipt-line strong {
+            color: var(--brutal-text-primary);
+            font-weight: 700;
+        }
+
+        .btn-note {
+            width: 100%;
+            margin-top: 14px;
+            font-size: 11px;
+            color: var(--brutal-text-tertiary);
+            line-height: 1.7;
+        }
+
+        .static-fallback .hero {
+            min-height: auto;
+        }
+
+        .static-fallback .features-grid {
+            margin-top: 48px;
+        }
+
         .hero-label {
             font-size: 11px;
             letter-spacing: var(--tracking-wider);
@@ -258,10 +411,10 @@
         }
 
         .hero-title {
-            font-size: clamp(48px, 12vw, 140px);
+            font-size: clamp(44px, 8vw, 112px);
             font-weight: 800;
             line-height: 0.9;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.04em;
             margin-bottom: 40px;
         }
 
@@ -272,8 +425,7 @@
 
         .hero-title .line span {
             display: block;
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            transform: translateY(100%);
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         .hero-title .line:nth-child(2) span {
@@ -285,14 +437,15 @@
         }
 
         @keyframes slideUp {
+            from { transform: translateY(100%); }
             to { transform: translateY(0); }
         }
 
         .hero-subtitle {
             font-size: 14px;
             color: var(--brutal-text-secondary);
-            max-width: 500px;
-            margin-bottom: 48px;
+            max-width: 620px;
+            margin-bottom: 32px;
             letter-spacing: 0.02em;
             line-height: 1.8;
         }
@@ -1285,10 +1438,196 @@
             background: var(--brutal-surface);
         }
 
+        .format-panel {
+            border: 1px solid var(--brutal-border);
+            background: #050505;
+            padding: 28px;
+            text-align: left;
+        }
+
+        .format-panel-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding-bottom: 16px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--brutal-border);
+            font-size: 10px;
+            color: var(--brutal-text-tertiary);
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+        }
+
+        .format-row {
+            display: grid;
+            grid-template-columns: 92px 1fr;
+            gap: 18px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--brutal-border);
+            font-size: 12px;
+        }
+
+        .format-row:last-child {
+            border-bottom: none;
+        }
+
+        .format-type {
+            color: var(--brutal-text-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: var(--tracking-wide);
+            font-size: 10px;
+        }
+
+        .format-value {
+            color: var(--brutal-text-secondary);
+            overflow-wrap: anywhere;
+        }
+
+        .pricing-note {
+            border: 1px solid var(--brutal-border);
+            border-top: none;
+            padding: 20px 24px;
+            color: var(--brutal-text-secondary);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .proof,
+        .faq {
+            padding: 120px 0;
+            border-top: 1px solid var(--brutal-border);
+        }
+
+        .proof-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--brutal-border);
+            border: 1px solid var(--brutal-border);
+            margin-top: 72px;
+        }
+
+        .proof-card {
+            background: var(--brutal-bg);
+            padding: 40px;
+        }
+
+        .proof-card h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: var(--tracking-wide);
+            margin-bottom: 16px;
+        }
+
+        .proof-card p,
+        .proof-card li {
+            font-size: 13px;
+            color: var(--brutal-text-secondary);
+            line-height: 1.8;
+        }
+
+        .proof-card ul {
+            list-style: none;
+        }
+
+        .proof-card li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--brutal-border);
+        }
+
+        .proof-card li:last-child {
+            border-bottom: none;
+        }
+
+        .proof-card a,
+        .faq-item a,
+        .btn-note a {
+            color: var(--brutal-text-primary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--brutal-text-tertiary);
+        }
+
+        .proof-card a:hover,
+        .faq-item a:hover,
+        .btn-note a:hover {
+            border-bottom-color: var(--brutal-text-primary);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1px;
+            background: var(--brutal-border);
+            border: 1px solid var(--brutal-border);
+            margin-top: 72px;
+        }
+
+        .faq-item {
+            background: var(--brutal-bg);
+            padding: 32px;
+        }
+
+        .faq-item h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: var(--tracking-wide);
+            margin-bottom: 14px;
+        }
+
+        .faq-item p {
+            font-size: 13px;
+            color: var(--brutal-text-secondary);
+            line-height: 1.8;
+        }
+
+        code {
+            color: var(--brutal-text-primary);
+            background: var(--brutal-surface);
+            border: 1px solid var(--brutal-border);
+            padding: 1px 4px;
+            font-family: var(--font-mono);
+            font-size: 0.92em;
+        }
+
+        .auth-alt-action {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--brutal-border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .auth-note {
+            font-size: 11px;
+            color: var(--brutal-text-tertiary);
+            line-height: 1.6;
+            text-align: center;
+        }
+
         /* Mobile */
         @media (max-width: 900px) {
             .nav-links {
                 display: none;
+            }
+
+            .hero-layout {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .hero-visual {
+                justify-self: stretch;
+                width: min(420px, 100%);
+                margin: 0 auto;
+            }
+
+            .link-receipt {
+                left: 12px;
+                right: 12px;
+                bottom: 20px;
+                width: auto;
             }
 
             .hero-label-brand {
@@ -1325,7 +1664,9 @@
                 text-align: left;
             }
 
-            .pricing-grid {
+            .pricing-grid,
+            .proof-grid,
+            .faq-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -1340,17 +1681,55 @@
             }
         }
 
+        @media (max-width: 640px) {
+            .nav-auth {
+                gap: 8px;
+            }
+
+            .nav-auth-link {
+                display: none;
+            }
+
+            .nav-cta {
+                padding: 10px 12px;
+                font-size: 10px;
+            }
+
+            .hero {
+                padding-top: 104px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .format-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
         /* Animations */
         @media (prefers-reduced-motion: no-preference) {
             .feature-card,
             .step,
-            .pricing-card {
-                opacity: 0;
-                transform: translateY(20px);
-                animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            .pricing-card,
+            .proof-card,
+            .faq-item {
+                animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
             }
 
             @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
                 to {
                     opacity: 1;
                     transform: translateY(0);
@@ -1371,6 +1750,14 @@
             .pricing-card:nth-child(1) { animation-delay: 0.1s; }
             .pricing-card:nth-child(2) { animation-delay: 0.2s; }
             .pricing-card:nth-child(3) { animation-delay: 0.3s; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+            }
         }
 
         /* Glitch effect for title */
@@ -1442,8 +1829,66 @@
     <!-- Navigation (dynamic) -->
     <nav id="navbar"></nav>
 
-    <!-- Main app container -->
-    <div id="app"></div>
+    <!-- Main app container. Contains static fallback content until the JS router hydrates. -->
+    <div id="app" class="view-landing">
+        <main class="static-fallback" aria-label="imghost landing page static fallback">
+            <section class="hero">
+                <div class="hero-grid"></div>
+                <div class="container hero-content">
+                    <div class="hero-layout">
+                        <div class="hero-copy">
+                            <div class="hero-label">iPhone Share Sheet to direct image links</div>
+                            <h1 class="hero-title">
+                                <span class="line"><span>UPLOAD.</span></span>
+                                <span class="line"><span>COPY.</span></span>
+                                <span class="line"><span>PASTE.</span></span>
+                            </h1>
+                            <p class="hero-subtitle">imghost turns a photo or screenshot on your iPhone into a clean hosted URL. Copy raw, Markdown, HTML, BBCode, Obsidian, or custom link formats.</p>
+                            <div class="hero-actions">
+                                <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-primary">Download free on App Store</a>
+                                <a href="mailto:cody@isolated.tech" class="btn-secondary">Support</a>
+                            </div>
+                            <p class="btn-note">Static fallback loaded. JavaScript adds the web login/dashboard, but the App Store download and product details work without it.</p>
+                        </div>
+                        <figure class="hero-visual">
+                            <div class="screenshot-shell">
+                                <picture>
+                                    <source srcset="/demo-640.webp" type="image/webp">
+                                    <img src="/demo-640.png" width="640" height="1385" alt="imghost app screenshot showing direct link format options: Raw URL, Markdown, HTML, BBCode, and Custom" loading="eager" fetchpriority="high">
+                                </picture>
+                            </div>
+                        </figure>
+                    </div>
+                </div>
+            </section>
+            <section class="features">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-label">Static Product Facts</div>
+                        <h2 class="section-title">Share Sheet uploads. Direct links. Bulk export. App Store billing.</h2>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card"><h3 class="feature-title">Formats</h3><p class="feature-desc">Raw URL, Markdown, HTML, BBCode, Obsidian, or custom templates.</p></div>
+                        <div class="feature-card"><h3 class="feature-title">Pro Limits</h3><p class="feature-desc">7-day trial, then $2.99/month or $24.99/year in the US App Store. Pro includes 10GB storage and 500MB uploads.</p></div>
+                        <div class="feature-card"><h3 class="feature-title">Ownership</h3><p class="feature-desc">Delete uploads from the app and export your library as a ZIP archive on Pro.</p></div>
+                    </div>
+                </div>
+            </section>
+            <footer>
+                <div class="container">
+                    <div class="footer-inner">
+                        <ul class="footer-links">
+                            <li><a href="/blog/">Blog</a></li>
+                            <li><a href="/privacy.html">Privacy</a></li>
+                            <li><a href="/terms.html">Terms</a></li>
+                            <li><a href="mailto:cody@isolated.tech">Support</a></li>
+                        </ul>
+                        <div class="footer-copy">&copy; 2026 imghost. Built with brutality.</div>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
 
     <!-- Toast container -->
     <div id="toast-container" class="toast-container"></div>
@@ -1457,42 +1902,62 @@
         <section class="hero">
             <div class="hero-grid"></div>
             <div class="container hero-content">
-                <div class="hero-label">Cloud Image Hosting for iOS<span class="hero-label-brand"> — Built by <a href="https://isolated.tech" target="_blank" rel="noopener">isolated.tech</a></span></div>
-                <h1 class="hero-title">
-                    <span class="line"><span class="glitch" data-text="UPLOAD.">UPLOAD.</span></span>
-                    <span class="line"><span class="glitch" data-text="SHARE.">SHARE.</span></span>
-                    <span class="line"><span class="glitch" data-text="DONE.">DONE.</span></span>
-                </h1>
-                <p class="hero-subtitle">
-                    No fluff. No friction. Just brutal efficiency. Share images from anywhere on iOS and get instant, direct links.<span class="cursor"></span>
-                </p>
-                <div class="hero-actions">
-                    <a href="#download" class="btn-primary">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                        </svg>
-                        Download for iOS
-                    </a>
-                    <a href="#features" class="btn-secondary">Learn More</a>
-                </div>
-                <div class="hero-brand-mobile">Built by <a href="https://isolated.tech" target="_blank" rel="noopener">isolated.tech</a></div>
-                <div class="hero-stats">
-                    <div class="stat">
-                        <div class="stat-value">7</div>
-                        <div class="stat-label">Day Free Trial</div>
+                <div class="hero-layout">
+                    <div class="hero-copy">
+                        <div class="hero-label">iPhone Share Sheet to direct image links<span class="hero-label-brand"> — Built by <a href="https://isolated.tech" target="_blank" rel="noopener">isolated.tech</a></span></div>
+                        <h1 class="hero-title">
+                            <span class="line"><span class="glitch" data-text="UPLOAD.">UPLOAD.</span></span>
+                            <span class="line"><span class="glitch" data-text="COPY.">COPY.</span></span>
+                            <span class="line"><span class="glitch" data-text="PASTE.">PASTE.</span></span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            Turn a photo, screenshot, or file on your iPhone into a clean hosted link. Share Sheet in. Direct URL, Markdown, HTML, BBCode, Obsidian, or custom format out.<span class="cursor"></span>
+                        </p>
+                        <div class="hero-actions">
+                            <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                                </svg>
+                                Download free on App Store
+                            </a>
+                            <a href="#how-it-works" class="btn-secondary">See the flow</a>
+                            <p class="btn-note">Web login is secondary: use it for an existing account, gallery, and link copying. New users should start with the App Store app.</p>
+                        </div>
+                        <div class="hero-brand-mobile">Built by <a href="https://isolated.tech" target="_blank" rel="noopener">isolated.tech</a></div>
+                        <div class="hero-stats" aria-label="Product limits and trust facts">
+                            <div class="stat">
+                                <div class="stat-value">10GB</div>
+                                <div class="stat-label">Pro Storage</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">500MB</div>
+                                <div class="stat-label">Max Upload</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">ZIP</div>
+                                <div class="stat-label">Bulk Export</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">R2</div>
+                                <div class="stat-label">Cloudflare Storage</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat">
-                        <div class="stat-value">10GB</div>
-                        <div class="stat-label">Pro Storage</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">&lt;1s</div>
-                        <div class="stat-label">Upload Speed</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">0</div>
-                        <div class="stat-label">Tracking Pixels</div>
-                    </div>
+                    <figure class="hero-visual">
+                        <div class="screenshot-shell">
+                            <picture>
+                                <source srcset="/demo-640.webp" type="image/webp">
+                                <img src="/demo-640.png" width="640" height="1385" alt="imghost iPhone screenshot showing direct link formats: Raw URL, Markdown, HTML, BBCode, and Custom" loading="eager" fetchpriority="high">
+                            </picture>
+                        </div>
+                        <figcaption class="link-receipt">
+                            <div class="receipt-label">After upload: copy format</div>
+                            <span class="receipt-line"><strong>RAW</strong> https://imghost.isolated.tech/a1b2c3.jpg</span>
+                            <span class="receipt-line"><strong>MD</strong> ![photo.jpg](https://...)</span>
+                            <span class="receipt-line"><strong>HTML</strong> &lt;img src=&quot;https://...&quot;&gt;</span>
+                            <span class="receipt-line"><strong>BB</strong> [img]https://...[/img]</span>
+                        </figcaption>
+                    </figure>
                 </div>
             </div>
         </section>
@@ -1502,44 +1967,44 @@
             <div class="container">
                 <div class="section-header">
                     <div class="section-label">01 / Features</div>
-                    <h2 class="section-title">Everything you need. Nothing you don't.</h2>
+                    <h2 class="section-title">Built for the moment you need a link, not a social feed.</h2>
                 </div>
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon">&#8599;</div>
                         <div class="feature-number">001</div>
-                        <h3 class="feature-title">Share Extension</h3>
-                        <p class="feature-desc">Upload directly from your Photos app or any app with iOS Share Sheet. One tap. Done.</p>
+                        <h3 class="feature-title">Share Sheet Upload</h3>
+                        <p class="feature-desc">Open Photos, Files, Safari, Messages, or any iOS app that shares media. Tap imghost and upload without switching workflows.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">&#9783;</div>
                         <div class="feature-number">002</div>
-                        <h3 class="feature-title">Photo Gallery</h3>
-                        <p class="feature-desc">All your uploads organized by date. Pinch to zoom. Swipe to delete. No learning curve.</p>
+                        <h3 class="feature-title">Upload History</h3>
+                        <p class="feature-desc">See your previous uploads, thumbnails, filenames, metadata, and copy the link again when a forum, note, issue, or DM needs it.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">&#8688;</div>
                         <div class="feature-number">003</div>
                         <h3 class="feature-title">Direct Links</h3>
-                        <p class="feature-desc">Get clean, direct URLs. Markdown, HTML, BBCode, or raw. Your choice.</p>
+                        <p class="feature-desc">Every upload returns a clean URL without an interstitial landing page. Paste it into chat, docs, tickets, forums, or notes.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">&#9032;</div>
                         <div class="feature-number">004</div>
                         <h3 class="feature-title">Bulk Export</h3>
-                        <p class="feature-desc">Download all your images as a ZIP. Your data, always accessible.</p>
+                        <p class="feature-desc">Create a ZIP archive of your uploaded media with a manifest, then save it to Files, Photos, Finder, or wherever you keep originals.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">&#10697;</div>
                         <div class="feature-number">005</div>
-                        <h3 class="feature-title">Custom Link Formats</h3>
-                        <p class="feature-desc">Markdown, HTML, BBCode, or raw URLs. Create your own format template.</p>
+                        <h3 class="feature-title">Copy Formats</h3>
+                        <p class="feature-desc">Choose Raw URL, Markdown, Obsidian Markdown/video, HTML, BBCode, or a custom template using URL and filename variables.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">&#9055;</div>
                         <div class="feature-number">006</div>
-                        <h3 class="feature-title">Secure by Default</h3>
-                        <p class="feature-desc">JWT authentication. Per-image delete tokens. No tracking. No ads. Ever.</p>
+                        <h3 class="feature-title">Delete Control</h3>
+                        <p class="feature-desc">Uploaded objects have account ownership and delete paths. Direct links are public to anyone with the URL, so deletion is explicit.</p>
                     </div>
                 </div>
             </div>
@@ -1550,25 +2015,25 @@
             <div class="container">
                 <div class="section-header">
                     <div class="section-label">02 / Process</div>
-                    <h2 class="section-title">Three steps. Zero friction.</h2>
+                    <h2 class="section-title">The path is deliberately boring.</h2>
                 </div>
                 <div class="steps">
                     <div class="step">
                         <div class="step-number">01</div>
-                        <h3 class="step-title">Select Image</h3>
-                        <p class="step-desc">Open any image on your iPhone. Tap the share button.</p>
+                        <h3 class="step-title">Pick Media</h3>
+                        <p class="step-desc">Choose a photo, screenshot, PDF, video, archive, or other supported file from your iPhone.</p>
                         <span class="step-arrow">&rarr;</span>
                     </div>
                     <div class="step">
                         <div class="step-number">02</div>
-                        <h3 class="step-title">Tap imghost</h3>
-                        <p class="step-desc">Find imghost in your share sheet. One tap to upload.</p>
+                        <h3 class="step-title">Share to imghost</h3>
+                        <p class="step-desc">Use the system Share Sheet. imghost uploads with your selected quality and link format settings.</p>
                         <span class="step-arrow">&rarr;</span>
                     </div>
                     <div class="step">
                         <div class="step-number">03</div>
-                        <h3 class="step-title">Get Your Link</h3>
-                        <p class="step-desc">Link copied to clipboard. Paste anywhere. Share everywhere.</p>
+                        <h3 class="step-title">Paste the Result</h3>
+                        <p class="step-desc">Clipboard gets the exact output you picked: raw URL, Markdown, HTML, BBCode, Obsidian, or custom.</p>
                     </div>
                 </div>
             </div>
@@ -1580,61 +2045,64 @@
                 <div class="preview-container">
                     <div class="preview-content">
                         <div class="section-header">
-                            <div class="section-label">03 / Interface</div>
-                            <h2 class="section-title">Brutally beautiful.</h2>
+                            <div class="section-label">03 / Output</div>
+                            <h2 class="section-title">A link machine, not a gallery wall.</h2>
                         </div>
                         <div class="preview-features">
                             <div class="preview-feature">
                                 <div class="preview-feature-icon">+</div>
                                 <div class="preview-feature-text">
-                                    <strong>High Contrast UI</strong>
-                                    Pure black. Pure white. Nothing in between. Designed for focus.
+                                    <strong>Forum-ready</strong>
+                                    BBCode output for boards that still expect <code>[img]</code> tags.
                                 </div>
                             </div>
                             <div class="preview-feature">
                                 <div class="preview-feature-icon">+</div>
                                 <div class="preview-feature-text">
-                                    <strong>Monospace Typography</strong>
-                                    Technical. Precise. Every character counts.
+                                    <strong>Docs-ready</strong>
+                                    Markdown and HTML output for READMEs, tickets, docs, and notes.
                                 </div>
                             </div>
                             <div class="preview-feature">
                                 <div class="preview-feature-icon">+</div>
                                 <div class="preview-feature-text">
-                                    <strong>Zero Decoration</strong>
-                                    No gradients. No shadows. No rounded corners. Just function.
+                                    <strong>Obsidian-ready</strong>
+                                    Obsidian-friendly image and video embeds with optional width settings.
                                 </div>
                             </div>
                             <div class="preview-feature">
                                 <div class="preview-feature-icon">+</div>
                                 <div class="preview-feature-text">
-                                    <strong>Obsidian-Inspired</strong>
-                                    Built for people who appreciate raw, utilitarian design.
+                                    <strong>API-ready</strong>
+                                    A direct object URL you can hand to scripts, JSON, webhooks, and support threads.
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="phone-mockup">
-                        <div class="phone">
-                            <div class="phone-notch"></div>
-                            <div class="phone-screen">
-                                <div class="phone-header">Gallery</div>
-                                <div class="phone-title">PHOTOS</div>
-                                <div class="phone-grid">
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                    <div class="phone-grid-item"></div>
-                                </div>
-                            </div>
+                    <div class="format-panel" aria-label="Example copied link formats">
+                        <div class="format-panel-header">
+                            <span>Copied Output</span>
+                            <span>imghost.isolated.tech</span>
+                        </div>
+                        <div class="format-row">
+                            <span class="format-type">Raw</span>
+                            <span class="format-value">https://imghost.isolated.tech/f8x2k9.jpg</span>
+                        </div>
+                        <div class="format-row">
+                            <span class="format-type">Markdown</span>
+                            <span class="format-value">![screenshot.jpg](https://imghost.isolated.tech/f8x2k9.jpg)</span>
+                        </div>
+                        <div class="format-row">
+                            <span class="format-type">HTML</span>
+                            <span class="format-value">&lt;img src=&quot;https://imghost.isolated.tech/f8x2k9.jpg&quot; alt=&quot;screenshot.jpg&quot;&gt;</span>
+                        </div>
+                        <div class="format-row">
+                            <span class="format-type">BBCode</span>
+                            <span class="format-value">[img]https://imghost.isolated.tech/f8x2k9.jpg[/img]</span>
+                        </div>
+                        <div class="format-row">
+                            <span class="format-type">Custom</span>
+                            <span class="format-value">{filename} -&gt; {url}</span>
                         </div>
                     </div>
                 </div>
@@ -1646,56 +2114,125 @@
             <div class="container">
                 <div class="section-header">
                     <div class="section-label">04 / Pricing</div>
-                    <h2 class="section-title">Start free. Upgrade when ready.</h2>
+                    <h2 class="section-title">The hosted service is sold through the App Store.</h2>
                 </div>
                 <div class="pricing-grid">
                     <div class="pricing-card">
-                        <div class="pricing-tier">Start Here</div>
-                        <div class="pricing-name">7-Day Trial</div>
-                        <div class="pricing-price">$0<span>/7 days</span></div>
-                        <p class="pricing-desc">Try imghost Pro free for 7 days. Full Pro experience, no limits.</p>
+                        <div class="pricing-tier">Trial</div>
+                        <div class="pricing-name">7 Days</div>
+                        <div class="pricing-price">$0<span>/trial</span></div>
+                        <p class="pricing-desc">Start in the iPhone app. Apple handles the trial, purchase confirmation, renewal, cancellation, and receipts.</p>
                         <ul class="pricing-features">
-                            <li>10GB storage</li>
-                            <li>Unlimited uploads</li>
-                            <li>500MB max file size</li>
-                            <li>All Pro features</li>
-                            <li>Cancel anytime</li>
+                            <li>Pro feature access during trial</li>
+                            <li>Direct links and copy formats</li>
+                            <li>App Store-managed billing</li>
+                            <li>Cancel in Apple ID settings</li>
                         </ul>
                         <div class="pricing-cta">
-                            <a href="#download" class="btn-secondary">Start Free Trial</a>
+                            <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-secondary">Download on App Store</a>
                         </div>
                     </div>
                     <div class="pricing-card featured">
                         <div class="pricing-tier">Best Value</div>
                         <div class="pricing-name">Pro Annual</div>
                         <div class="pricing-price">$24.99<span>/year</span></div>
-                        <p class="pricing-desc">Save 30% with annual billing. Full Pro access, unlimited uploads.</p>
+                        <p class="pricing-desc">For people who keep image links around: docs, issue trackers, forums, notes, clients, and support replies.</p>
                         <ul class="pricing-features">
-                            <li>10GB storage</li>
-                            <li>Unlimited uploads</li>
-                            <li>500MB max file size</li>
-                            <li>Custom link formats</li>
-                            <li>Priority support</li>
+                            <li>10GB hosted storage</li>
+                            <li>500MB max upload size</li>
+                            <li>Unlimited upload count within storage</li>
+                            <li>Bulk ZIP export</li>
+                            <li>Custom link templates</li>
                         </ul>
                         <div class="pricing-cta">
-                            <a href="#download" class="btn-primary">Get Pro Annual</a>
+                            <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-primary">Download on App Store</a>
                         </div>
                     </div>
                     <div class="pricing-card">
                         <div class="pricing-tier">Flexible</div>
                         <div class="pricing-name">Pro Monthly</div>
                         <div class="pricing-price">$2.99<span>/month</span></div>
-                        <p class="pricing-desc">Full Pro access with monthly flexibility. Cancel anytime.</p>
+                        <p class="pricing-desc">Same hosted Pro limits with month-to-month billing when you only need image hosting for bursts of work.</p>
                         <ul class="pricing-features">
-                            <li>10GB storage</li>
-                            <li>Unlimited uploads</li>
-                            <li>500MB max file size</li>
-                            <li>Custom link formats</li>
-                            <li>Priority support</li>
+                            <li>10GB hosted storage</li>
+                            <li>500MB max upload size</li>
+                            <li>Raw, Markdown, HTML, BBCode</li>
+                            <li>Native Share Sheet upload</li>
+                            <li>Delete and copy from history</li>
                         </ul>
                         <div class="pricing-cta">
-                            <a href="#download" class="btn-secondary">Get Pro Monthly</a>
+                            <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-secondary">Download on App Store</a>
                         </div>
+                    </div>
+                </div>
+                <p class="pricing-note">Prices are the current US App Store products found in the source README. Regional prices and taxes are shown by Apple before purchase. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period.</p>
+            </div>
+        </section>
+
+        <!-- Proof -->
+        <section class="proof" id="trust">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-label">05 / Trust</div>
+                    <h2 class="section-title">Small tool. Real operator. Source-available stack.</h2>
+                </div>
+                <div class="proof-grid">
+                    <div class="proof-card">
+                        <h3>Built by isolated.tech / Cody Bontecou</h3>
+                        <p>imghost is not a content network. It is a utilitarian hosted file-link tool backed by a Cloudflare Worker, R2 object storage, and D1 metadata. Support goes to <a href="mailto:cody@isolated.tech">cody@isolated.tech</a>.</p>
+                    </div>
+                    <div class="proof-card">
+                        <h3>What you can verify</h3>
+                        <ul>
+                            <li>Canonical App Store listing: <a href="https://apps.apple.com/us/app/imghost/id6758588596">imghost on the App Store</a></li>
+                            <li>Public source/repo: <a href="https://github.com/CodyBontecou/ios-share" target="_blank" rel="noopener">CodyBontecou/ios-share</a></li>
+                            <li>Hosted service: <a href="https://imghost.isolated.tech">imghost.isolated.tech</a></li>
+                            <li>Sample link shape: <code>https://imghost.isolated.tech/f8x2k9.jpg</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq" id="faq">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-label">06 / FAQ</div>
+                    <h2 class="section-title">The questions a buyer asks before trusting image links to a tiny app.</h2>
+                </div>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h3>Are links public or private?</h3>
+                        <p>Direct links are public to anyone who has the URL. Treat them like unlisted object links, not private vault links. Do not upload secrets.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Can I delete an upload?</h3>
+                        <p>Yes. The app keeps upload history and delete controls. Once deleted, the hosted object should stop resolving after caches expire.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Are links permanent?</h3>
+                        <p>Pro uploads are intended to stay available until you delete them, your account is removed, or a legal/abuse issue requires removal. No small hosted service should be treated as archival storage.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>What file types work?</h3>
+                        <p>The native app is built around images and screenshots, and the source supports videos, audio, PDFs, archives, text files, and common binary files up to the configured upload limit.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>How do I cancel?</h3>
+                        <p>Subscriptions are App Store purchases. Manage or cancel from Apple ID subscription settings. Apple shows renewal timing, regional price, taxes, and refund options.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Is there a web uploader?</h3>
+                        <p>Not as the main flow. The web dashboard is for existing accounts, gallery/history, and copying links. Uploading is designed for the iPhone Share Sheet and native clients.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>What platforms are supported?</h3>
+                        <p>The App Store app targets iPhone/iPad workflows. The codebase also contains macOS app and share-extension targets; availability depends on the current App Store release.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>How is this different from Imgur, iCloud, or Dropbox?</h3>
+                        <p>Imgur is a public media platform. iCloud and Dropbox are file sync/share suites. imghost is narrower: upload from a native share sheet and get a direct embed-ready link immediately.</p>
                     </div>
                 </div>
             </div>
@@ -1704,13 +2241,13 @@
         <!-- CTA -->
         <section class="cta-section" id="download">
             <div class="container">
-                <h2 class="cta-title">TRY IT<br>FREE.</h2>
-                <p class="cta-subtitle">Start your 7-day free trial. No credit card required. Experience brutal image hosting.</p>
+                <h2 class="cta-title">GET THE<br>LINK TOOL.</h2>
+                <p class="cta-subtitle">Install imghost from the App Store. Start with the 7-day Pro trial, then keep monthly or annual billing only if it earns a place in your share sheet.</p>
                 <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-primary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
-                    Download on the App Store
+                    Download free on App Store
                 </a>
             </div>
         </section>
@@ -1720,6 +2257,7 @@
             <div class="container">
                 <div class="footer-inner">
                     <ul class="footer-links">
+                        <li><a href="/blog/">Blog</a></li>
                         <li><a href="/privacy.html">Privacy</a></li>
                         <li><a href="/terms.html">Terms</a></li>
                         <li><a href="mailto:cody@isolated.tech">Support</a></li>
@@ -1974,12 +2512,13 @@
                     navbar.innerHTML = `
                         <div class="nav-inner">
                             <div class="logo" onclick="Router.navigate('/')">
-                                <div class="logo-mark"><img src="/logo.png" alt="imghost"></div>
+                                <div class="logo-mark"><img src="/logo-64.webp" width="64" height="64" alt="imghost"></div>
                                 <span>imghost</span>
                             </div>
                             <ul class="nav-links">
                                 <li><a onclick="Router.navigate('/dashboard')">Dashboard</a></li>
                                 <li><a onclick="Router.navigate('/settings')">Settings</a></li>
+                                <li><a href="/blog/">Blog</a></li>
                             </ul>
                             <div class="nav-auth">
                                 <button class="nav-auth-link" onclick="Auth.logout()">Logout</button>
@@ -1990,17 +2529,18 @@
                     navbar.innerHTML = `
                         <div class="nav-inner">
                             <div class="logo" onclick="Router.navigate('/')">
-                                <div class="logo-mark"><img src="/logo.png" alt="imghost"></div>
+                                <div class="logo-mark"><img src="/logo-64.webp" width="64" height="64" alt="imghost"></div>
                                 <span>imghost</span>
                             </div>
                             <ul class="nav-links">
                                 <li><a href="#features">Features</a></li>
-                                <li><a href="#how-it-works">How It Works</a></li>
                                 <li><a href="#pricing">Pricing</a></li>
+                                <li><a href="#faq">FAQ</a></li>
+                                <li><a href="/blog/">Blog</a></li>
                             </ul>
                             <div class="nav-auth">
-                                <button class="nav-auth-link" onclick="Router.navigate('/login')">Login</button>
-                                <button class="nav-cta" onclick="Router.navigate('/register')">Sign Up</button>
+                                <button class="nav-auth-link" onclick="Router.navigate('/login')">Web Login</button>
+                                <a class="nav-cta" href="https://apps.apple.com/us/app/imghost/id6758588596">Download</a>
                             </div>
                         </div>
                     `;
@@ -2072,8 +2612,8 @@
                     <div class="auth-container">
                         <div class="auth-card">
                             <div class="auth-header">
-                                <h1 class="auth-title">Login</h1>
-                                <p class="auth-subtitle">Welcome back. Enter your credentials.</p>
+                                <h1 class="auth-title">Web Login</h1>
+                                <p class="auth-subtitle">For existing imghost accounts. Uploads start in the iPhone app or native share extension.</p>
                             </div>
                             <form class="auth-form" onsubmit="Views.handleLogin(event)">
                                 <div id="auth-error"></div>
@@ -2089,8 +2629,12 @@
                                     Login
                                 </button>
                             </form>
+                            <div class="auth-alt-action">
+                                <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-secondary" style="justify-content: center;">Download App Store App</a>
+                                <p class="auth-note">New users should install the app first. Web signup is secondary for dashboard/API access.</p>
+                            </div>
                             <div class="auth-footer">
-                                Don't have an account? <a onclick="Router.navigate('/register')">Sign up</a>
+                                Need a web account? <a onclick="Router.navigate('/register')">Create one</a>
                             </div>
                         </div>
                     </div>
@@ -2125,8 +2669,8 @@
                     <div class="auth-container">
                         <div class="auth-card">
                             <div class="auth-header">
-                                <h1 class="auth-title">Sign Up</h1>
-                                <p class="auth-subtitle">Create your account. Start hosting images.</p>
+                                <h1 class="auth-title">Web Account</h1>
+                                <p class="auth-subtitle">Secondary path for dashboard/API access. The primary upload flow is the App Store app.</p>
                             </div>
                             <form class="auth-form" onsubmit="Views.handleRegister(event)">
                                 <div id="auth-error"></div>
@@ -2143,11 +2687,15 @@
                                     <input type="password" name="confirmPassword" class="form-input" placeholder="Repeat password" required>
                                 </div>
                                 <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
-                                    Create Account
+                                    Create Web Account
                                 </button>
                             </form>
+                            <div class="auth-alt-action">
+                                <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-secondary" style="justify-content: center;">Download App Store App</a>
+                                <p class="auth-note">Use the iPhone app to upload from Share Sheet and start the App Store-managed trial.</p>
+                            </div>
                             <div class="auth-footer">
-                                Already have an account? <a onclick="Router.navigate('/login')">Login</a>
+                                Already have an account? <a onclick="Router.navigate('/login')">Web login</a>
                             </div>
                         </div>
                     </div>
@@ -2184,7 +2732,7 @@
                 } catch (error) {
                     errorDiv.innerHTML = `<div class="auth-error">${error.message}</div>`;
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Create Account';
+                    submitBtn.textContent = 'Create Web Account';
                 }
             }
 
@@ -2501,21 +3049,19 @@
         // LANDING PAGE ANIMATIONS
         // ============================================
         function initLandingAnimations() {
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
+            // CSS animations are decorative only. Do not hide content behind JS.
+            if (!('IntersectionObserver' in window)) return;
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.style.animationPlayState = 'running';
+                        entry.target.dataset.visible = 'true';
+                        observer.unobserve(entry.target);
                     }
                 });
-            }, observerOptions);
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-            document.querySelectorAll('.feature-card, .step, .pricing-card').forEach(el => {
-                el.style.animationPlayState = 'paused';
+            document.querySelectorAll('.feature-card, .step, .pricing-card, .proof-card, .faq-item').forEach(el => {
                 observer.observe(el);
             });
         }
@@ -2566,5 +3112,53 @@
             Router.init();
         });
     </script>
+<!-- Cloudflare Web Analytics -->
+<script>
+(function () {
+  var productionHosts = {
+    'instareply.isolated.tech': true,
+    'voxboard.isolated.tech': true,
+    'healthmd.isolated.tech': true,
+    'isome.isolated.tech': true,
+    'gitsyncmd.isolated.tech': true,
+    'timemd.isolated.tech': true,
+    'imghost.isolated.tech': true
+  };
+
+  if (!productionHosts[window.location.hostname]) {
+    return;
+  }
+
+  function loadCloudflareBeacon() {
+    if (document.querySelector('script[src="https://static.cloudflareinsights.com/beacon.min.js"]')) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.defer = true;
+    script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    script.setAttribute('data-cf-beacon', '{"token":"090f363070334cddad5c5cc1509b8807"}');
+    document.head.appendChild(script);
+  }
+
+  fetch('https://img-host.costream.workers.dev/analytics-gate', {
+    cache: 'no-store',
+    mode: 'cors',
+    credentials: 'omit'
+  })
+    .then(function (response) {
+      return response.ok ? response.json() : { track: false };
+    })
+    .then(function (gate) {
+      if (gate && gate.track) {
+        loadCloudflareBeacon();
+      }
+    })
+    .catch(function () {
+      // Fail closed so excluded IPs are not accidentally tracked.
+    });
+})();
+</script>
+<!-- End Cloudflare Web Analytics -->
 </body>
 </html>

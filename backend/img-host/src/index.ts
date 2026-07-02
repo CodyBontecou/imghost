@@ -96,6 +96,8 @@ export interface Env {
   NCMEC_API_KEY?: string;
   /** Shared secret for privileged DMCA takedown API access */
   DMCA_API_KEY?: string;
+  /** Comma/whitespace-separated public IPs whose browser analytics hits should be ignored */
+  ANALYTICS_EXCLUDED_IPS?: string;
   /** Optional bearer token for native app analytics ingestion */
   APP_ANALYTICS_INGEST_TOKEN?: string;
   /** Optional cap for native app analytics batch size (max 50) */
@@ -1127,6 +1129,118 @@ async function handleStaticPage(env: Env, filename: string): Promise<Response> {
   return new Response(object.body, { headers });
 }
 
+async function handleStaticAsset(
+  env: Env,
+  filename: string,
+  contentType: string,
+  cacheControl = 'public, max-age=3600'
+): Promise<Response> {
+  const object = await env.IMAGES.get(filename);
+  if (!object) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  const headers = new Headers();
+  headers.set('Content-Type', contentType);
+  headers.set('Cache-Control', cacheControl);
+
+  return new Response(object.body, { headers });
+}
+
+function getStaticContentType(filename: string): string | null {
+  const extension = filename.split('.').pop()?.toLowerCase();
+
+  switch (extension) {
+    case 'png':
+      return 'image/png';
+    case 'jpg':
+    case 'jpeg':
+      return 'image/jpeg';
+    case 'webp':
+      return 'image/webp';
+    case 'gif':
+      return 'image/gif';
+    case 'svg':
+      return 'image/svg+xml; charset=utf-8';
+    case 'css':
+      return 'text/css; charset=utf-8';
+    case 'js':
+      return 'application/javascript; charset=utf-8';
+    case 'txt':
+      return 'text/plain; charset=utf-8';
+    case 'xml':
+      return 'application/xml; charset=utf-8';
+    default:
+      return null;
+  }
+}
+
+async function handleBlogRoute(env: Env, path: string): Promise<Response> {
+  let key: string;
+
+  if (path === '/blog' || path === '/blog/' || path === '/blog/index.html') {
+    key = 'blog/index.html';
+  } else {
+    key = path.replace(/^\/+/, '');
+
+    if (key.includes('..')) {
+      return new Response('Not found', { status: 404 });
+    }
+
+    const lastSegment = key.split('/').pop() ?? '';
+    if (path.endsWith('/')) {
+      key = `${key}index.html`;
+    } else if (!lastSegment.includes('.')) {
+      key = `${key}/index.html`;
+    }
+  }
+
+  if (key.endsWith('.html')) {
+    return await handleStaticPage(env, key);
+  }
+
+  const contentType = getStaticContentType(key);
+  if (!contentType) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  const cacheControl = contentType.startsWith('image/')
+    ? 'public, max-age=31536000, immutable'
+    : 'public, max-age=3600';
+
+  return await handleStaticAsset(env, key, contentType, cacheControl);
+}
+
+function analyticsGateHeaders(): Headers {
+  return new Headers({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Cache-Control': 'no-store',
+    'Content-Type': 'application/json; charset=utf-8',
+  });
+}
+
+function parseAnalyticsExcludedIps(value?: string): Set<string> {
+  return new Set(
+    (value ?? '')
+      .split(/[\s,]+/)
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+  );
+}
+
+function handleAnalyticsGate(request: Request, env: Env): Response {
+  const excludedIps = parseAnalyticsExcludedIps(env.ANALYTICS_EXCLUDED_IPS);
+  const clientIp = getClientIp(request);
+  const track = clientIp !== 'unknown' && !excludedIps.has(clientIp);
+
+  return new Response(JSON.stringify({ track }), {
+    status: 200,
+    headers: analyticsGateHeaders(),
+  });
+}
+
 // ─── Scheduled Cron: delete expired free-tier images ─────────────────────────
 
 async function runExpiredImageCleanup(env: Env): Promise<void> {
@@ -1160,6 +1274,9 @@ export default {
     const origin = request.headers.get('Origin');
 
     // Handle public analytics CORS before the app's authenticated API CORS rules.
+    if (method === 'OPTIONS' && path === '/analytics-gate') {
+      return new Response(null, { status: 204, headers: analyticsGateHeaders() });
+    }
     if (method === 'OPTIONS' && path === '/v1/events') {
       return new Response(null, { status: 204, headers: appAnalyticsCorsHeaders() });
     }
@@ -1173,6 +1290,12 @@ export default {
     const withCors = (response: Response) => addCorsHeaders(response, origin);
 
     try {
+      // GET /analytics-gate - Cross-site analytics opt-out gate.
+      // Used by hosted isolated.tech app pages so Cody's own IP never loads the beacon.
+      if (method === 'GET' && path === '/analytics-gate') {
+        return handleAnalyticsGate(request, env);
+      }
+
       // POST /v1/events - Privacy-safe native app analytics ingestion.
       if (method === 'POST' && path === '/v1/events') {
         return handleAppAnalyticsIngest(request, env);
@@ -1193,28 +1316,49 @@ export default {
         return await handleStaticPage(env, 'terms.html');
       }
 
+      // GET /blog/... - Serve blog index, posts, and post-local assets
+      if (method === 'GET' && (path === '/blog' || path.startsWith('/blog/'))) {
+        return await handleBlogRoute(env, path);
+      }
+
       // GET /favicon.png - Serve favicon
       if (method === 'GET' && path === '/favicon.png') {
-        const object = await env.IMAGES.get('favicon.png');
-        if (!object) {
-          return new Response('Not found', { status: 404 });
-        }
-        const headers = new Headers();
-        headers.set('Content-Type', 'image/png');
-        headers.set('Cache-Control', 'public, max-age=86400'); // 1 day cache
-        return new Response(object.body, { headers });
+        return await handleStaticAsset(env, 'favicon.png', 'image/png', 'public, max-age=86400');
       }
 
       // GET /logo.png - Serve logo
       if (method === 'GET' && path === '/logo.png') {
-        const object = await env.IMAGES.get('logo.png');
-        if (!object) {
-          return new Response('Not found', { status: 404 });
-        }
-        const headers = new Headers();
-        headers.set('Content-Type', 'image/png');
-        headers.set('Cache-Control', 'public, max-age=86400'); // 1 day cache
-        return new Response(object.body, { headers });
+        return await handleStaticAsset(env, 'logo.png', 'image/png', 'public, max-age=31536000, immutable');
+      }
+
+      // GET /logo-64.webp - Serve optimized logo
+      if (method === 'GET' && path === '/logo-64.webp') {
+        return await handleStaticAsset(env, 'logo-64.webp', 'image/webp', 'public, max-age=31536000, immutable');
+      }
+
+      // GET /demo.png - Serve landing-page demo screenshot
+      if (method === 'GET' && path === '/demo.png') {
+        return await handleStaticAsset(env, 'demo.png', 'image/png', 'public, max-age=31536000, immutable');
+      }
+
+      // GET /demo-640.png - Serve optimized PNG demo fallback
+      if (method === 'GET' && path === '/demo-640.png') {
+        return await handleStaticAsset(env, 'demo-640.png', 'image/png', 'public, max-age=31536000, immutable');
+      }
+
+      // GET /demo-640.webp - Serve optimized WebP demo screenshot
+      if (method === 'GET' && path === '/demo-640.webp') {
+        return await handleStaticAsset(env, 'demo-640.webp', 'image/webp', 'public, max-age=31536000, immutable');
+      }
+
+      // GET /robots.txt - Serve crawler directives
+      if (method === 'GET' && path === '/robots.txt') {
+        return await handleStaticAsset(env, 'robots.txt', 'text/plain; charset=utf-8', 'public, max-age=3600');
+      }
+
+      // GET /sitemap.xml - Serve XML sitemap
+      if (method === 'GET' && path === '/sitemap.xml') {
+        return await handleStaticAsset(env, 'sitemap.xml', 'application/xml; charset=utf-8', 'public, max-age=3600');
       }
 
       // POST /auth/register - Enhanced with JWT and email verification

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Turn an Image into a Shareable Link from iPhone or Mac — imghost</title>
+    <meta name="description" content="A practical guide to turning a photo, screenshot, or file into a shareable direct link with imghost on iPhone, iPad, or Mac. Includes privacy notes and link-format examples.">
+    <link rel="canonical" href="https://imghost.isolated.tech/blog/turn-image-into-shareable-link/">
+    <link rel="sitemap" type="application/xml" href="https://imghost.isolated.tech/sitemap.xml">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="imghost">
+    <meta property="og:title" content="How to Turn an Image into a Shareable Link from iPhone or Mac">
+    <meta property="og:description" content="Use imghost to upload an image and copy a direct URL, Markdown, HTML, BBCode, Obsidian, or custom link format.">
+    <meta property="og:url" content="https://imghost.isolated.tech/blog/turn-image-into-shareable-link/">
+    <meta property="og:image" content="https://imghost.isolated.tech/blog/turn-image-into-shareable-link/iphone-direct-links.png">
+    <meta property="article:published_time" content="2026-06-14T00:00:00Z">
+    <meta property="article:author" content="Cody Bontecou">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="How to Turn an Image into a Shareable Link from iPhone or Mac">
+    <meta name="twitter:description" content="Turn a photo or screenshot into a clean hosted URL, then copy the format your destination expects.">
+    <meta name="twitter:image" content="https://imghost.isolated.tech/blog/turn-image-into-shareable-link/iphone-direct-links.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://imghost.isolated.tech/blog/turn-image-into-shareable-link/#post",
+      "headline": "How to Turn an Image into a Shareable Link from iPhone or Mac",
+      "description": "A practical guide to turning a photo, screenshot, or file into a shareable direct link with imghost on iPhone, iPad, or Mac.",
+      "image": [
+        "https://imghost.isolated.tech/blog/turn-image-into-shareable-link/iphone-share-extension.png",
+        "https://imghost.isolated.tech/blog/turn-image-into-shareable-link/iphone-direct-links.png"
+      ],
+      "datePublished": "2026-06-14",
+      "dateModified": "2026-06-14",
+      "author": {
+        "@type": "Person",
+        "name": "Cody Bontecou",
+        "url": "https://codybontecou.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "isolated.tech",
+        "url": "https://isolated.tech",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://imghost.isolated.tech/logo.png"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://imghost.isolated.tech/blog/turn-image-into-shareable-link/"
+      },
+      "isPartOf": {
+        "@type": "Blog",
+        "name": "imghost Blog",
+        "url": "https://imghost.isolated.tech/blog/"
+      }
+    }
+    </script>
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="preload" as="image" href="iphone-direct-links.png" type="image/png" fetchpriority="high">
+
+    <style>
+        :root {
+            --brutal-bg: #000000;
+            --brutal-surface: #141414;
+            --brutal-surface-elevated: #1F1F1F;
+            --brutal-border: #333333;
+            --brutal-text-primary: #FFFFFF;
+            --brutal-text-secondary: #999999;
+            --brutal-text-tertiary: #8A8A8A;
+            --brutal-success: #30D158;
+            --brutal-warning: #FFD60A;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            --tracking-wide: 0.15em;
+            --tracking-wider: 0.25em;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body {
+            background: var(--brutal-bg);
+            color: var(--brutal-text-primary);
+            font-family: var(--font-mono);
+            line-height: 1.65;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        ::selection { background: var(--brutal-text-primary); color: var(--brutal-bg); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--brutal-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--brutal-border); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--brutal-text-tertiary); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .narrow { max-width: 840px; }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.92);
+            border-bottom: 1px solid var(--brutal-border);
+            backdrop-filter: blur(12px);
+        }
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--brutal-text-primary);
+            text-decoration: none;
+        }
+        .logo-mark { width: 32px; height: 32px; border-radius: 6px; overflow: hidden; }
+        .logo-mark img { width: 100%; height: 100%; object-fit: cover; }
+        .nav-links, .footer-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a, .footer-links a {
+            color: var(--brutal-text-secondary);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a[aria-current="page"], .footer-links a:hover { color: var(--brutal-text-primary); }
+        .nav-cta, .btn-primary, .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+        }
+        .nav-cta { background: var(--brutal-text-primary); color: var(--brutal-bg); padding: 10px 20px; }
+        .nav-cta:hover, .btn-primary:hover { transform: translate(-3px, -3px); box-shadow: 3px 3px 0 var(--brutal-text-primary); }
+        .btn-primary { background: var(--brutal-text-primary); color: var(--brutal-bg); border: 1px solid var(--brutal-text-primary); padding: 16px 28px; }
+        .btn-secondary { color: var(--brutal-text-primary); border: 1px solid var(--brutal-border); padding: 16px 28px; }
+        .btn-secondary:hover { border-color: var(--brutal-text-primary); background: var(--brutal-surface); }
+
+        .article-hero {
+            min-height: 96vh;
+            display: flex;
+            align-items: center;
+            padding: 136px 0 88px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--brutal-border);
+        }
+        .article-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--brutal-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--brutal-border) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.25;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 72%);
+        }
+        .article-hero::after {
+            content: 'LINK';
+            position: absolute;
+            right: -4vw;
+            bottom: -4vw;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--brutal-border);
+            font-size: clamp(96px, 23vw, 320px);
+            font-weight: 800;
+            line-height: 0.8;
+            letter-spacing: -0.08em;
+            pointer-events: none;
+        }
+        .hero-layout {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+            gap: 64px;
+            align-items: center;
+        }
+        .section-label, .eyebrow {
+            font-size: 10px;
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+            color: var(--brutal-text-tertiary);
+        }
+        .section-label { margin-bottom: 16px; }
+        .hero-title {
+            font-size: clamp(44px, 9vw, 112px);
+            font-weight: 800;
+            line-height: 0.92;
+            letter-spacing: -0.055em;
+            max-width: 860px;
+            margin-bottom: 32px;
+        }
+        .hero-subtitle {
+            font-size: 15px;
+            color: var(--brutal-text-secondary);
+            max-width: 710px;
+            letter-spacing: 0.02em;
+            line-height: 1.85;
+        }
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .chip {
+            border: 1px solid var(--brutal-border);
+            color: var(--brutal-text-tertiary);
+            padding: 6px 10px;
+            font-size: 9px;
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.72);
+        }
+        .chip.ready { color: var(--brutal-success); border-color: rgba(48, 209, 88, 0.45); }
+        .hero-card {
+            border: 1px solid var(--brutal-border);
+            background: rgba(0, 0, 0, 0.78);
+            padding: 18px;
+            box-shadow: 14px 14px 0 rgba(255, 255, 255, 0.06);
+        }
+        .hero-card img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--brutal-border);
+            background: #050505;
+        }
+        .caption {
+            color: var(--brutal-text-tertiary);
+            font-size: 10px;
+            line-height: 1.7;
+            margin-top: 14px;
+        }
+
+        .article-shell { padding: 96px 0; }
+        .article-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 300px;
+            gap: 64px;
+            align-items: start;
+        }
+        article {
+            min-width: 0;
+        }
+        article h2 {
+            font-size: clamp(30px, 5vw, 52px);
+            line-height: 1.08;
+            letter-spacing: -0.035em;
+            margin: 84px 0 24px;
+        }
+        article h2:first-child { margin-top: 0; }
+        article h3 {
+            font-size: 20px;
+            line-height: 1.3;
+            margin: 32px 0 12px;
+            letter-spacing: -0.01em;
+        }
+        article p, article li {
+            color: var(--brutal-text-secondary);
+            font-size: 14px;
+            line-height: 1.9;
+        }
+        article p + p { margin-top: 18px; }
+        article a { color: var(--brutal-text-primary); text-decoration-color: var(--brutal-text-tertiary); text-underline-offset: 4px; }
+        article ul, article ol { margin: 20px 0 28px 22px; }
+        article li + li { margin-top: 12px; }
+        strong { color: var(--brutal-text-primary); }
+        code {
+            color: var(--brutal-text-primary);
+            background: var(--brutal-surface);
+            border: 1px solid var(--brutal-border);
+            padding: 2px 5px;
+            font-size: 0.92em;
+        }
+        pre {
+            background: var(--brutal-surface);
+            border: 1px solid var(--brutal-border);
+            overflow-x: auto;
+            padding: 22px;
+            margin: 24px 0;
+            color: var(--brutal-text-secondary);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+        pre code { border: none; background: transparent; padding: 0; }
+        .lead {
+            color: var(--brutal-text-primary);
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 36px;
+        }
+        .quick-answer {
+            border: 1px solid var(--brutal-border);
+            background: var(--brutal-surface);
+            padding: 28px;
+            margin: 36px 0;
+        }
+        .quick-answer h2 {
+            font-size: 24px;
+            margin: 0 0 12px;
+            letter-spacing: -0.02em;
+        }
+        .callout {
+            border-left: 3px solid var(--brutal-warning);
+            background: rgba(255, 214, 10, 0.08);
+            padding: 18px 20px;
+            margin: 28px 0;
+        }
+        .callout p { color: var(--brutal-text-primary); font-size: 13px; }
+
+        .step-list {
+            counter-reset: step;
+            list-style: none;
+            margin-left: 0;
+        }
+        .step-list li {
+            counter-increment: step;
+            position: relative;
+            padding: 24px 0 24px 58px;
+            border-top: 1px solid var(--brutal-border);
+        }
+        .step-list li:last-child { border-bottom: 1px solid var(--brutal-border); }
+        .step-list li::before {
+            content: counter(step, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            top: 28px;
+            color: var(--brutal-text-primary);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: var(--tracking-wide);
+        }
+        .step-list strong { display: block; margin-bottom: 6px; }
+
+        .screenshot-strip {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin: 36px 0;
+        }
+        .screenshot-card {
+            border: 1px solid var(--brutal-border);
+            background: var(--brutal-surface);
+            padding: 12px;
+        }
+        .screenshot-card img {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #050505;
+            border: 1px solid var(--brutal-border);
+        }
+        .screenshot-card figcaption {
+            color: var(--brutal-text-tertiary);
+            font-size: 10px;
+            line-height: 1.65;
+            margin-top: 12px;
+        }
+
+        .format-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 28px 0;
+            border: 1px solid var(--brutal-border);
+        }
+        .format-table th, .format-table td {
+            border-bottom: 1px solid var(--brutal-border);
+            padding: 16px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 12px;
+        }
+        .format-table th {
+            color: var(--brutal-text-primary);
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+        }
+        .format-table td { color: var(--brutal-text-secondary); }
+        .format-table tr:last-child td { border-bottom: none; }
+
+        .aside-card {
+            position: sticky;
+            top: 96px;
+            border: 1px solid var(--brutal-border);
+            background: var(--brutal-surface);
+            padding: 24px;
+        }
+        .aside-card h2 {
+            font-size: 13px;
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+        .toc { list-style: none; }
+        .toc li { border-top: 1px solid var(--brutal-border); }
+        .toc a {
+            display: block;
+            color: var(--brutal-text-secondary);
+            text-decoration: none;
+            font-size: 12px;
+            padding: 12px 0;
+        }
+        .toc a:hover { color: var(--brutal-text-primary); }
+        .aside-note {
+            color: var(--brutal-text-tertiary);
+            font-size: 11px;
+            line-height: 1.8;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid var(--brutal-border);
+        }
+
+        .cta-section {
+            padding: 96px 0;
+            border-top: 1px solid var(--brutal-border);
+            text-align: center;
+        }
+        .cta-title {
+            font-size: clamp(36px, 8vw, 80px);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            margin-bottom: 24px;
+        }
+        .cta-subtitle {
+            color: var(--brutal-text-secondary);
+            max-width: 620px;
+            margin: 0 auto 36px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .cta-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+        footer { padding: 48px 0; border-top: 1px solid var(--brutal-border); }
+        .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+        .footer-links a { color: var(--brutal-text-tertiary); }
+        .footer-copy { font-size: 11px; color: var(--brutal-text-tertiary); letter-spacing: var(--tracking-wide); }
+
+        @media (max-width: 980px) {
+            .hero-layout, .article-grid { grid-template-columns: 1fr; }
+            .hero-card { max-width: 380px; }
+            .aside-card { position: static; }
+        }
+        @media (max-width: 760px) {
+            .nav-links { display: none; }
+            .article-hero { min-height: auto; padding-top: 112px; }
+            .screenshot-strip { grid-template-columns: 1fr; }
+            .format-table, .format-table tbody, .format-table tr, .format-table th, .format-table td { display: block; width: 100%; }
+            .format-table thead { display: none; }
+            .format-table td { border-bottom: none; padding: 10px 16px; }
+            .format-table tr { border-bottom: 1px solid var(--brutal-border); padding: 8px 0; }
+            .format-table tr:last-child { border-bottom: none; }
+            .footer-inner { flex-direction: column; align-items: flex-start; }
+            .footer-links { flex-wrap: wrap; gap: 18px; }
+        }
+        @media (max-width: 520px) {
+            .container { padding: 0 18px; }
+            .nav-cta { padding: 10px 12px; font-size: 10px; }
+            .step-list li { padding-left: 44px; }
+            pre { font-size: 11px; }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            .hero-card, .quick-answer, .screenshot-card, .aside-card { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+            @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-mark"><img src="/logo-64.webp" width="64" height="64" alt="imghost"></div>
+                <span>imghost</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/#pricing">Pricing</a></li>
+                <li><a href="/#faq">FAQ</a></li>
+                <li><a href="/blog/" aria-current="page">Blog</a></li>
+            </ul>
+            <a class="nav-cta" href="https://apps.apple.com/us/app/imghost/id6758588596">Download</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="article-hero">
+            <div class="container">
+                <div class="hero-layout">
+                    <div>
+                        <div class="section-label">imghost / workflow guide</div>
+                        <div class="hero-meta">
+                            <span class="chip ready">Guide</span>
+                            <span class="chip">June 14, 2026</span>
+                            <span class="chip">iPhone + Mac</span>
+                        </div>
+                        <h1 class="hero-title">How to turn an image into a shareable link from iPhone or Mac.</h1>
+                        <p class="hero-subtitle">The shortest path is simple: choose an image, send it to imghost, then paste the direct URL or formatted link wherever you need it. This guide covers the practical workflow and the privacy tradeoffs to understand before sharing.</p>
+                    </div>
+                    <figure class="hero-card">
+                        <img src="iphone-direct-links.png" width="1242" height="2688" alt="imghost app screenshot showing direct URL, Markdown, HTML, BBCode, and raw link format options" loading="eager" fetchpriority="high">
+                        <figcaption class="caption">imghost can copy raw URLs or formatted snippets for Markdown, HTML, BBCode, Obsidian, and custom templates.</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <section class="article-shell">
+            <div class="container article-grid">
+                <article>
+                    <p class="lead">Sometimes an image needs to become a link, not an attachment. You might be writing a bug report, sending a screenshot in chat, embedding an image in Markdown, or posting to a forum that expects a direct image URL. imghost is built for that exact handoff.</p>
+
+                    <div class="quick-answer" id="quick-answer">
+                        <h2>Quick answer</h2>
+                        <p>Install imghost, share a photo or screenshot to the app, let it upload, then copy the output format you need. On iPhone and iPad, the fastest entry point is the iOS Share Sheet. On Mac, use the macOS app or share extension when available in your installed build.</p>
+                    </div>
+
+                    <figure class="screenshot-strip" aria-label="imghost app screenshots">
+                        <div class="screenshot-card">
+                            <img src="iphone-library.png" width="1242" height="2688" alt="imghost iPhone marketing screenshot introducing image hosting" loading="lazy">
+                            <figcaption>Host screenshots and images so you can refer to them by URL.</figcaption>
+                        </div>
+                        <div class="screenshot-card">
+                            <img src="iphone-share-extension.png" width="1242" height="2688" alt="imghost iPhone marketing screenshot describing Share Sheet upload" loading="lazy">
+                            <figcaption>Use the system Share Sheet from Photos, Files, Safari, and other apps.</figcaption>
+                        </div>
+                        <div class="screenshot-card">
+                            <img src="iphone-direct-links.png" width="1242" height="2688" alt="imghost iPhone screenshot showing direct link settings" loading="lazy">
+                            <figcaption>Pick raw URL, Markdown, HTML, BBCode, Obsidian, or a custom format.</figcaption>
+                        </div>
+                    </figure>
+
+                    <h2 id="iphone">Turn an image into a link on iPhone or iPad</h2>
+                    <ol class="step-list">
+                        <li><strong>Choose the image.</strong> Open Photos, Files, Safari, Messages, Notes, or another app that can share media. Select the photo, screenshot, GIF, or supported file you want to host.</li>
+                        <li><strong>Open the Share Sheet.</strong> Tap the iOS share button. If imghost is not visible, scroll through the app row, tap More, and enable it for faster access next time.</li>
+                        <li><strong>Send it to imghost.</strong> imghost receives the item, prepares it according to your quality settings, and uploads it to the hosted backend for your account.</li>
+                        <li><strong>Copy the result.</strong> After upload, use the copied link or open the item in your imghost library to copy the raw URL or the formatted version you prefer.</li>
+                    </ol>
+
+                    <p>The hosted link is meant to be clean and direct: no social feed, no interstitial page, and no extra viewer UI. That makes it useful for GitHub issues, Discord messages, documentation, Markdown notes, forum posts, emails, and any workflow where an image needs to be referenced by URL.</p>
+
+                    <h2 id="mac">Turn an image into a link on Mac</h2>
+                    <p>On Mac, the goal is the same but the entry points are desktop-native. If your installed imghost build includes the macOS app, you can drag files into the app, use the menu bar workflow, paste from the clipboard, or upload through the macOS share extension.</p>
+                    <ol class="step-list">
+                        <li><strong>Pick a local file.</strong> Start with a screenshot, exported image, PDF, video, archive, or other supported file.</li>
+                        <li><strong>Upload from the Mac app.</strong> Drag and drop into imghost, use the file picker, or use the Share menu from an app that supports macOS sharing.</li>
+                        <li><strong>Copy one or many links.</strong> The Mac upload flow can return results for selected files and copy links in the currently selected format.</li>
+                        <li><strong>Manage the library later.</strong> Reopen imghost to browse history, copy a link again, delete an upload, or export your library if your plan supports it.</li>
+                    </ol>
+                    <p>Because distribution can differ by release, check your current App Store or direct-distribution build for the Mac-specific features available to you. The iPhone/iPad Share Sheet flow remains the primary path for the public App Store app.</p>
+
+                    <h2 id="formats">Choose the right link format</h2>
+                    <p>A hosted image URL is only half the workflow. The destination usually wants a specific shape. imghost can format the same upload in several ways:</p>
+
+                    <table class="format-table">
+                        <thead>
+                            <tr>
+                                <th>Format</th>
+                                <th>Best for</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Raw URL</td>
+                                <td>Chat apps, notes, browser tabs, APIs, and places that auto-preview links.</td>
+                                <td><code>https://imghost.isolated.tech/f8x2k9.jpg</code></td>
+                            </tr>
+                            <tr>
+                                <td>Markdown</td>
+                                <td>GitHub issues, README files, docs, static sites, and Markdown notes.</td>
+                                <td><code>![photo.jpg](https://imghost.isolated.tech/f8x2k9.jpg)</code></td>
+                            </tr>
+                            <tr>
+                                <td>HTML</td>
+                                <td>Web pages, CMS fields, email templates, and custom snippets.</td>
+                                <td><code>&lt;img src="https://imghost.isolated.tech/f8x2k9.jpg" alt="photo.jpg"&gt;</code></td>
+                            </tr>
+                            <tr>
+                                <td>BBCode</td>
+                                <td>Older forums and communities that still use BBCode image tags.</td>
+                                <td><code>[img]https://imghost.isolated.tech/f8x2k9.jpg[/img]</code></td>
+                            </tr>
+                            <tr>
+                                <td>Custom</td>
+                                <td>Personal templates, recurring snippets, and specialized publishing workflows.</td>
+                                <td><code>{url}</code> with your own wrapper text.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>If you are not sure, start with the raw URL. If the destination is Markdown-aware, switch to Markdown so the image embeds instead of appearing as a plain text link.</p>
+
+                    <h2 id="privacy">Privacy and sharing expectations</h2>
+                    <div class="callout">
+                        <p><strong>Important:</strong> a shareable image link should be treated as public to anyone who has the URL. Do not upload private documents, sensitive screenshots, or personal data unless you are comfortable with link-based access.</p>
+                    </div>
+                    <p>imghost is a utility for direct links, not a private vault or social network. The hosted service stores uploaded files so links can resolve later. Your library helps you copy, delete, and export items, but a URL you send to someone else can be opened by that recipient and may be cached by browsers, chat apps, crawlers, or downstream services.</p>
+                    <p>Deleting an upload from imghost is the right way to stop future access from the service side. In practice, cached previews or third-party copies may take time to disappear. For sensitive material, the safest workflow is not to upload it in the first place.</p>
+
+                    <h2 id="troubleshooting">Troubleshooting</h2>
+                    <h3>imghost does not appear in the iPhone Share Sheet</h3>
+                    <p>Open the Share Sheet, scroll to the end of the app row, tap More, and look for imghost. iOS lets you favorite share extensions so they appear closer to the front next time.</p>
+
+                    <h3>The link did not paste where I expected</h3>
+                    <p>Open imghost, find the upload in your library, and copy the link again. Also check which link format is selected; Markdown or HTML snippets are intentionally different from a raw URL.</p>
+
+                    <h3>The upload is too large</h3>
+                    <p>Plan limits and maximum upload sizes can change by tier and App Store region. If a file is rejected, try a smaller image export, a compressed quality preset, or a Pro plan if you need larger uploads and more storage.</p>
+
+                    <h3>I need to share several files</h3>
+                    <p>Use the app library to manage history, and use the Mac upload flow when available for desktop batch-style work. For long-term ownership, export support is available on supported plans.</p>
+
+                    <h2 id="summary">The practical rule</h2>
+                    <p>Use imghost when the next step in your workflow needs a URL instead of an attachment. Pick the image, upload it, copy the correct format, and paste it where the conversation, issue, document, or website needs it.</p>
+                </article>
+
+                <aside class="aside-card" aria-label="Article navigation">
+                    <h2>In this guide</h2>
+                    <ul class="toc">
+                        <li><a href="#quick-answer">Quick answer</a></li>
+                        <li><a href="#iphone">iPhone or iPad</a></li>
+                        <li><a href="#mac">Mac</a></li>
+                        <li><a href="#formats">Link formats</a></li>
+                        <li><a href="#privacy">Privacy notes</a></li>
+                        <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    </ul>
+                    <p class="aside-note">Best for bug reports, docs, forum posts, Markdown notes, and anywhere an image needs to travel as a URL instead of an attachment.</p>
+                </aside>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2 class="cta-title">GET THE<br>LINK TOOL.</h2>
+                <p class="cta-subtitle">Install imghost from the App Store to turn iPhone media into hosted links from the native Share Sheet. Use the format that fits your destination, then keep moving.</p>
+                <div class="cta-actions">
+                    <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-primary">Download free on App Store</a>
+                    <a href="/blog/" class="btn-secondary">Back to blog</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-inner">
+                <ul class="footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/privacy.html">Privacy</a></li>
+                    <li><a href="/terms.html">Terms</a></li>
+                    <li><a href="mailto:cody@isolated.tech">Support</a></li>
+                </ul>
+                <div class="footer-copy">&copy; 2026 imghost. Built with brutality.</div>
+            </div>
+        </div>
+    </footer>
+<!-- Cloudflare Web Analytics -->
+<script>
+(function () {
+  var productionHosts = {
+    'instareply.isolated.tech': true,
+    'voxboard.isolated.tech': true,
+    'healthmd.isolated.tech': true,
+    'isome.isolated.tech': true,
+    'gitsyncmd.isolated.tech': true,
+    'timemd.isolated.tech': true,
+    'imghost.isolated.tech': true
+  };
+
+  if (!productionHosts[window.location.hostname]) {
+    return;
+  }
+
+  function loadCloudflareBeacon() {
+    if (document.querySelector('script[src="https://static.cloudflareinsights.com/beacon.min.js"]')) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.defer = true;
+    script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    script.setAttribute('data-cf-beacon', '{"token":"090f363070334cddad5c5cc1509b8807"}');
+    document.head.appendChild(script);
+  }
+
+  fetch('https://img-host.costream.workers.dev/analytics-gate', {
+    cache: 'no-store',
+    mode: 'cors',
+    credentials: 'omit'
+  })
+    .then(function (response) {
+      return response.ok ? response.json() : { track: false };
+    })
+    .then(function (gate) {
+      if (gate && gate.track) {
+        loadCloudflareBeacon();
+      }
+    })
+    .catch(function () {
+      // Fail closed so excluded IPs are not accidentally tracked.
+    });
+})();
+</script>
+<!-- End Cloudflare Web Analytics -->
+</body>
+</html>

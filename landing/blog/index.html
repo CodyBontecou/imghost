@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog — imghost</title>
+    <meta name="description" content="imghost blog for product notes, release updates, and practical workflows around iPhone Share Sheet uploads and direct image links.">
+    <link rel="canonical" href="https://imghost.isolated.tech/blog/">
+    <link rel="sitemap" type="application/xml" href="https://imghost.isolated.tech/sitemap.xml">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="imghost">
+    <meta property="og:title" content="Blog — imghost">
+    <meta property="og:description" content="Product notes, release updates, and practical workflows for turning iPhone media into clean direct links.">
+    <meta property="og:url" content="https://imghost.isolated.tech/blog/">
+    <meta property="og:image" content="https://imghost.isolated.tech/demo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Blog — imghost">
+    <meta name="twitter:description" content="Product notes, release updates, and direct-link workflows from imghost.">
+    <meta name="twitter:image" content="https://imghost.isolated.tech/demo.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "@id": "https://imghost.isolated.tech/blog/#blog",
+      "name": "imghost Blog",
+      "url": "https://imghost.isolated.tech/blog/",
+      "description": "Product notes, release updates, and practical workflows for direct image links from imghost.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "isolated.tech",
+        "url": "https://isolated.tech"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "imghost",
+        "url": "https://imghost.isolated.tech/"
+      },
+      "blogPost": [
+        {
+          "@type": "BlogPosting",
+          "headline": "How to Turn an Image into a Shareable Link from iPhone or Mac",
+          "url": "https://imghost.isolated.tech/blog/turn-image-into-shareable-link/",
+          "datePublished": "2026-06-14",
+          "author": {
+            "@type": "Person",
+            "name": "Cody Bontecou"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="preload" as="image" href="/demo-640.webp" type="image/webp">
+
+    <style>
+        :root {
+            --brutal-bg: #000000;
+            --brutal-surface: #141414;
+            --brutal-surface-elevated: #1F1F1F;
+            --brutal-border: #333333;
+            --brutal-text-primary: #FFFFFF;
+            --brutal-text-secondary: #999999;
+            --brutal-text-tertiary: #8A8A8A;
+            --brutal-success: #30D158;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            --tracking-wide: 0.15em;
+            --tracking-wider: 0.25em;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: var(--brutal-bg);
+            color: var(--brutal-text-primary);
+            font-family: var(--font-mono);
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        ::selection {
+            background: var(--brutal-text-primary);
+            color: var(--brutal-bg);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--brutal-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--brutal-border);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--brutal-text-tertiary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--brutal-bg);
+            border-bottom: 1px solid var(--brutal-border);
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--brutal-text-primary);
+            text-decoration: none;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .logo-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a,
+        .footer-links a {
+            color: var(--brutal-text-secondary);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a[aria-current="page"],
+        .footer-links a:hover {
+            color: var(--brutal-text-primary);
+        }
+
+        .nav-cta {
+            background: var(--brutal-text-primary);
+            color: var(--brutal-bg);
+            padding: 10px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 2px 2px 0 var(--brutal-text-primary);
+        }
+
+        .blog-hero {
+            min-height: 72vh;
+            display: flex;
+            align-items: center;
+            padding: 136px 0 88px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--brutal-border);
+        }
+
+        .blog-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--brutal-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--brutal-border) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.26;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 72%);
+        }
+
+        .blog-hero::after {
+            content: 'BLOG';
+            position: absolute;
+            right: -2vw;
+            bottom: -5vw;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--brutal-border);
+            font-size: clamp(96px, 22vw, 300px);
+            font-weight: 800;
+            line-height: 0.8;
+            letter-spacing: -0.08em;
+            pointer-events: none;
+        }
+
+        .hero-layout {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+            gap: 64px;
+            align-items: end;
+        }
+
+        .section-label {
+            font-size: 10px;
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+            color: var(--brutal-text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 10vw, 124px);
+            font-weight: 800;
+            line-height: 0.9;
+            letter-spacing: -0.05em;
+            margin-bottom: 32px;
+            max-width: 760px;
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            color: var(--brutal-text-secondary);
+            max-width: 650px;
+            letter-spacing: 0.02em;
+            line-height: 1.85;
+        }
+
+        .dispatch-card {
+            border: 1px solid var(--brutal-border);
+            background: rgba(0, 0, 0, 0.78);
+            padding: 28px;
+            box-shadow: 14px 14px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .dispatch-card-label {
+            font-size: 9px;
+            color: var(--brutal-text-tertiary);
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .dispatch-line {
+            display: grid;
+            grid-template-columns: 84px 1fr;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--brutal-border);
+            font-size: 12px;
+        }
+
+        .dispatch-line:last-child {
+            border-bottom: none;
+        }
+
+        .dispatch-key {
+            color: var(--brutal-text-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: var(--tracking-wide);
+            font-size: 10px;
+        }
+
+        .dispatch-value {
+            color: var(--brutal-text-secondary);
+        }
+
+        .posts {
+            padding: 112px 0;
+        }
+
+        .posts-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 32px;
+            align-items: end;
+            margin-bottom: 56px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 700;
+            line-height: 1.1;
+            max-width: 620px;
+        }
+
+        .section-note {
+            color: var(--brutal-text-tertiary);
+            font-size: 12px;
+            max-width: 340px;
+            line-height: 1.8;
+        }
+
+        .post-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+            gap: 1px;
+            background: var(--brutal-border);
+            border: 1px solid var(--brutal-border);
+        }
+
+        .post-card,
+        .topic-card {
+            background: var(--brutal-bg);
+            padding: 40px;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .post-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .post-card::after {
+            content: '';
+            position: absolute;
+            inset: auto 40px 40px auto;
+            width: 120px;
+            height: 120px;
+            border: 1px solid var(--brutal-border);
+            opacity: 0.55;
+            transform: rotate(8deg);
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .post-chip {
+            border: 1px solid var(--brutal-border);
+            color: var(--brutal-text-tertiary);
+            padding: 6px 10px;
+            font-size: 9px;
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+        }
+
+        .post-chip.ready {
+            color: var(--brutal-success);
+            border-color: rgba(48, 209, 88, 0.45);
+        }
+
+        .post-title {
+            font-size: clamp(24px, 4vw, 42px);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            max-width: 680px;
+            margin-bottom: 24px;
+        }
+
+        .post-excerpt {
+            color: var(--brutal-text-secondary);
+            font-size: 13px;
+            line-height: 1.85;
+            max-width: 620px;
+        }
+
+        .post-action {
+            color: var(--brutal-text-primary);
+            font-size: 11px;
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            text-decoration: none;
+            border-bottom: 1px solid var(--brutal-text-tertiary);
+            width: fit-content;
+            margin-top: 40px;
+        }
+
+        .topic-list {
+            list-style: none;
+            margin-top: 24px;
+        }
+
+        .topic-list li {
+            color: var(--brutal-text-secondary);
+            font-size: 13px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--brutal-border);
+            line-height: 1.7;
+        }
+
+        .topic-list li::before {
+            content: '+';
+            color: var(--brutal-text-primary);
+            margin-right: 12px;
+        }
+
+        .topic-list li:last-child {
+            border-bottom: none;
+        }
+
+        .cta-section {
+            padding: 96px 0;
+            border-top: 1px solid var(--brutal-border);
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: clamp(36px, 8vw, 80px);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            margin-bottom: 24px;
+        }
+
+        .cta-subtitle {
+            color: var(--brutal-text-secondary);
+            max-width: 500px;
+            margin: 0 auto 36px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 32px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--brutal-text-primary);
+            color: var(--brutal-bg);
+            border: 1px solid var(--brutal-text-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 4px 4px 0 var(--brutal-text-primary);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--brutal-text-primary);
+            border: 1px solid var(--brutal-border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--brutal-text-primary);
+            background: var(--brutal-surface);
+        }
+
+        footer {
+            padding: 48px 0;
+            border-top: 1px solid var(--brutal-border);
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--brutal-text-tertiary);
+        }
+
+        .footer-copy {
+            font-size: 11px;
+            color: var(--brutal-text-tertiary);
+            letter-spacing: var(--tracking-wide);
+        }
+
+        @media (max-width: 900px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-layout,
+            .post-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .posts-header,
+            .footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .footer-inner {
+                gap: 24px;
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav-cta {
+                padding: 10px 12px;
+                font-size: 10px;
+            }
+
+            .blog-hero {
+                padding-top: 112px;
+            }
+
+            .dispatch-line {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .post-card,
+            .topic-card {
+                padding: 28px;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                gap: 18px;
+            }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .post-card,
+            .topic-card,
+            .dispatch-card {
+                animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+            }
+
+            .topic-card { animation-delay: 0.12s; }
+
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-mark"><img src="/logo-64.webp" width="64" height="64" alt="imghost"></div>
+                <span>imghost</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/#pricing">Pricing</a></li>
+                <li><a href="/#faq">FAQ</a></li>
+                <li><a href="/blog/" aria-current="page">Blog</a></li>
+            </ul>
+            <a class="nav-cta" href="https://apps.apple.com/us/app/imghost/id6758588596">Download</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="blog-hero">
+            <div class="container">
+                <div class="hero-layout">
+                    <div>
+                        <div class="section-label">imghost / Blog</div>
+                        <h1 class="hero-title">Notes from the link pipeline.</h1>
+                        <p class="hero-subtitle">A home for imghost product updates, practical Share Sheet workflows, and implementation notes around turning iPhone and Mac media into clean direct links. The first guide is live.</p>
+                    </div>
+                    <aside class="dispatch-card" aria-label="Blog editorial scope">
+                        <div class="dispatch-card-label">Editorial Scope</div>
+                        <div class="dispatch-line">
+                            <span class="dispatch-key">Format</span>
+                            <span class="dispatch-value">Release notes, workflow guides, and engineering notes.</span>
+                        </div>
+                        <div class="dispatch-line">
+                            <span class="dispatch-key">Focus</span>
+                            <span class="dispatch-value">Share Sheet uploads, direct URLs, Markdown/HTML/BBCode output, export, and ownership.</span>
+                        </div>
+                        <div class="dispatch-line">
+                            <span class="dispatch-key">Status</span>
+                            <span class="dispatch-value">First local post published; future standalone pages can follow the same /blog/&lt;slug&gt;/ shape.</span>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section class="posts" aria-labelledby="latest-posts">
+            <div class="container">
+                <div class="posts-header">
+                    <div>
+                        <div class="section-label">Latest</div>
+                        <h2 class="section-title" id="latest-posts">First dispatch: image to link.</h2>
+                    </div>
+                    <p class="section-note">Practical workflows for turning screenshots, photos, and files into direct URLs and formatted snippets.</p>
+                </div>
+
+                <div class="post-grid">
+                    <article class="post-card" aria-label="How to turn an image into a shareable link from iPhone or Mac">
+                        <div>
+                            <div class="post-meta">
+                                <span class="post-chip ready">June 14, 2026</span>
+                                <span class="post-chip">Workflow</span>
+                            </div>
+                            <h3 class="post-title">How to turn an image into a shareable link from iPhone or Mac.</h3>
+                            <p class="post-excerpt">Choose a photo, screenshot, or file; share it to imghost; then paste a raw URL, Markdown, HTML, BBCode, Obsidian, or custom-format link wherever it belongs.</p>
+                        </div>
+                        <a class="post-action" href="/blog/turn-image-into-shareable-link/" aria-label="Read how to turn an image into a shareable link from iPhone or Mac">Read the guide</a>
+                    </article>
+
+                    <aside class="topic-card" aria-label="Planned blog topics">
+                        <div>
+                            <div class="section-label">Planned Topics</div>
+                            <h3 class="post-title">What belongs here.</h3>
+                            <ul class="topic-list">
+                                <li>Short release notes when App Store builds ship.</li>
+                                <li>Copy-format examples for docs, issues, forums, and notes.</li>
+                                <li>Export and deletion workflows for keeping control of uploads.</li>
+                                <li>Implementation notes from the Cloudflare Worker, R2, and D1 backend.</li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2 class="cta-title">NEED A LINK<br>RIGHT NOW?</h2>
+                <p class="cta-subtitle">The blog can wait. imghost is available on the App Store for turning iPhone media into hosted links from the native Share Sheet.</p>
+                <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-primary">Download free on App Store</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-inner">
+                <ul class="footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/privacy.html">Privacy</a></li>
+                    <li><a href="/terms.html">Terms</a></li>
+                    <li><a href="mailto:cody@isolated.tech">Support</a></li>
+                </ul>
+                <div class="footer-copy">&copy; 2026 imghost. Built with brutality.</div>
+            </div>
+        </div>
+    </footer>
+<!-- Cloudflare Web Analytics -->
+<script>
+(function () {
+  var productionHosts = {
+    'instareply.isolated.tech': true,
+    'voxboard.isolated.tech': true,
+    'healthmd.isolated.tech': true,
+    'isome.isolated.tech': true,
+    'gitsyncmd.isolated.tech': true,
+    'timemd.isolated.tech': true,
+    'imghost.isolated.tech': true
+  };
+
+  if (!productionHosts[window.location.hostname]) {
+    return;
+  }
+
+  function loadCloudflareBeacon() {
+    if (document.querySelector('script[src="https://static.cloudflareinsights.com/beacon.min.js"]')) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.defer = true;
+    script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    script.setAttribute('data-cf-beacon', '{"token":"090f363070334cddad5c5cc1509b8807"}');
+    document.head.appendChild(script);
+  }
+
+  fetch('https://img-host.costream.workers.dev/analytics-gate', {
+    cache: 'no-store',
+    mode: 'cors',
+    credentials: 'omit'
+  })
+    .then(function (response) {
+      return response.ok ? response.json() : { track: false };
+    })
+    .then(function (gate) {
+      if (gate && gate.track) {
+        loadCloudflareBeacon();
+      }
+    })
+    .catch(function () {
+      // Fail closed so excluded IPs are not accidentally tracked.
+    });
+})();
+</script>
+<!-- End Cloudflare Web Analytics -->
+</body>
+</html>
