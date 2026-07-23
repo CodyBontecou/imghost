@@ -1,0 +1,270 @@
+# Fire when App Store Connect approves an imghost release.
+#
+# Triggered by repository_dispatch from asc-webhook-worker with:
+#   { state: "READY_FOR_DISTRIBUTION", appStoreVersionId: "<uuid>" }
+# Manual mode resolves a known version and platform so the workflow can be
+# smoke-tested without waiting for another App Store review.
+#
+# Effects:
+#   - Promote a matching draft GitHub release, if one exists
+#   - Optionally trigger the llm-wiki launch checklist scaffold
+#   - Record the approved release in the isolated.tech internal registry
+#
+# Required secrets:
+#   ASC_KEY_ID, ASC_ISSUER_ID, ASC_API_KEY_P8
+#   INTERNAL_RELEASE_API_TOKEN
+# Required vars:
+#   INTERNAL_RELEASE_API_URL
+# Optional secrets:
+#   LLM_WIKI_DISPATCH_TOKEN
+
+name: Announce release
+
+on:
+  repository_dispatch:
+    types: [asc-approved]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 1.4.2)'
+        required: true
+        type: string
+      platform:
+        description: 'Platform'
+        required: true
+        type: choice
+        options: [IOS, MAC_OS]
+      dry_run:
+        description: 'Resolve release metadata without publishing side effects'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+env:
+  APP_NAME: imghost
+  APP_SLUG: imghost
+  ASC_APP_ID: '6758588596'
+  APP_STORE_URL: https://apps.apple.com/us/app/imghost/id6758588596
+  BUNDLE_ID: com.codybontecou.imghost
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install CLI dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl jq
+          export INSTALL_DIR="$HOME/.local/bin"
+          curl -fsSL https://asccli.sh/install | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/asc" version
+          gh --version
+
+      - name: Configure asc CLI
+        env:
+          ASC_KEY_ID_SECRET: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID_SECRET: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        run: |
+          if [[ -z "$ASC_KEY_ID_SECRET" || -z "$ASC_ISSUER_ID_SECRET" || -z "$ASC_API_KEY_P8" ]]; then
+            echo "::error::Missing ASC_KEY_ID, ASC_ISSUER_ID, or ASC_API_KEY_P8 repository secret"
+            exit 1
+          fi
+
+          ASC_KEY_DIR="$RUNNER_TEMP/.asc-keys"
+          mkdir -p "$ASC_KEY_DIR"
+          chmod 700 "$ASC_KEY_DIR"
+          ASC_KEY_PATH="$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID_SECRET}.p8"
+          if ! printf '%s' "$ASC_API_KEY_P8" | base64 --decode > "$ASC_KEY_PATH" 2>/dev/null; then
+            printf '%s' "$ASC_API_KEY_P8" > "$ASC_KEY_PATH"
+          fi
+          chmod 600 "$ASC_KEY_PATH"
+          {
+            echo "ASC_KEY_ID=$ASC_KEY_ID_SECRET"
+            echo "ASC_ISSUER_ID=$ASC_ISSUER_ID_SECRET"
+            echo "ASC_PRIVATE_KEY_PATH=$ASC_KEY_PATH"
+            echo "ASC_BYPASS_KEYCHAIN=1"
+          } >> "$GITHUB_ENV"
+
+      - name: Resolve dispatch payload
+        id: meta
+        run: |
+          ASCV_ID='${{ github.event.client_payload.appStoreVersionId }}'
+          STATE='${{ github.event.client_payload.state }}'
+
+          if [[ -n "$ASCV_ID" ]]; then
+            echo "Webhook mode: appStoreVersionId=$ASCV_ID state=$STATE"
+            V_JSON=$(asc versions view --version-id "$ASCV_ID" --output json)
+            VERSION=$(printf '%s' "$V_JSON" | jq -r '.versionString // .attributes.versionString // .data.attributes.versionString // empty')
+            PLATFORM=$(printf '%s' "$V_JSON" | jq -r '.platform // .attributes.platform // .data.attributes.platform // empty')
+          else
+            VERSION='${{ inputs.version }}'
+            PLATFORM='${{ inputs.platform }}'
+            echo "Manual mode: version=$VERSION platform=$PLATFORM"
+          fi
+
+          if [[ -z "$VERSION" || -z "$PLATFORM" ]]; then
+            echo "::error::Could not resolve version and platform"
+            exit 1
+          fi
+          case "$PLATFORM" in
+            IOS|MAC_OS) ;;
+            *) echo "::error::Unsupported platform: $PLATFORM"; exit 1 ;;
+          esac
+
+          PLATFORM_LABEL=$([[ "$PLATFORM" == "MAC_OS" ]] && echo macOS || echo iOS)
+          {
+            echo "version=$VERSION"
+            echo "platform=$PLATFORM"
+            echo "platform_label=$PLATFORM_LABEL"
+            echo "tag=v$VERSION"
+            echo "dry_run=${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == true }}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Fetch release notes
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG='${{ steps.meta.outputs.tag }}'
+          NOTES_FILE="$RUNNER_TEMP/notes.md"
+
+          if gh release view "$TAG" --json id,isDraft,body > "$RUNNER_TEMP/release.json" 2>/dev/null; then
+            jq -r '.body // ""' "$RUNNER_TEMP/release.json" > "$NOTES_FILE"
+            IS_DRAFT=$(jq -r .isDraft "$RUNNER_TEMP/release.json")
+            HAS_RELEASE=true
+          else
+            echo "::notice::No GitHub release for $TAG; falling back to App Store What's New"
+            ASCV_ID='${{ github.event.client_payload.appStoreVersionId }}'
+            if [[ -z "$ASCV_ID" ]]; then
+              ASCV_ID=$(asc versions list \
+                --app "$ASC_APP_ID" \
+                --version '${{ steps.meta.outputs.version }}' \
+                --platform '${{ steps.meta.outputs.platform }}' \
+                --output json \
+                | jq -r '.data[0].id // empty')
+            fi
+
+            NOTES=""
+            if [[ -n "$ASCV_ID" ]]; then
+              NOTES=$(asc localizations list --version "$ASCV_ID" --locale en-US --output json 2>/dev/null \
+                | jq -r '.data[]? | select(.attributes.locale == "en-US") | .attributes.whatsNew // empty' \
+                | head -c 4000 || true)
+            fi
+            if [[ -z "$NOTES" ]]; then
+              NOTES="${APP_NAME} v${{ steps.meta.outputs.version }} is now live on ${{ steps.meta.outputs.platform_label }}."
+            fi
+            printf '%s\n' "$NOTES" > "$NOTES_FILE"
+            IS_DRAFT=false
+            HAS_RELEASE=false
+          fi
+
+          {
+            echo "is_draft=$IS_DRAFT"
+            echo "has_release=$HAS_RELEASE"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Promote draft GitHub release
+        if: steps.meta.outputs.dry_run != 'true' && steps.release.outputs.is_draft == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit '${{ steps.meta.outputs.tag }}' --draft=false
+
+      - name: Trigger llm-wiki launch checklist scaffold
+        if: steps.meta.outputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.LLM_WIKI_DISPATCH_TOKEN }}
+        run: |
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "::notice::LLM_WIKI_DISPATCH_TOKEN is not configured; skipping launch checklist dispatch"
+            exit 0
+          fi
+
+          gh api -X POST repos/CodyBontecou/llm-wiki/dispatches \
+            -f event_type=generate-launch-checklist \
+            -F "client_payload[app]=$APP_SLUG" \
+            -F "client_payload[version]=${{ steps.meta.outputs.version }}" \
+            -F "client_payload[asc_id]=$ASC_APP_ID" \
+            -F "client_payload[repo]=${{ github.repository }}"
+
+      - name: Record release in internal registry
+        if: steps.meta.outputs.dry_run != 'true'
+        env:
+          INTERNAL_RELEASE_API_URL: ${{ vars.INTERNAL_RELEASE_API_URL }}
+          INTERNAL_RELEASE_API_TOKEN: ${{ secrets.INTERNAL_RELEASE_API_TOKEN }}
+          ASCV_ID: ${{ github.event.client_payload.appStoreVersionId }}
+        run: |
+          if [[ -z "${INTERNAL_RELEASE_API_URL:-}" || -z "${INTERNAL_RELEASE_API_TOKEN:-}" ]]; then
+            echo "::error::INTERNAL_RELEASE_API_URL and INTERNAL_RELEASE_API_TOKEN are required"
+            exit 1
+          fi
+
+          PAYLOAD_FILE="$RUNNER_TEMP/internal-release.json"
+          jq -n \
+            --arg name "$APP_NAME" \
+            --arg slug "$APP_SLUG" \
+            --arg appStoreId "$ASC_APP_ID" \
+            --arg bundleId "$BUNDLE_ID" \
+            --arg repoUrl "https://github.com/${{ github.repository }}" \
+            --arg appStoreUrl "$APP_STORE_URL" \
+            --arg version '${{ steps.meta.outputs.version }}' \
+            --arg platform '${{ steps.meta.outputs.platform }}' \
+            --rawfile releaseNotes "$RUNNER_TEMP/notes.md" \
+            --arg publishedAt "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg ascVersionId "${ASCV_ID:-}" \
+            --arg source "asc-webhook" \
+            --arg sourceUrl "https://github.com/${{ github.repository }}/releases/tag/${{ steps.meta.outputs.tag }}" \
+            '{
+              app: {
+                name: $name,
+                slug: $slug,
+                appStoreId: $appStoreId,
+                bundleId: $bundleId,
+                repoUrl: $repoUrl,
+                appStoreUrl: $appStoreUrl
+              },
+              version: $version,
+              platform: $platform,
+              releaseNotes: $releaseNotes,
+              publishedAt: $publishedAt,
+              ascVersionId: $ascVersionId,
+              source: $source,
+              sourceUrl: $sourceUrl
+            }' > "$PAYLOAD_FILE"
+
+          RESP=$(curl --fail-with-body --retry 3 --retry-all-errors --max-time 30 -sS \
+            -X POST "$INTERNAL_RELEASE_API_URL" \
+            -H "Authorization: Bearer $INTERNAL_RELEASE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@$PAYLOAD_FILE")
+          echo "$RESP" | jq -e '.data.release.id and (.error == null)' >/dev/null
+          echo "Recorded $APP_NAME v${{ steps.meta.outputs.version }} (${{ steps.meta.outputs.platform_label }}) in internal registry"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## imghost ${{ steps.meta.outputs.tag }} (${{ steps.meta.outputs.platform_label }})"
+            echo ""
+            if [[ "${{ steps.meta.outputs.dry_run }}" == "true" ]]; then
+              echo "- Mode: dry run; no publishing side effects"
+            else
+              echo "- Internal release registry: recorded"
+              echo "- llm-wiki: dispatched if token was configured"
+            fi
+            if [[ "${{ steps.release.outputs.has_release }}" == "true" ]]; then
+              echo "- GitHub release: ${{ steps.release.outputs.is_draft == 'true' && 'promoted from draft' || 'already published' }}"
+            else
+              echo "- GitHub release: skipped; release notes came from App Store Connect"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
