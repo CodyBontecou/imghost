@@ -2,6 +2,13 @@
 
 Complete user authentication system with JWT tokens, email verification, password reset, and rate limiting.
 
+## Staged Apple-to-email conversion
+
+See [EMAIL_CONVERSION.md](docs/EMAIL_CONVERSION.md) for the gated same-account API,
+security model, client contract, regression coverage and remaining rollout blockers.
+It is disabled by default; Settings UX/delivery/device/runtime verification is incomplete.
+This is not an administrative override or a supported production recovery flow yet.
+
 ## Features
 
 - Email/password authentication with PBKDF2 password hashing

@@ -332,8 +332,10 @@ export async function handleRefreshToken(request: Request, env: Env): Promise<Re
 
     // Optionally rotate refresh token (recommended for security)
     const newRefreshToken = Auth.generateSecureToken();
-    await db.revokeRefreshToken(refresh_token);
-    await db.createRefreshToken(user.id, newRefreshToken, 30 * 24 * 60 * 60 * 1000);
+    const rotated = await db.rotateRefreshToken(refresh_token, user.id, newRefreshToken, 30 * 24 * 60 * 60 * 1000);
+    if (!rotated) {
+      return json({ error: 'Invalid or expired refresh token' }, 401);
+    }
 
     return json({
       access_token: accessToken,
@@ -346,7 +348,7 @@ export async function handleRefreshToken(request: Request, env: Env): Promise<Re
       is_anonymous: user.is_anonymous === 1
     });
   } catch (error) {
-    console.error('Refresh token error:', error);
+    console.error('Refresh token failed');
     return json({ error: 'Invalid request body' }, 400);
   }
 }

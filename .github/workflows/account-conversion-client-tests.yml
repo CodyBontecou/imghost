@@ -1,0 +1,36 @@
+name: Account conversion client tests
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/imghost/Shared/AccountConversion/**'
+      - 'frontend/imghost/Tests/AccountConversionTests/**'
+      - 'frontend/imghost/Package.swift'
+      - 'frontend/imghost/imghost.xcodeproj/project.pbxproj'
+      - '.github/workflows/account-conversion-client-tests.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: account-conversion-client-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  service-tests:
+    runs-on: macos-15
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend/imghost
+    steps:
+      - uses: actions/checkout@v4
+      - name: XCTest shared client transport (no production network or StoreKit calls)
+        run: swift test --jobs 2
+      - name: Typecheck shared service for iOS simulator
+        run: >-
+          xcrun swiftc -typecheck -target arm64-apple-ios16.0-simulator
+          -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)"
+          Shared/AccountConversion/EmailConversionService.swift
+      - name: Validate Xcode project syntax
+        run: plutil -lint imghost.xcodeproj/project.pbxproj
