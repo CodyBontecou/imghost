@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Legacy disposable-environment helper: creates accounts and prints credentials.
+# Never run against production or publish its output. CI uses tests/*.test.ts.
 # Test Authentication API Endpoints
 # Usage: ./examples/test-auth.sh [base_url]
 # Example: ./examples/test-auth.sh http://localhost:8787
@@ -122,7 +124,7 @@ echo "Response: $FORGOT_RESPONSE"
 
 if echo "$FORGOT_RESPONSE" | grep -q "message"; then
   echo -e "${GREEN}✓ Forgot password request successful${NC}"
-  echo -e "${YELLOW}Note: Check server logs for password reset token${NC}"
+  echo -e "${YELLOW}Note: Copy the reset code from the received test email, never server logs${NC}"
 else
   echo -e "${RED}✗ Forgot password request failed${NC}"
 fi
@@ -139,7 +141,7 @@ echo "Response: $RESEND_RESPONSE"
 
 if echo "$RESEND_RESPONSE" | grep -q "message"; then
   echo -e "${GREEN}✓ Resend verification successful${NC}"
-  echo -e "${YELLOW}Note: Check server logs for verification token${NC}"
+  echo -e "${YELLOW}Note: Copy the verification code from the received test email${NC}"
 else
   echo -e "${RED}✗ Resend verification failed${NC}"
 fi
@@ -177,7 +179,7 @@ echo ""
 echo -e "${GREEN}All critical tests passed!${NC}"
 echo ""
 echo "Next steps:"
-echo "1. Check server logs for email verification token"
-echo "2. Test email verification: curl -X POST $BASE_URL/auth/verify-email -H 'Content-Type: application/json' -d '{\"token\":\"TOKEN_FROM_LOGS\"}'"
-echo "3. Test password reset with token from logs"
+echo "1. Check the received test email for the verification code"
+echo "2. Test email verification in the app or POST /auth/verify-email with that code"
+echo "3. Test password reset with the code from the received test email"
 echo ""

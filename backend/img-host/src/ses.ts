@@ -93,7 +93,8 @@ export async function sendEmailSES(
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`SES error ${response.status}: ${error}`);
+    // Provider responses can contain recipient/message details. Never propagate
+    // those to callers that may log errors.
+    throw new Error(`SES request rejected (HTTP ${response.status})`);
   }
 }
