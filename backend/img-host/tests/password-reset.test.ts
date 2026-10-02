@@ -6,20 +6,40 @@ import { Auth } from '../src/auth';
 import { Database } from '../src/database';
 
 // Execute production SQL, not a query-string mock. This small D1 adapter models
-// first/run and D1's documented meta.changes; it is not a Workers runtime test.
+// first/run/meta.changes and transactional batch; not a Workers runtime test.
 function d1(sqlite: DatabaseSync): D1Database {
+  const execute = new WeakMap<object, () => any>();
   return {
     prepare(sql: string) {
       const statement = sqlite.prepare(sql);
-      const bound = (...values: any[]) => ({
-        first: async () => statement.get(...values) || null,
-        all: async () => ({ results: statement.all(...values), success: true }),
-        run: async () => {
+      const bound = (...values: any[]) => {
+        const run = () => {
           const result = statement.run(...values);
           return { success: true, meta: { changes: Number(result.changes) } };
-        },
-      });
-      return { ...bound(), bind: bound };
+        };
+        const prepared = {
+          first: async () => statement.get(...values) || null,
+          all: async () => ({ results: statement.all(...values), success: true }),
+          run: async () => run(),
+        };
+        execute.set(prepared, run);
+        return prepared;
+      };
+      const prepared = bound();
+      return Object.assign(prepared, { bind: bound });
+    },
+    async batch(statements: object[]) {
+      sqlite.exec('BEGIN');
+      try {
+        // Execute synchronously inside one SQLite transaction; no interleaving
+        // or nested transactions while modeling D1's serialized batch guarantee.
+        const results = statements.map(statement => execute.get(statement)!());
+        sqlite.exec('COMMIT');
+        return results;
+      } catch (error) {
+        sqlite.exec('ROLLBACK');
+        throw error;
+      }
     },
   } as unknown as D1Database;
 }
@@ -246,6 +266,38 @@ describe('emailed password reset through worker routes', () => {
     expect(console.log).not.toHaveBeenCalled();
     expect(vi.mocked(console.error).mock.calls).toEqual([['Forgot password: failed to send reset email']]);
     if (failure === 'missing credentials') expect(transport).not.toHaveBeenCalled();
+  });
+
+  it('rolls back reset state when session revocation fails and permits explicit retry', async () => {
+    const code = await requestCode();
+    const user = (await db.getUserByEmail('ordinary@example.com'))!;
+    const tokensBefore = sqlite.prepare('SELECT * FROM refresh_tokens').all();
+    sqlite.exec(`CREATE TEMP TRIGGER fail_reset_revocation BEFORE UPDATE OF revoked ON refresh_tokens
+      BEGIN SELECT RAISE(ABORT, 'simulated storage failure'); END;`);
+    const failed = await reset(code);
+    expect(failed.status).toBe(500);
+    expect(await failed.json()).toEqual({ error: 'Failed to reset password. Please try again.' });
+    expect(await db.getUserById(user.id)).toEqual(user);
+    expect(sqlite.prepare('SELECT * FROM refresh_tokens').all()).toEqual(tokensBefore);
+    expect(mail.filter(message => message.subject === 'Password Changed')).toHaveLength(0);
+    expect(vi.mocked(console.error).mock.calls).toEqual([['Reset password failed']]);
+    sqlite.exec('DROP TRIGGER fail_reset_revocation');
+    expect((await reset(code)).status).toBe(200);
+    expect(await Auth.verifyPassword(newPassword, (await db.getUserById(user.id))!.password_hash)).toBe(true);
+    expect(await db.getRefreshToken(`refresh-${user.id}`)).toBeNull();
+    expect((await reset(code)).status).toBe(400);
+  });
+
+  it.each(['{bad json', 'null', '[]', 'true'])('rejects malformed body %s without consuming a code', async body => {
+    const code = await requestCode();
+    const before = await db.getUserByEmail('ordinary@example.com');
+    const response = await worker.fetch(new Request('https://imghost.example/auth/reset-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body,
+    }), env, {} as ExecutionContext);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: 'Invalid request body' });
+    expect(await db.getUserByEmail('ordinary@example.com')).toEqual(before);
+    expect((await reset(code)).status).toBe(200);
   });
 
   it('reports a committed reset as successful even if the confirmation email fails', async () => {

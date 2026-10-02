@@ -35,6 +35,7 @@ References verified for this implementation:
 - [SES sandbox restrictions](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html)
 - [Apple private email relay configuration](https://developer.apple.com/help/account/capabilities/configure-private-email-relay-service/)
 - [D1 result metadata (`meta.changes`)](https://developers.cloudflare.com/d1/worker-api/return-object/)
+- [D1 transactional batch and rollback](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch)
 
 Use the existing database schema/migrations for a new disposable environment.
 This reset fix needs **no migration**, makes no changes to account IDs, Apple
@@ -55,12 +56,15 @@ Do not rerun initialization or destructive migrations on existing accounts.
 4. Sign in with the same email and new password. Apple-only accounts acquire a
    password on the existing user row; Apple sign-in remains linked to that row.
 
-`POST /auth/forgot-password` and `POST /auth/reset-password` JSON contracts are
-unchanged. Tokens are 32 random bytes encoded as base64, bound to the user's
-password-reset fields, expire after one hour, are replaced on another request,
-and are atomically cleared when the password changes. Expiry is rechecked after
-hashing so concurrent/expired/replaced challenges cannot update the password.
-Existing refresh tokens for that user are revoked; legacy API keys remain valid
+`POST /auth/forgot-password` and `POST /auth/reset-password` request and success
+JSON contracts are unchanged. Tokens are 32 random bytes encoded as base64,
+bound to the user's password-reset fields, expire after one hour, and are replaced
+on another request. After hashing, one D1 transaction uses matching account,
+challenge and expiry guards to revoke that user's refresh sessions, change the
+password and clear the code. Invalid/reused codes revoke nothing; a storage
+failure rolls back all three effects so the code remains available for retry.
+Malformed input/invalid codes return 400; internal reset failure returns a generic
+500, not a false post-commit "invalid request body". Legacy API keys remain valid
 for backwards compatibility and existing access JWTs expire normally (one hour).
 Confirmation-mail failure does not undo a committed reset or tell the client
 that its already-consumed code failed.
@@ -84,7 +88,8 @@ not the CI regression suite.
 including `tests/password-reset.test.ts`, on a public GitHub-hosted Ubuntu runner
 with Node 22 and at most two workers. The reset suite executes real production
 SQL against an in-memory Node SQLite database, adapts `first/run/meta.changes`
-to D1, calls the actual Worker routes, uses real PBKDF2 and the SES signing code,
+and serialized transactional `batch` to D1, calls the actual Worker routes, uses
+real PBKDF2 and the SES signing code,
 and replaces only the outbound fetch with a test transport. It uses `schema.sql`
 as the fixture; it does not prove migration ordering or live D1 behavior.
 
@@ -97,7 +102,8 @@ preservation, refresh revocation, email instructions, legacy GET safety, invalid
 wrong-purpose/expired/replaced/reused tokens, concurrent consumption, expiry or
 replacement during hashing, invalid password/token types, request rate limits,
 missing credentials/SES rejection/network failure without secret logs, and
-confirmation delivery failure after a successful reset.
+confirmation delivery failure after a successful reset, malformed JSON bodies,
+and injected session-revocation failure with rollback and explicit retry.
 
 ## Required owner/device QA before considering the issue complete
 

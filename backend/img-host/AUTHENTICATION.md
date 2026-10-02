@@ -182,7 +182,7 @@ Reset password using the token from email.
 }
 ```
 
-**Note:** All existing refresh tokens for this user are revoked. User ID, Apple link, API key, images and subscription are preserved. Existing access JWTs expire normally. Confirmation-mail failure does not change a successful reset response.
+**Note:** Refresh-session revocation, password update and reset-code consumption use one guarded D1 transaction. Invalid/reused codes do not revoke sessions; storage failure rolls back the transaction, returns a generic 500 and leaves the code available for retry. Malformed bodies/invalid codes return 400. User ID, Apple link, API key, images and subscription are preserved. Existing access JWTs expire normally. Confirmation-mail failure does not change a successful reset response.
 
 **Error Responses:**
 - `400 Bad Request`: Invalid, expired, replaced or reused token; invalid body or weak password

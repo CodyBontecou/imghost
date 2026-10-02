@@ -427,7 +427,16 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
   const db = new Database(env.DB);
 
   try {
-    const body = await request.json() as { token: string; new_password: string };
+    let body: { token?: unknown; new_password?: unknown };
+    try {
+      const parsed = await request.json();
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        return json({ error: 'Invalid request body' }, 400);
+      }
+      body = parsed as { token?: unknown; new_password?: unknown };
+    } catch {
+      return json({ error: 'Invalid request body' }, 400);
+    }
     const { token, new_password } = body;
 
     if (typeof token !== 'string' || !token || typeof new_password !== 'string' || !new_password) {
@@ -450,14 +459,11 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
     // Hash new password
     const passwordHash = await Auth.hashPassword(new_password);
 
-    // Recheck expiry and consume this account's reset challenge atomically. A second
-    // request (or a replacement code issued while hashing) must not change the password.
+    // Recheck expiry and atomically consume this account's challenge, change its
+    // password and revoke refresh sessions. Storage failure leaves the code reusable.
     if (!await db.consumePasswordResetToken(user.id, resetToken, passwordHash)) {
       return json({ error: 'Invalid or expired reset token' }, 400);
     }
-
-    // Revoke all refresh tokens for security
-    await db.revokeAllUserRefreshTokens(user.id);
 
     // The reset is already committed. Notification failure must not tell the client
     // the password change failed or encourage retrying a consumed code.
@@ -477,7 +483,7 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
     });
   } catch (error) {
     console.error('Reset password failed');
-    return json({ error: 'Invalid request body' }, 400);
+    return json({ error: 'Failed to reset password. Please try again.' }, 500);
   }
 }
 
