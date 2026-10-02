@@ -439,8 +439,10 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
       return json({ error: 'Password must be at least 8 characters long' }, 400);
     }
 
-    // Verify token
-    const user = await db.getUserByPasswordResetToken(token);
+    // Mail copy/paste can include a trailing newline; existing base64 tokens
+    // contain no whitespace. Keep the native POST contract unchanged.
+    const resetToken = token.trim();
+    const user = await db.getUserByPasswordResetToken(resetToken);
     if (!user) {
       return json({ error: 'Invalid or expired reset token' }, 400);
     }
@@ -450,7 +452,7 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
 
     // Recheck expiry and consume this account's reset challenge atomically. A second
     // request (or a replacement code issued while hashing) must not change the password.
-    if (!await db.consumePasswordResetToken(user.id, token, passwordHash)) {
+    if (!await db.consumePasswordResetToken(user.id, resetToken, passwordHash)) {
       return json({ error: 'Invalid or expired reset token' }, 400);
     }
 

@@ -183,6 +183,12 @@ describe('emailed password reset through worker routes', () => {
     expect((await reset(token)).status).toBe(400);
   });
 
+  it('accepts surrounding Mail copy/paste whitespace without altering base64 characters', async () => {
+    const code = await requestCode();
+    expect((await reset(` \t${code}\r\n`)).status).toBe(200);
+    expect((await reset(code)).status).toBe(400);
+  });
+
   it('binds consumption to the original account', async () => {
     const code = await requestCode();
     const other = (await db.getUserByEmail('other@example.com'))!;
