@@ -148,9 +148,11 @@ describe('emailed password reset through worker routes', () => {
     if (user.apple_user_id) expect(await db.getUserByAppleId(user.apple_user_id)).toMatchObject({ id: user.id });
     const login = await api('/auth/login', { email, password: newPassword });
     expect(login.status).toBe(200);
-    expect(await login.json()).toMatchObject({ user_id: user.id, api_token: user.api_token, subscription_tier: 'pro' });
+    const loginReceipt = await login.json() as { refresh_token: string };
+    expect(loginReceipt).toMatchObject({ user_id: user.id, api_token: user.api_token, subscription_tier: 'pro' });
     expect((await api('/auth/login', { email, password: oldPassword })).status).toBe(401);
     expect((await reset(code)).status).toBe(400);
+    expect(await db.getRefreshToken(loginReceipt.refresh_token)).not.toBeNull();
     expect(console.log).not.toHaveBeenCalled();
     expect(console.error).not.toHaveBeenCalled();
   });
@@ -212,8 +214,10 @@ describe('emailed password reset through worker routes', () => {
   it('binds consumption to the original account', async () => {
     const code = await requestCode();
     const other = (await db.getUserByEmail('other@example.com'))!;
+    const tokensBefore = sqlite.prepare('SELECT * FROM refresh_tokens').all();
     expect(await db.consumePasswordResetToken(other.id, code, 'not-a-valid-hash')).toBe(false);
     expect(await db.getUserById(other.id)).toEqual(other);
+    expect(sqlite.prepare('SELECT * FROM refresh_tokens').all()).toEqual(tokensBefore);
     expect((await reset(code)).status).toBe(200);
   });
 
@@ -236,6 +240,7 @@ describe('emailed password reset through worker routes', () => {
   it.each(['expires', 'is replaced'])('rechecks a challenge that %s while hashing', async change => {
     const code = await requestCode();
     const user = (await db.getUserByEmail('ordinary@example.com'))!;
+    const tokensBefore = sqlite.prepare('SELECT * FROM refresh_tokens').all();
     const hashPassword = Auth.hashPassword.bind(Auth);
     vi.spyOn(Auth, 'hashPassword').mockImplementation(async password => {
       if (change === 'expires') vi.spyOn(Date, 'now').mockReturnValue(user.password_reset_token_expires!);
@@ -244,6 +249,7 @@ describe('emailed password reset through worker routes', () => {
     });
     expect((await reset(code)).status).toBe(400);
     expect((await db.getUserById(user.id))!.password_hash).toBe(user.password_hash);
+    expect(sqlite.prepare('SELECT * FROM refresh_tokens').all()).toEqual(tokensBefore);
   });
 
   it('uses the same success response for unknown email and enforces request rate limits', async () => {
