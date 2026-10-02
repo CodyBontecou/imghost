@@ -1,0 +1,35 @@
+name: Backend tests
+
+on:
+  pull_request:
+    paths:
+      - 'backend/img-host/**'
+      - '.github/workflows/backend-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend/img-host
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/img-host/package-lock.json
+      # Existing lockfile pairs Vitest 3 with the unused coverage-v8 4 plugin.
+      # Honor that lockfile without changing dependencies; this job does not use coverage.
+      - run: npm ci --legacy-peer-deps
+      - name: Run all backend behavior tests (including password-reset.test.ts)
+        run: npm test -- --maxWorkers=2

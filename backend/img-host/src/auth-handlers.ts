@@ -30,10 +30,9 @@ function json(data: unknown, status = 200): Response {
 async function sendEmail(to: string, subject: string, body: string, env: Env): Promise<boolean> {
   const from = env.EMAIL_FROM || 'noreply@isolated.tech';
 
-  // Fall back to console logging in local dev (no AWS credentials)
+  // Fail closed in every environment: email bodies contain authentication secrets.
   if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY) {
-    console.log(`[EMAIL] To: ${to}, Subject: ${subject}\n${body}`);
-    return true;
+    throw new Error('SES credentials are not configured');
   }
 
   await sendEmailSES(
@@ -398,18 +397,16 @@ export async function handleForgotPassword(request: Request, env: Env): Promise<
     const resetToken = Auth.generateSecureToken();
     await db.setPasswordResetToken(user.id, resetToken, 60 * 60 * 1000); // 1 hour
 
-    // Send reset email
-    const baseUrl = env.BASE_URL || 'https://your-domain.com';
-    const resetLink = `${baseUrl}/auth/reset-password?token=${encodeURIComponent(resetToken)}`;
+    // Both native clients already have a Reset Code field; do not advertise a web form.
     try {
       await sendEmail(
         email,
-        'Password Reset Request',
-        `You requested a password reset. Click this link to reset your password: ${resetLink}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, please ignore this email.`,
+        'Your imghost password reset code',
+        `Your password reset code is:\n\n${resetToken}\n\nIn imghost on iOS or macOS, return to Forgot Password and choose Enter Code. Copy the entire code above into the Reset Code field, then enter and confirm a new password (at least 8 characters).\n\nThis code expires in 1 hour and can be used only once. Requesting another code replaces this one.\n\nUse the same email address you requested this code for when signing in. This also lets you set a password for an account created with Sign in with Apple, without creating a new account.\n\nIf you didn't request this, please ignore this email. Never share this code.`,
         env
       );
-    } catch (error) {
-      console.error('Forgot password: failed to send reset email:', error);
+    } catch {
+      console.error('Forgot password: failed to send reset email');
       return json({ error: 'Failed to send password reset email. Please try again.' }, 500);
     }
 
@@ -417,7 +414,7 @@ export async function handleForgotPassword(request: Request, env: Env): Promise<
       message: 'If an account exists with this email, you will receive password reset instructions.'
     });
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error('Forgot password failed');
     return json({ error: 'Internal server error' }, 500);
   }
 }
@@ -433,7 +430,7 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
     const body = await request.json() as { token: string; new_password: string };
     const { token, new_password } = body;
 
-    if (!token || !new_password) {
+    if (typeof token !== 'string' || !token || typeof new_password !== 'string' || !new_password) {
       return json({ error: 'Token and new password required' }, 400);
     }
 
@@ -451,25 +448,33 @@ export async function handleResetPassword(request: Request, env: Env): Promise<R
     // Hash new password
     const passwordHash = await Auth.hashPassword(new_password);
 
-    // Update password and clear reset token
-    await db.updatePassword(user.id, passwordHash);
+    // Recheck expiry and consume this account's reset challenge atomically. A second
+    // request (or a replacement code issued while hashing) must not change the password.
+    if (!await db.consumePasswordResetToken(user.id, token, passwordHash)) {
+      return json({ error: 'Invalid or expired reset token' }, 400);
+    }
 
     // Revoke all refresh tokens for security
     await db.revokeAllUserRefreshTokens(user.id);
 
-    // Send confirmation email
-    await sendEmail(
-      user.email,
-      'Password Changed',
-      'Your password has been successfully changed. If you did not make this change, please contact support immediately.',
-      env
-    );
+    // The reset is already committed. Notification failure must not tell the client
+    // the password change failed or encourage retrying a consumed code.
+    try {
+      await sendEmail(
+        user.email,
+        'Password Changed',
+        'Your password has been successfully changed. If you did not make this change, please contact support immediately.',
+        env
+      );
+    } catch {
+      console.error('Reset password: failed to send confirmation email');
+    }
 
     return json({
       message: 'Password successfully reset. Please log in with your new password.'
     });
   } catch (error) {
-    console.error('Reset password error:', error);
+    console.error('Reset password failed');
     return json({ error: 'Invalid request body' }, 400);
   }
 }

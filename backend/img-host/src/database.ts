@@ -598,6 +598,17 @@ export class Database {
     return result || null;
   }
 
+  async consumePasswordResetToken(userId: string, token: string, passwordHash: string): Promise<boolean> {
+    const result = await this.db
+      .prepare(
+        `UPDATE users SET password_hash = ?, password_reset_token = NULL, password_reset_token_expires = NULL
+         WHERE id = ? AND password_reset_token = ? AND password_reset_token_expires > ?`
+      )
+      .bind(passwordHash, userId, token, Date.now())
+      .run();
+    return result.meta.changes === 1;
+  }
+
   async updatePassword(userId: string, passwordHash: string): Promise<void> {
     await this.db
       .prepare('UPDATE users SET password_hash = ?, password_reset_token = NULL, password_reset_token_expires = NULL WHERE id = ?')

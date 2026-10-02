@@ -150,7 +150,9 @@ Request a password reset email.
 
 **Rate Limit:** 3 requests per hour per IP
 
-**Note:** Always returns success to prevent email enumeration attacks.
+**Note:** Known and unknown emails receive the same success message when delivery succeeds. Delivery/configuration failures return 500 (and may reveal account existence); rate limits return 429.
+
+The email contains a copyable code with iOS/macOS Enter Code instructions, not a web reset link. For Apple-only accounts use the stored email (which may be a private-relay address). See [setup and delivery/device QA](./SETUP_AUTH.md).
 
 ### 5. Reset Password
 
@@ -167,8 +169,11 @@ Reset password using the token from email.
 ```
 
 **Requirements:**
-- Token must be valid and not expired (1 hour expiry)
-- New password must be at least 8 characters
+- Token must be a password-reset token for the existing account and not expired (1 hour expiry)
+- Token is single-use and replaced by a subsequent reset request
+- New password must be a string of at least 8 characters
+
+`GET /auth/reset-password?token=...` is a read-only native-code instruction page for previously emailed links; it never consumes a code or changes a password.
 
 **Response (200 OK):**
 ```json
@@ -177,11 +182,10 @@ Reset password using the token from email.
 }
 ```
 
-**Note:** All existing refresh tokens are revoked for security.
+**Note:** All existing refresh tokens for this user are revoked. User ID, Apple link, API key, images and subscription are preserved. Existing access JWTs expire normally. Confirmation-mail failure does not change a successful reset response.
 
 **Error Responses:**
-- `400 Bad Request`: Invalid token or weak password
-- `401 Unauthorized`: Expired token
+- `400 Bad Request`: Invalid, expired, replaced or reused token; invalid body or weak password
 
 ### 6. Verify Email
 
@@ -359,32 +363,23 @@ The system sends the following emails:
 
 ### Email Service Configuration
 
-Set these environment variables in `wrangler.toml` or `.dev.vars`:
+The implemented provider is Amazon SES v2. Configure `EMAIL_FROM` and `AWS_REGION`, and store `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` as secrets. There is no console-email fallback or SendGrid/Postmark integration. Missing credentials fail delivery without logging email bodies/codes.
 
-```toml
-EMAIL_FROM = "noreply@your-domain.com"
-EMAIL_API_KEY = "your-sendgrid-or-postmark-api-key"
-BASE_URL = "https://your-domain.com"
-```
-
-### Supported Email Providers
-
-- SendGrid (recommended)
-- Postmark
-- Cloudflare Email Workers
-- Any SMTP or API-based service
-
-Example SendGrid integration is commented in `src/auth-handlers.ts`.
+See [SETUP_AUTH.md](./SETUP_AUTH.md) for verified SES API, sandbox, Apple private-relay authentication requirements and delivery testing limits.
 
 ## Environment Variables
 
 Required:
 - `JWT_SECRET` - Secret key for signing JWT tokens (generate with `openssl rand -base64 32`)
 
+Required for email delivery:
+- `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` - SES credentials (secrets)
+
 Optional:
-- `EMAIL_FROM` - Sender email address
-- `EMAIL_API_KEY` - Email service API key
-- `BASE_URL` - Base URL for email links (e.g., `https://your-domain.com`)
+- `EMAIL_FROM` - Verified SES sender (default `noreply@isolated.tech`)
+- `AWS_REGION` - SES region (default `us-east-1`)
+
+`BASE_URL` is retained in the environment interface for compatibility but is not used to generate reset links.
 
 ### Setting up locally
 
@@ -392,22 +387,25 @@ Create `.dev.vars` file:
 
 ```env
 JWT_SECRET=your-secret-key-here
-EMAIL_FROM=noreply@your-domain.com
-BASE_URL=http://localhost:8787
+EMAIL_FROM=noreply@your-verified-domain.com
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-test-access-key
+AWS_SECRET_ACCESS_KEY=your-test-secret-key
 ```
 
 ### Setting up in production
 
 ```bash
 wrangler secret put JWT_SECRET
-wrangler secret put EMAIL_API_KEY
+wrangler secret put AWS_ACCESS_KEY_ID
+wrangler secret put AWS_SECRET_ACCESS_KEY
 ```
 
 Update `wrangler.toml`:
 ```toml
 [vars]
-EMAIL_FROM = "noreply@your-domain.com"
-BASE_URL = "https://your-domain.com"
+EMAIL_FROM = "noreply@your-verified-domain.com"
+AWS_REGION = "us-east-1"
 ```
 
 ## Migration Guide
@@ -438,7 +436,7 @@ The new authentication system maintains backward compatibility:
 4. **Monitor Rate Limits** - Track failed login attempts
 5. **Require Email Verification** - Enforce for sensitive operations
 6. **Rotate Refresh Tokens** - Tokens are automatically rotated
-7. **Revoke on Password Reset** - All sessions invalidated on password change
+7. **Revoke on Password Reset** - Refresh tokens are revoked; access JWTs expire normally
 
 ## Testing
 
@@ -450,7 +448,7 @@ curl -X POST http://localhost:8787/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password123"}'
 
-# Verify email (copy token from logs)
+# Verify email (copy code from the received test email)
 curl -X POST http://localhost:8787/auth/verify-email \
   -H "Content-Type: application/json" \
   -d '{"token":"VERIFICATION_TOKEN_HERE"}'
@@ -469,7 +467,7 @@ curl -X POST http://localhost:8787/auth/forgot-password \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com"}'
 
-# Reset password (copy token from logs)
+# Reset password (copy full code from the received test email, never logs)
 curl -X POST http://localhost:8787/auth/reset-password \
   -H "Content-Type: application/json" \
   -d '{"token":"RESET_TOKEN_HERE","new_password":"newpassword123"}'
@@ -494,9 +492,10 @@ curl -X POST http://localhost:8787/auth/refresh \
 - Ensure the same secret is used across all instances
 
 ### "Email not sent"
-- Verify `EMAIL_API_KEY` and `EMAIL_FROM` are configured
-- Check email service logs
-- Email sending is currently stubbed (see `auth-handlers.ts` for integration)
+- Verify SES credentials, region and verified `EMAIL_FROM` identity
+- Check sandbox recipient restrictions and bounce/suppression metadata
+- For Apple private relay check registered sources and aligned SPF/DKIM
+- See [SETUP_AUTH.md](./SETUP_AUTH.md); never log/reset secrets
 
 ### "Rate limit exceeded"
 - Wait for the rate limit window to reset
