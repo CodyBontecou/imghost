@@ -268,11 +268,14 @@ describe('emailed password reset through worker routes', () => {
     if (failure === 'missing credentials') expect(transport).not.toHaveBeenCalled();
   });
 
-  it('rolls back reset state when session revocation fails and permits explicit retry', async () => {
+  it.each([
+    ['session revocation', 'refresh_tokens', 'revoked'],
+    ['password update', 'users', 'password_hash'],
+  ])('rolls back reset state when %s fails and permits explicit retry', async (_failure, table, column) => {
     const code = await requestCode();
     const user = (await db.getUserByEmail('ordinary@example.com'))!;
     const tokensBefore = sqlite.prepare('SELECT * FROM refresh_tokens').all();
-    sqlite.exec(`CREATE TEMP TRIGGER fail_reset_revocation BEFORE UPDATE OF revoked ON refresh_tokens
+    sqlite.exec(`CREATE TEMP TRIGGER fail_reset_write BEFORE UPDATE OF ${column} ON ${table}
       BEGIN SELECT RAISE(ABORT, 'simulated storage failure'); END;`);
     const failed = await reset(code);
     expect(failed.status).toBe(500);
@@ -281,7 +284,7 @@ describe('emailed password reset through worker routes', () => {
     expect(sqlite.prepare('SELECT * FROM refresh_tokens').all()).toEqual(tokensBefore);
     expect(mail.filter(message => message.subject === 'Password Changed')).toHaveLength(0);
     expect(vi.mocked(console.error).mock.calls).toEqual([['Reset password failed']]);
-    sqlite.exec('DROP TRIGGER fail_reset_revocation');
+    sqlite.exec('DROP TRIGGER fail_reset_write');
     expect((await reset(code)).status).toBe(200);
     expect(await Auth.verifyPassword(newPassword, (await db.getUserById(user.id))!.password_hash)).toBe(true);
     expect(await db.getRefreshToken(`refresh-${user.id}`)).toBeNull();
