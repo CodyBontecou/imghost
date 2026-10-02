@@ -120,6 +120,10 @@ This is additive authentication, not immediate replacement of Apple.
    Test real subscription entitlements/renewals without billing changes or repurchase.
 4. Verify D1 batch `changes()`/rollback behavior and migration parity in a nonproduction
    Worker. Unit adapter uses real SQLite transactions but is not Cloudflare runtime proof.
+   First cloud run failed applying historical migrations in order: 0004 indexes `user_id`
+   on 0002's `identifier`-based rate table. Fixture now uses the existing 0011 repair
+   **before** 0004; no historical production migration was changed. Verify actual deployed
+   schema/migration procedure independently, not by assuming a clean chronological replay.
 5. Add durable retry/alerting for `notification_pending` without credential/customer logs;
    define restricted audit retention and expire/scrub abandoned challenge snapshots. There
    is currently no background notification retry or scheduled challenge cleanup. One row

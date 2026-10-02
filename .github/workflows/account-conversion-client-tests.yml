@@ -3,6 +3,8 @@ name: Account conversion client tests
 on:
   pull_request:
     paths:
+      - 'backend/img-host/src/email-conversion.ts'
+      - 'backend/img-host/tests/email-conversion.test.ts'
       - 'frontend/imghost/Shared/AccountConversion/**'
       - 'frontend/imghost/Tests/AccountConversionTests/**'
       - 'frontend/imghost/Package.swift'

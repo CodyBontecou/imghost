@@ -12,7 +12,12 @@ class SQLiteD1 {
   failBatchAt = -1;
   constructor() {
     this.sql.exec('PRAGMA foreign_keys = ON');
-    for (const file of readdirSync('migrations').filter(f => f.endsWith('.sql')).sort()) {
+    // Historical 0004 tries indexing user_id on 0002's identifier-based table.
+    // Use the repository's explicit 0011 repair before 0004, without changing either
+    // production migration. This fixture is the repaired schema, not rollout parity proof.
+    const repair = '0011_fix_rate_limits_schema.sql';
+    for (const file of readdirSync('migrations').filter(f => f.endsWith('.sql') && f !== repair).sort()) {
+      if (file === '0004_rate_limiting.sql') this.sql.exec(readFileSync(`migrations/${repair}`, 'utf8'));
       this.sql.exec(readFileSync(`migrations/${file}`, 'utf8'));
     }
   }
