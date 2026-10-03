@@ -15,7 +15,6 @@ jobs:
     timeout-minutes: 6
     env:
       AUDIT_HEAD: 93b19483f9913f4fd584f5434ad179dad1a2a5aa
-      RECEIPTS: ${{ runner.temp }}/audit-receipts
       NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
       NPM_CONFIG_OMIT: ''
       NPM_CONFIG_INCLUDE: ''
@@ -35,6 +34,8 @@ jobs:
       - name: Record pinned virtual-graph provenance (no install)
         working-directory: backend/img-host
         run: |
+          export RECEIPTS="$RUNNER_TEMP/audit-receipts"
+          echo "RECEIPTS=$RECEIPTS" >> "$GITHUB_ENV"
           mkdir -p "$RECEIPTS"
           python3 - <<'PY'
           import datetime, hashlib, json, os, pathlib, subprocess
@@ -105,6 +106,7 @@ jobs:
         if: always()
         working-directory: backend/img-host
         run: |
+          export RECEIPTS="$RUNNER_TEMP/audit-receipts"
           python3 - <<'PY'
           import datetime, hashlib, json, os, pathlib, subprocess
           directory = pathlib.Path(os.environ['RECEIPTS'])
