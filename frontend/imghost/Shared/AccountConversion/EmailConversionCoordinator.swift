@@ -136,7 +136,7 @@ final class EmailConversionCoordinator: ObservableObject {
         message = notificationPending
             ? String(localized: "New email login verified and saved on this device. Apple access remains. Confirmation delivery is pending.")
             : String(localized: "New email login verified and saved on this device. Apple access remains. Your library and subscription were not reset.")
-        password = ""
+        self.password = ""
         confirmation = ""
         code = ""
     }

@@ -8,6 +8,7 @@ enum EmailConversionAppleProof {
     }
 }
 
+@available(macOS 14.0, *)
 struct EmailConversionView: View {
     @StateObject private var flow: EmailConversionCoordinator
     @Environment(\.dismiss) private var dismiss
