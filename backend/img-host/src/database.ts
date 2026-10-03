@@ -636,6 +636,21 @@ export class Database {
     return result || null;
   }
 
+  // Atomic rotation: conversion/logout revocation must beat any in-flight refresh.
+  // D1 batch rolls back both statements on error; changes() gates issuance on single-use.
+  async rotateRefreshToken(token: string, userId: string, replacement: string, expiresInMs: number): Promise<boolean> {
+    const now = Date.now();
+    const results = await this.db.batch([
+      this.db.prepare(`UPDATE refresh_tokens SET revoked = 1
+        WHERE token = ? AND user_id = ? AND revoked = 0 AND expires_at > ?`)
+        .bind(token, userId, now),
+      this.db.prepare(`INSERT INTO refresh_tokens (id, user_id, token, expires_at, created_at, revoked)
+        SELECT ?, ?, ?, ?, ?, 0 WHERE changes() = 1`)
+        .bind(crypto.randomUUID(), userId, replacement, now + expiresInMs, now),
+    ]);
+    return results[0].meta.changes === 1;
+  }
+
   async revokeRefreshToken(token: string): Promise<void> {
     await this.db
       .prepare('UPDATE refresh_tokens SET revoked = 1 WHERE token = ?')

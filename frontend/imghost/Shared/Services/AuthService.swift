@@ -13,11 +13,19 @@ final class AuthService {
 
     private let keychainService = KeychainService.shared
     private let session: URLSession
+    private let sessionRefresh: SessionRefreshCoordinator
 
     private init() {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
-        self.session = URLSession(configuration: config)
+        let httpSession = URLSession(configuration: config)
+        self.session = httpSession
+        self.sessionRefresh = SessionRefreshCoordinator(sessions: KeychainService.shared.sessions,
+            baseURL: URL(string: Config.backendURL)!, transport: { request in
+                let (data, response) = try await httpSession.data(for: request)
+                guard let http = response as? HTTPURLResponse else { throw AuthError.networkError }
+                return (data, http)
+            })
     }
 
     private var baseURL: String {
@@ -172,39 +180,15 @@ final class AuthService {
     }
 
     func refreshTokens() async throws {
-        guard let refreshToken = keychainService.loadRefreshToken() else {
-            throw AuthError.noRefreshToken
-        }
-
-        let url = URL(string: "\(baseURL)/auth/refresh")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let body = ["refresh_token": refreshToken]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, response) = try await session.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw AuthError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw AuthError.refreshFailed
-        }
-
-        let refreshResponse = try JSONDecoder().decode(RefreshResponse.self, from: data)
-
-        // Save new tokens
-        try keychainService.saveAccessToken(refreshResponse.accessToken)
-        try keychainService.saveRefreshToken(refreshResponse.refreshToken)
-        let expiry = Date().addingTimeInterval(TimeInterval(refreshResponse.expiresIn))
-        try keychainService.saveTokenExpiry(expiry)
+        try await sessionRefresh.refresh()
     }
 
-    func logout() {
-        keychainService.clearAllTokens()
+    func prepareConversionSession(_ captured: AtomicSessionStore.Snapshot) async throws -> AtomicSessionStore.Snapshot {
+        try await sessionRefresh.ensureValidSession(replacing: captured)
+    }
+
+    func logout() throws {
+        try keychainService.clearAllTokens()
     }
 
     // MARK: - Password Reset
@@ -349,7 +333,7 @@ final class AuthService {
         switch httpResponse.statusCode {
         case 200:
             // Clear local tokens after successful deletion
-            keychainService.clearAllTokens()
+            try keychainService.clearAllTokens()
             return
         case 401:
             // Token is invalid even after refresh attempt - session is expired
@@ -406,9 +390,8 @@ final class AuthService {
 
     /// Ensure we have a valid access token, refreshing if needed
     func ensureValidToken() async throws {
-        if isTokenExpired() {
-            try await refreshTokens()
-        }
+        // Also drains a returned-but-unsaved refresh response before another request.
+        _ = try await sessionRefresh.ensureValidSession()
     }
 }
 

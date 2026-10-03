@@ -1,0 +1,79 @@
+name: Account conversion client tests
+
+on:
+  pull_request:
+    paths:
+      - 'backend/img-host/src/email-conversion.ts'
+      - 'backend/img-host/tests/email-conversion.test.ts'
+      - 'frontend/imghost/Shared/**'
+      - 'frontend/imghost/imghost/**'
+      - 'frontend/imghost/imghostMac/**'
+      - 'frontend/imghost/ShareExtension/**'
+      - 'frontend/imghost/MacShareExtension/**'
+      - 'frontend/imghost/Tests/AccountConversionTests/**'
+      - 'frontend/imghost/Package.swift'
+      - 'frontend/imghost/imghost.xcodeproj/project.pbxproj'
+      - '.github/workflows/account-conversion-client-tests.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: account-conversion-client-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  service-tests:
+    runs-on: macos-15
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: frontend/imghost
+    steps:
+      - uses: actions/checkout@v4
+      - name: XCTest production coordinator, AuthState and Security adapter (injected network/syscall faults)
+        run: swift test --jobs 2
+      - name: Typecheck shared service for iOS simulator
+        run: >-
+          xcrun swiftc -typecheck -target arm64-apple-ios16.0-simulator
+          -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)"
+          Shared/AccountConversion/*.swift Shared/Models/AuthState.swift
+          Shared/Models/AuthResponse.swift Shared/Models/User.swift Shared/Models/ImghostError.swift
+          Shared/Services/KeychainService.swift Shared/Config.swift
+      - name: Validate Xcode project syntax
+        run: plutil -lint imghost.xcodeproj/project.pbxproj
+      - name: Compile full iOS app and share extension without signing or launching
+        run: >-
+          xcodebuild -project imghost.xcodeproj -scheme imghost -configuration Debug
+          -destination 'generic/platform=iOS Simulator' -jobs 2
+          -derivedDataPath "$RUNNER_TEMP/conversion-ios-build"
+          CODE_SIGNING_ALLOWED=NO build
+      - name: Compile full macOS app and share extension without signing or launching
+        run: >-
+          xcodebuild -project imghost.xcodeproj -scheme imghostMac -configuration Debug
+          -destination 'platform=macOS' -jobs 2
+          -derivedDataPath "$RUNNER_TEMP/conversion-mac-build"
+          CODE_SIGNING_ALLOWED=NO build
+
+  ios-xctest:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Isolate package from adjacent application project (symlinks, no duplicate sources)
+        run: |
+          mkdir -p "$RUNNER_TEMP/conversion-package"
+          for entry in Package.swift Shared Tests; do
+            ln -s "$GITHUB_WORKSPACE/frontend/imghost/$entry" "$RUNNER_TEMP/conversion-package/$entry"
+          done
+      - name: Run the same production adoption tests on iOS simulator (no app/production launch)
+        working-directory: ${{ runner.temp }}/conversion-package
+        run: |
+          set -o pipefail
+          xcodebuild -list -json > "$RUNNER_TEMP/conversion-schemes.json"
+          SCHEME=$(python3 -c 'import json,os; d=json.load(open(os.environ["RUNNER_TEMP"]+"/conversion-schemes.json")); s=d.get("workspace",d.get("project",{}))["schemes"]; m=[x for x in s if "AccountConversion" in x]; assert len(m)==1, s; print(m[0])')
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c 'import sys,json; d=json.load(sys.stdin); a=[v["udid"] for k,vs in d["devices"].items() if "iOS" in k for v in vs if v["name"].startswith("iPhone")]; assert a; print(a[0])')
+          xcodebuild -scheme "$SCHEME" -destination "platform=iOS Simulator,id=$DEVICE" \
+            -jobs 2 -parallel-testing-enabled NO \
+            -derivedDataPath "$RUNNER_TEMP/conversion-ios-tests" \
+            -resultBundlePath "$RUNNER_TEMP/conversion-ios-tests.xcresult" test

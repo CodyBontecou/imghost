@@ -1,4 +1,5 @@
 import Foundation
+import Security
 
 enum ImghostError: LocalizedError {
     case notConfigured
