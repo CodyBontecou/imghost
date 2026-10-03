@@ -1,0 +1,183 @@
+name: Frozen-lock advisory receipts
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/audit-receipts.yml'
+      - '.github/AUDIT_RECEIPTS.md'
+
+permissions:
+  contents: read
+
+jobs:
+  audit-receipts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      AUDIT_HEAD: 93b19483f9913f4fd584f5434ad179dad1a2a5aa
+      RECEIPTS: ${{ runner.temp }}/audit-receipts
+      NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+      NPM_CONFIG_OMIT: ''
+      NPM_CONFIG_INCLUDE: ''
+      NPM_CONFIG_IGNORE_SCRIPTS: 'true'
+      NPM_CONFIG_UPDATE_NOTIFIER: 'false'
+      NPM_CONFIG_FETCH_RETRIES: '0'
+      NPM_CONFIG_FETCH_TIMEOUT: '60000'
+      NODE_ENV: ''
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 93b19483f9913f4fd584f5434ad179dad1a2a5aa
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - name: Record pinned virtual-graph provenance (no install)
+        working-directory: backend/img-host
+        run: |
+          mkdir -p "$RECEIPTS"
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, subprocess
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          def npm(*args):
+              return subprocess.check_output(['npm', *args], text=True).strip()
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE'])
+          event = json.loads(pathlib.Path(os.environ['GITHUB_EVENT_PATH']).read_text())
+          files = ['package.json', 'package-lock.json', 'backend/img-host/package.json', 'backend/img-host/package-lock.json']
+          data = {
+              'startedUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'runUrl': f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+              'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'event': os.environ['GITHUB_EVENT_NAME'],
+              'eventHead': os.environ['GITHUB_SHA'],
+              'workflowRef': os.environ['GITHUB_WORKFLOW_REF'],
+              'workflowSha': os.environ['GITHUB_WORKFLOW_SHA'],
+              'pullRequestHead': event.get('pull_request', {}).get('head', {}).get('sha'),
+              'auditHead': git('rev-parse', 'HEAD'),
+              'auditTree': git('rev-parse', 'HEAD^{tree}'),
+              'checkoutStatusBefore': git('status', '--porcelain', '--untracked-files=all'),
+              'fileSha256Before': {f: hashlib.sha256((root / f).read_bytes()).hexdigest() for f in files},
+              'node': subprocess.check_output(['node', '--version'], text=True).strip(),
+              'npm': npm('--version'),
+              'registry': npm('config', 'get', 'registry'),
+              'configuredOmit': npm('config', 'get', 'omit'),
+              'configuredInclude': npm('config', 'get', 'include'),
+              'workingDirectory': 'backend/img-host',
+              'graph': 'package-lock-only virtual graph; not the historic installed 146-package graph',
+              'gate': 'OPEN: measurement only, not security clearance or rollout evidence',
+          }
+          pathlib.Path(os.environ['RECEIPTS'], 'provenance.json').write_text(json.dumps(data, indent=2) + '\n')
+          assert data['auditHead'] == os.environ['AUDIT_HEAD'], data
+          assert data['auditTree'] == '631c1656c6711dbd01e36f2395c7508fe2739001', data
+          assert data['checkoutStatusBefore'] == '', data
+          assert not (root / 'backend/img-host/node_modules').exists(), 'Installed graph is forbidden'
+          assert data['node'] == 'v22.23.3' and data['npm'] == '10.9.9', data
+          assert data['registry'] == 'https://registry.npmjs.org/', data
+          assert data['configuredOmit'] == data['configuredInclude'] == '', data
+          PY
+      - name: Capture full and omit-dev JSON, stderr, UTC and actual exits
+        working-directory: backend/img-host
+        run: |
+          for mode in full omit-dev; do
+            start=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            set +e
+            if [ "$mode" = full ]; then
+              npm audit --package-lock-only --ignore-scripts --legacy-peer-deps --json > "$RECEIPTS/$mode.json" 2> "$RECEIPTS/$mode.stderr.txt"
+            else
+              npm audit --package-lock-only --ignore-scripts --legacy-peer-deps --omit=dev --json > "$RECEIPTS/$mode.json" 2> "$RECEIPTS/$mode.stderr.txt"
+            fi
+            status=$?
+            set -e
+            end=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            MODE="$mode" START="$start" END="$end" STATUS="$status" python3 - <<'PY'
+          import json, os, pathlib
+          mode = os.environ['MODE']
+          command = 'npm audit --package-lock-only --ignore-scripts --legacy-peer-deps '
+          command += '--omit=dev --json' if mode == 'omit-dev' else '--json'
+          receipt = {'command': command, 'startedUtc': os.environ['START'], 'endedUtc': os.environ['END'],
+                     'exitStatus': int(os.environ['STATUS']), 'omit': 'dev' if mode == 'omit-dev' else '',
+                     'include': '', 'graph': 'frozen-lock virtual graph'}
+          pathlib.Path(os.environ['RECEIPTS'], mode + '.execution.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PY
+          done
+      - name: Validate structured receipts and unchanged checkout; findings keep gate OPEN
+        if: always()
+        working-directory: backend/img-host
+        run: |
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, subprocess
+          directory = pathlib.Path(os.environ['RECEIPTS'])
+          directory.mkdir(exist_ok=True)
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE'])
+          errors, summaries = [], {}
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          try:
+              before = json.loads((directory / 'provenance.json').read_text())
+              after = {f: hashlib.sha256((root / f).read_bytes()).hexdigest() for f in before['fileSha256Before']}
+              status = git('status', '--porcelain', '--untracked-files=all')
+              final = {'endedUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                       'auditHeadAfter': git('rev-parse', 'HEAD'), 'auditTreeAfter': git('rev-parse', 'HEAD^{tree}'),
+                       'checkoutStatusAfter': status, 'fileSha256After': after}
+              assert after == before['fileSha256Before'], 'Lock/manifest mutation'
+              assert status == before['checkoutStatusBefore'] == '', 'Checkout mutation'
+              assert final['auditHeadAfter'] == before['auditHead'] == os.environ['AUDIT_HEAD'], 'HEAD mutation'
+              assert final['auditTreeAfter'] == before['auditTree'] == '631c1656c6711dbd01e36f2395c7508fe2739001', 'Tree mutation'
+              assert before['node'] == 'v22.23.3' and before['npm'] == '10.9.9', 'Toolchain mismatch'
+              assert before['registry'] == 'https://registry.npmjs.org/', 'Registry mismatch'
+              assert before['configuredOmit'] == before['configuredInclude'] == '', 'Unexpected filter'
+              assert not (root / 'backend/img-host/node_modules').exists(), 'Installed graph is forbidden'
+          except Exception as error:
+              errors.append(f'provenance/clean-tree: {error}')
+              final = locals().get('final', {})
+          for mode in ('full', 'omit-dev'):
+              try:
+                  execution = json.loads((directory / (mode + '.execution.json')).read_text())
+                  data = json.loads((directory / (mode + '.json')).read_text())
+                  assert isinstance(data, dict) and 'error' not in data, 'Registry/audit error'
+                  assert data['auditReportVersion'] == 2, 'Unexpected audit schema'
+                  vulnerabilities = data['vulnerabilities']
+                  counts = data['metadata']['vulnerabilities']
+                  dependencies = data['metadata']['dependencies']
+                  assert isinstance(vulnerabilities, dict) and isinstance(dependencies, dict)
+                  for key in ('info', 'low', 'moderate', 'high', 'critical', 'total'):
+                      assert type(counts[key]) is int and counts[key] >= 0, 'Invalid counts'
+                  assert counts['total'] == sum(counts[k] for k in ('info', 'low', 'moderate', 'high', 'critical'))
+                  assert counts['total'] == len(vulnerabilities), 'Finding-count mismatch'
+                  for key in ('prod', 'dev', 'optional', 'peer', 'peerOptional', 'total'):
+                      assert type(dependencies[key]) is int and dependencies[key] >= 0, 'Invalid dependency counts'
+                  for name, finding in vulnerabilities.items():
+                      assert finding['name'] == name and finding['severity'] in ('info', 'low', 'moderate', 'high', 'critical')
+                      assert type(finding['isDirect']) is bool and isinstance(finding['range'], str)
+                      for key in ('via', 'effects', 'nodes'):
+                          assert isinstance(finding[key], list), f'Missing/invalid {key}'
+                      assert type(finding['fixAvailable']) is bool or isinstance(finding['fixAvailable'], dict)
+                      for via in finding['via']:
+                          assert isinstance(via, (str, dict)), 'Invalid via'
+                          if isinstance(via, dict):
+                              assert all(k in via for k in ('source', 'name', 'dependency', 'title', 'url', 'severity', 'range')), 'Incomplete advisory'
+                  expected = 1 if counts['total'] else 0
+                  assert execution['exitStatus'] == expected, f"Unexpected exit {execution['exitStatus']} (expected {expected})"
+                  assert (directory / (mode + '.stderr.txt')).stat().st_size == 0, 'Audit stderr requires review'
+                  summaries[mode] = {'exitStatus': execution['exitStatus'], 'vulnerabilities': counts, 'dependencies': dependencies}
+              except Exception as error:
+                  errors.append(f'{mode}: {error}')
+          final.update({'validationPassed': not errors, 'errors': errors, 'results': summaries,
+                        'gate': 'OPEN; no security clearance or rollout authorization'})
+          (directory / 'validation.json').write_text(json.dumps(final, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('## Advisory gate OPEN — virtual frozen-lock measurement only\n\n')
+              summary.write('Workflow success means receipt validation, NOT security clearance. No install, scripts, tests, builds or rollout. Not a reproduction of historic 146 installed packages / 15 findings.\n\n')
+              summary.write('```json\n' + json.dumps(final, indent=2) + '\n```\n')
+          if errors:
+              raise SystemExit('\n'.join(errors))
+          PY
+      - name: Preserve complete small text receipts even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frozen-lock-audit-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/audit-receipts/
+          if-no-files-found: error
+          retention-days: 1
