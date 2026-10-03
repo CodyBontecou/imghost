@@ -39,7 +39,10 @@ fails closed rather than degrading to an in-process-only lock. Migration no long
 `AuthState.adoptConversion` compares the captured session, commits it synchronously, then publishes
 memory without an intervening await. It preserves the source user ID, storage usage/limit/image count,
 local history and subscription state. It does **not** call ordinary `setAuthenticated`, sync, logout,
-subscription reset or history clearing. Failed writes leave memory untouched. A failed comparison or
+subscription reset or history clearing. A scoped AuthState lease also suppresses background auth checks
+and Settings user-info publication while completion/login/recovery owns the source session; an old
+refresh-token rejection must not log out the user midway through adoption. Closing, failed availability
+checks and successful adoption release the lease. Failed writes leave memory untouched. A failed comparison or
 post-server login/write failure exposes recovery rather than claiming server rollback. Stale in-process
 AuthState checks cannot overwrite/logout an adopted session. This is not full issue #5 completion.
 

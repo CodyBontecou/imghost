@@ -343,6 +343,28 @@ final class NativeAdoptionTests: XCTestCase {
         try f.unchanged(before)
     }
 
+    func testBackgroundAuthCheckCannotEraseSourceSessionDuringCompletionRecovery() async throws {
+        let f = Fixture(); f.loginFails = true; let flow = f.flow()
+        let before = try f.store.snapshot()
+        await f.prime(flow); await flow.complete()
+        XCTAssertEqual(flow.stage, .recovery)
+        await f.auth.checkAuthStatus()
+        // The real AuthState lease suppresses user/refresh/sync/logout during server uncertainty.
+        try f.unchanged(before)
+        flow.cancel()
+        await f.auth.checkAuthStatus()
+        XCTAssertEqual(f.syncCalls, 1) // Closing releases the scoped lease, not a permanent lifecycle lock.
+    }
+
+    func testFailedAvailabilityCheckReleasesAuthStateLeaseForOrdinaryChecks() async throws {
+        let f = Fixture(); f.challengeStatus = 404; let flow = f.flow()
+        await flow.begin()
+        await f.auth.checkAuthStatus()
+        XCTAssertEqual(f.syncCalls, 1)
+        XCTAssertEqual(f.auth.currentUser, f.oldUser)
+        XCTAssertNil(f.data)
+    }
+
     func testStaleAuthStatusFailureAfterAdoptionCannotLogOutNewSession() async throws {
         let f = Fixture()
         var resume: CheckedContinuation<User, Error>?

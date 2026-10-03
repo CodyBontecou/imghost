@@ -21,6 +21,7 @@ final class EmailConversionCoordinator: ObservableObject {
     private var epoch = UUID()
     private var notificationPending = false
     private var chosenDestination = ""
+    private var lease: UUID?
 
     init(service: EmailConversionService, authState: AuthState,
          login: @escaping (String, String) async throws -> AuthResponse) {
@@ -30,7 +31,7 @@ final class EmailConversionCoordinator: ObservableObject {
     }
 
     func begin() async {
-        guard !busy else { return }
+        guard !busy, stage == .idle else { return }
         epoch = UUID()
         let operation = epoch
         busy = true
@@ -39,7 +40,8 @@ final class EmailConversionCoordinator: ObservableObject {
         do {
             guard Self.validEmail(destination) else { throw EmailConversionService.Failure.invalidInput }
             chosenDestination = Self.canonical(destination)
-            let captured = try authState.conversionSnapshot()
+            let (lease, captured) = try authState.beginConversionLease()
+            self.lease = lease
             sourceID = authState.currentUser?.id
             snapshot = captured
             let result = try await service.challenge(accessToken: captured.session!.accessToken)
@@ -51,7 +53,14 @@ final class EmailConversionCoordinator: ObservableObject {
             }
             challenge = result
             stage = .apple
-        } catch { if operation == epoch { message = Self.errorMessage(error) } }
+        } catch {
+            if operation == epoch {
+                releaseLease()
+                snapshot = nil
+                sourceID = nil
+                message = Self.errorMessage(error)
+            }
+        }
     }
 
     func authorize(identityToken: String) async {
@@ -133,6 +142,9 @@ final class EmailConversionCoordinator: ObservableObject {
         }
         try authState.adoptConversion(response, sourceUserID: sourceID, replacing: snapshot)
         stage = .done
+        releaseLease()
+        self.snapshot = nil
+        challenge = nil
         message = notificationPending
             ? String(localized: "New email login verified and saved on this device. Apple access remains. Confirmation delivery is pending.")
             : String(localized: "New email login verified and saved on this device. Apple access remains. Your library and subscription were not reset.")
@@ -144,14 +156,23 @@ final class EmailConversionCoordinator: ObservableObject {
     func cancel() {
         // Invalidates callbacks, not the server transaction. Never claim remote rollback.
         epoch = UUID()
+        releaseLease()
         busy = false
         stage = .idle
         message = nil
         challenge = nil
         snapshot = nil
+        sourceID = nil
+        chosenDestination = ""
+        notificationPending = false
         password = ""
         confirmation = ""
         code = ""
+    }
+
+    private func releaseLease() {
+        if let lease { authState.endConversionLease(lease) }
+        lease = nil
     }
 
     static let recoveryMessage = String(localized: "The server may have changed your login email, but this device has not saved the new session. Apple access remains. Check new email login to recover; do not create another account. If that fails, reopen this flow or sign in with Apple.")
@@ -164,13 +185,16 @@ final class EmailConversionCoordinator: ObservableObject {
             && value.range(of: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", options: .regularExpression) != nil
     }
     private static func errorMessage(_ error: Error) -> String {
+        if error is AtomicSessionStore.Failure {
+            return String(localized: "Secure session storage is unavailable or another sign-in is in progress. No new local session was saved. Keep Apple access; close and retry.")
+        }
         switch error as? EmailConversionService.Failure {
         case .unavailable: return String(localized: "Email/password conversion is not available yet, or the service cannot be reached. Keep using Apple sign-in. Retry later; do not register another account.")
         case .reauthenticate: return String(localized: "Fresh sign-in is required. Keep Apple access and reopen this flow after signing in.")
         case .destinationUnavailable: return String(localized: "This email or challenge is unavailable. Accounts cannot be merged. Restart with an unoccupied email.")
         case .tooManyRequests: return String(localized: "Too many requests. Wait before restarting with a new Apple authorization.")
         case .invalidInput: return String(localized: "Check the email, code and matching passwords (8–1024 characters). If the challenge expired, restart with a new Apple authorization.")
-        default: return recoveryMessage
+        default: return String(localized: "Could not verify this request. No new local session was saved. Keep Apple access and restart or retry.")
         }
     }
 }

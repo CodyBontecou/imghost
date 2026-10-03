@@ -16,6 +16,7 @@ final class AuthState: ObservableObject {
     @Published var isLoading = true
     private let dependencies: Dependencies
     private var generation = 0
+    private var conversionLease: UUID?
 
     init(dependencies: Dependencies) { self.dependencies = dependencies }
 
@@ -24,6 +25,9 @@ final class AuthState: ObservableObject {
     var requiresEmailVerification: Bool { isAuthenticated && !hasVerifiedEmailOrAnonymous }
 
     func checkAuthStatus() async {
+        // Completion revokes the old refresh token before local login/adoption. Background
+        // expiry checks must not erase/publish over the source session while this flow owns it.
+        guard conversionLease == nil else { return }
         let start = generation
         isLoading = true
         defer { if start == generation { isLoading = false } }
@@ -35,7 +39,7 @@ final class AuthState: ObservableObject {
         }
         do {
             let user = try await dependencies.user()
-            guard start == generation else { return }
+            guard start == generation, conversionLease == nil else { return }
             publish(user)
             await dependencies.sync()
         } catch {
@@ -43,7 +47,7 @@ final class AuthState: ObservableObject {
             do {
                 try await dependencies.refresh()
                 let user = try await dependencies.user()
-                guard start == generation else { return }
+                guard start == generation, conversionLease == nil else { return }
                 publish(user)
                 await dependencies.sync()
             } catch {
@@ -81,6 +85,20 @@ final class AuthState: ObservableObject {
                      imageCount: user.imageCount, isAnonymous: user.isAnonymous))
     }
 
+    func beginConversionLease() throws -> (UUID, AtomicSessionStore.Snapshot) {
+        guard conversionLease == nil else { throw AtomicSessionStore.Failure.changedSession }
+        let snapshot = try conversionSnapshot()
+        let lease = UUID()
+        conversionLease = lease
+        generation += 1 // Invalidate auth checks already awaiting a pre-conversion response.
+        isLoading = false
+        return (lease, snapshot)
+    }
+
+    func endConversionLease(_ lease: UUID) {
+        if conversionLease == lease { conversionLease = nil }
+    }
+
     func conversionSnapshot() throws -> AtomicSessionStore.Snapshot {
         let snapshot = try dependencies.sessions.snapshot()
         guard isAuthenticated, let user = currentUser, user.isAnonymous != true,
@@ -111,6 +129,7 @@ final class AuthState: ObservableObject {
     }
 
     func updateUser(_ user: User) {
+        guard conversionLease == nil else { return }
         generation += 1
         publish(user)
     }
