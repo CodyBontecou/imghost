@@ -17,6 +17,7 @@ final class EmailConversionCoordinator: ObservableObject {
     private let authState: AuthState
     private let login: (String, String) async throws -> AuthResponse
     private let prepareSession: (AtomicSessionStore.Snapshot) async throws -> AtomicSessionStore.Snapshot
+    private let beforeValidationRead: () throws -> Void
     private var snapshot: AtomicSessionStore.Snapshot?
     private var sourceID: String?
     private var epoch = UUID()
@@ -26,10 +27,12 @@ final class EmailConversionCoordinator: ObservableObject {
 
     init(service: EmailConversionService, authState: AuthState,
          prepareSession: @escaping (AtomicSessionStore.Snapshot) async throws -> AtomicSessionStore.Snapshot,
+         beforeValidationRead: @escaping () throws -> Void = {},
          login: @escaping (String, String) async throws -> AuthResponse) {
         self.service = service
         self.authState = authState
         self.prepareSession = prepareSession
+        self.beforeValidationRead = beforeValidationRead
         self.login = login
     }
 
@@ -164,7 +167,10 @@ final class EmailConversionCoordinator: ObservableObject {
 
     private func prepare(operation: UUID) async throws -> AtomicSessionStore.Snapshot {
         guard let captured = snapshot else { throw AuthState.ConversionFailure.sourceChanged }
-        try validate(captured)
+        // A failed read acknowledgement can leave this flow holding A after its own durable
+        // refresh B. The production actor alone may prove that EXACT transition; never rebase
+        // from a same-ID snapshot here. A new login/logout still invalidates the live lease.
+        try validateLease()
         let ready: AtomicSessionStore.Snapshot
         do { ready = try await prepareSession(captured) }
         catch AtomicSessionStore.Failure.changedSession { throw AuthState.ConversionFailure.sourceChanged }
@@ -173,6 +179,7 @@ final class EmailConversionCoordinator: ObservableObject {
         // No await between validating the renewed source and dispatching a new server write.
         try validateLease()
         guard let lease, let sourceID else { throw AuthState.ConversionFailure.sourceChanged }
+        try beforeValidationRead() // Observation seam: tests hold the real independent-descriptor lock.
         try authState.validateConversionSession(lease, sourceUserID: sourceID, replacing: ready)
         snapshot = ready
         return ready

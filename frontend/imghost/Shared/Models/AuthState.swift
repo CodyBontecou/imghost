@@ -9,6 +9,7 @@ final class AuthState: ObservableObject {
         let refresh: () async throws -> Void
         let sync: () async -> Void
         let resetSubscription: () -> Void
+        var now: () -> Date = Date.init
     }
     @Published var isAuthenticated = false
     @Published var isEmailVerified = false
@@ -73,7 +74,7 @@ final class AuthState: ObservableObject {
     func setAuthenticated(response: AuthResponse) async throws {
         do {
             let snapshot = try dependencies.sessions.snapshot()
-            try dependencies.sessions.commit(Self.session(response), replacing: snapshot)
+            try dependencies.sessions.commit(session(response), replacing: snapshot)
         } catch {
             if Self.isStorageFailure(error) { reportSessionStorageFailure() }
             throw error
@@ -95,7 +96,7 @@ final class AuthState: ObservableObject {
         guard let user = currentUser, isAuthenticated, user.id == sourceUserID,
               response.userId == sourceUserID, response.emailVerified,
               response.isAnonymous != true else { throw EmailConversionService.Failure.wrongAccount }
-        try dependencies.sessions.commit(Self.session(response), replacing: snapshot)
+        try dependencies.sessions.commit(session(response), replacing: snapshot)
         conversionLease = nil
         logoutError = nil
         sessionStorageMessage = nil
@@ -142,9 +143,9 @@ final class AuthState: ObservableObject {
         return snapshot
     }
 
-    private static func session(_ response: AuthResponse) -> AccountSession {
+    private func session(_ response: AuthResponse) -> AccountSession {
         AccountSession(accessToken: response.accessToken, refreshToken: response.refreshToken,
-                       expiresAt: Date().addingTimeInterval(TimeInterval(response.expiresIn)), userID: response.userId)
+                       expiresAt: dependencies.now().addingTimeInterval(TimeInterval(response.expiresIn)), userID: response.userId)
     }
 
     private func publish(_ user: User?) {

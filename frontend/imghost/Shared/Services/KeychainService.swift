@@ -8,10 +8,11 @@ final class KeychainService {
     private let accessGroup: String?
     private let lockURL: URL?
     private let calls: AtomicSessionStore.SecurityCalls
+    private let now: () -> Date
     private let deleteCall: ([String: Any]) -> OSStatus
 
     var sessions: AtomicSessionStore { AtomicSessionStore.keychain(
-        service: service, accessGroup: accessGroup, lockURL: lockURL, calls: calls,
+        service: service, accessGroup: accessGroup, lockURL: lockURL, calls: calls, now: now,
         legacy: { [unowned self] in
             let access = try self.load(key: self.accessTokenKey)
             let refresh = try self.load(key: self.refreshTokenKey)
@@ -28,11 +29,13 @@ final class KeychainService {
     init(service: String = Config.keychainService, accessGroup: String? = Config.keychainAccessGroup,
          lockURL: URL? = Config.sharedContainerURL?.appendingPathComponent("auth-session.lock"),
          calls: AtomicSessionStore.SecurityCalls = .system,
+         now: @escaping () -> Date = Date.init,
          deleteCall: @escaping ([String: Any]) -> OSStatus = { SecItemDelete($0 as CFDictionary) }) {
         self.service = service
         self.accessGroup = accessGroup
         self.lockURL = lockURL
         self.calls = calls
+        self.now = now
         self.deleteCall = deleteCall
     }
 
@@ -191,7 +194,7 @@ final class KeychainService {
         let oldGroups: [String?] = [nil, Config.legacyKeychainAccessGroup]
         for group in oldGroups {
             let old = KeychainService(service: service, accessGroup: group, lockURL: lockURL,
-                                      calls: calls, deleteCall: deleteCall)
+                                      calls: calls, now: now, deleteCall: deleteCall)
             // Snapshot the complete old item/triplet under the same production lock.
             // An inaccessible obsolete group is not authority to delete anything; the
             // other historical group can still contain a readable session.

@@ -27,9 +27,26 @@ final class AtomicSessionStore {
         let replace: (Data, Bool) throws -> Void
         let locked: (@escaping () throws -> Void) throws -> Void
     }
+    /// Only this store can mint a refresh-only capability after validating a fresh response.
+    /// It is not a general permission to save expired login/adoption credentials.
+    struct ValidatedRefresh {
+        let source: Snapshot
+        let session: AccountSession
+        fileprivate let storeID: UUID
+        fileprivate init(source: Snapshot, session: AccountSession, storeID: UUID) {
+            self.source = source
+            self.session = session
+            self.storeID = storeID
+        }
+    }
     private let operations: Operations
+    private let now: () -> Date
+    private let storeID = UUID()
 
-    init(operations: Operations) { self.operations = operations }
+    init(operations: Operations, now: @escaping () -> Date = Date.init) {
+        self.operations = operations
+        self.now = now
+    }
 
     func snapshot() throws -> Snapshot {
         var result: Snapshot?
@@ -42,9 +59,30 @@ final class AtomicSessionStore {
     func commit(_ session: AccountSession?, replacing expected: Snapshot) throws {
         if let session {
             guard !session.accessToken.isEmpty, !session.refreshToken.isEmpty,
-                  session.expiresAt > Date() else { throw Failure.invalidSession }
+                  session.expiresAt > now() else { throw Failure.invalidSession }
         }
-        try write(session, replacing: expected)
+        _ = try write(session, replacing: expected)
+    }
+
+    func validateReturnedRefresh(_ response: RefreshResponse, replacing source: Snapshot,
+                                 receivedAt: Date) throws -> ValidatedRefresh {
+        guard let previous = source.session, !response.userId.isEmpty,
+              !response.accessToken.isEmpty, !response.refreshToken.isEmpty,
+              response.tokenType.lowercased() == "bearer", response.expiresIn > 0 else { throw Failure.invalidSession }
+        guard previous.userID == nil || previous.userID == response.userId else { throw Failure.changedSession }
+        let expiry = receivedAt.addingTimeInterval(TimeInterval(response.expiresIn))
+        guard receivedAt.timeIntervalSince1970.isFinite, expiry.timeIntervalSince1970.isFinite,
+              expiry > receivedAt, expiry > now() else { throw Failure.invalidSession }
+        return ValidatedRefresh(source: source, session: AccountSession(accessToken: response.accessToken,
+            refreshToken: response.refreshToken, expiresAt: expiry, userID: response.userId), storeID: storeID)
+    }
+
+    /// An already-validated refresh response can age while Security is unavailable. Persist
+    /// its usable refresh credential under the ORIGINAL exact CAS, even if access has aged.
+    /// The actor must renew before returning expired access as authorization. No new format.
+    func commitReturnedRefresh(_ returned: ValidatedRefresh) throws -> Snapshot {
+        guard returned.storeID == storeID else { throw Failure.invalidSession }
+        return try write(returned.session, replacing: returned.source)
     }
 
     /// Import only into a completely empty destination. Expired legacy access tokens are
@@ -54,16 +92,18 @@ final class AtomicSessionStore {
         guard expected.data == nil, expected.session == nil,
               !session.accessToken.isEmpty, !session.refreshToken.isEmpty,
               session.expiresAt.timeIntervalSince1970.isFinite else { throw Failure.invalidSession }
-        try write(session, replacing: expected)
+        _ = try write(session, replacing: expected)
     }
 
-    private func write(_ session: AccountSession?, replacing expected: Snapshot) throws {
+    private func write(_ session: AccountSession?, replacing expected: Snapshot) throws -> Snapshot {
         let data = try JSONEncoder().encode(Envelope(revision: UUID(), session: session))
         try operations.locked {
             let actual = try self.readUnlocked()
             guard actual == expected else { throw Failure.changedSession }
             try self.operations.replace(data, actual.data != nil)
         }
+        // Exact successful write receipt, including its revision; no fallible second read.
+        return Snapshot(data: data, session: session)
     }
 
     private func readUnlocked() throws -> Snapshot {
@@ -91,6 +131,7 @@ final class AtomicSessionStore {
     /// no test-only adoption/state model and no real credential writes in hosted tests.
     static func keychain(service: String, accessGroup: String?, lockURL: URL?,
                          calls: SecurityCalls = .system,
+                         now: @escaping () -> Date = Date.init,
                          locked: ((@escaping () throws -> Void) throws -> Void)? = nil,
                          legacy: @escaping () throws -> AccountSession?) -> AtomicSessionStore {
         var query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
@@ -123,7 +164,7 @@ final class AtomicSessionStore {
             guard status == errSecSuccess else { throw Failure.keychain(status) }
         }, locked: locked ?? { action in
             try SessionFileLock.withLock(url: lockURL, action: action)
-        }))
+        }), now: now)
     }
 }
 
