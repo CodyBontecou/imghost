@@ -38,7 +38,8 @@ jobs:
           xcrun swiftc -typecheck -target arm64-apple-ios16.0-simulator
           -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)"
           Shared/AccountConversion/*.swift Shared/Models/AuthState.swift
-          Shared/Models/AuthResponse.swift Shared/Models/User.swift
+          Shared/Models/AuthResponse.swift Shared/Models/User.swift Shared/Models/ImghostError.swift
+          Shared/Services/KeychainService.swift Shared/Config.swift
       - name: Validate Xcode project syntax
         run: plutil -lint imghost.xcodeproj/project.pbxproj
       - name: Compile full iOS app and share extension without signing or launching

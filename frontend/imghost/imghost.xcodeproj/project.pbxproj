@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EC0620000000000000000011 /* SessionRefreshCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC0620000000000000000001; };
+		EC0620000000000000000012 /* SessionRefreshCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC0620000000000000000001; };
+		EC0620000000000000000013 /* SessionRefreshCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC0620000000000000000001; };
+		EC0620000000000000000014 /* SessionRefreshCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC0620000000000000000001; };
 		EC0610000000000000000011 /* AtomicSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC0610000000000000000001; };
 		EC0610000000000000000012 /* AtomicSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC0610000000000000000001; };
 		EC0610000000000000000013 /* AtomicSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC0610000000000000000001; };
@@ -201,6 +205,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EC0620000000000000000001 /* SessionRefreshCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRefreshCoordinator.swift; sourceTree = "<group>"; };
 		EC0610000000000000000001 /* AtomicSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtomicSessionStore.swift; sourceTree = "<group>"; };
 		EC0610000000000000000002 /* EmailConversionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailConversionCoordinator.swift; sourceTree = "<group>"; };
 		EC0610000000000000000003 /* EmailConversionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailConversionView.swift; sourceTree = "<group>"; };
@@ -583,6 +588,7 @@
 			children = (
 				EC0600000000000000000001 /* EmailConversionService.swift */,
 				EC0610000000000000000001 /* AtomicSessionStore.swift */,
+				EC0620000000000000000001 /* SessionRefreshCoordinator.swift */,
 				EC0610000000000000000002 /* EmailConversionCoordinator.swift */,
 				EC0610000000000000000003 /* EmailConversionView.swift */,
 			);
@@ -849,6 +855,7 @@
 			files = (
 				AN0000000000000000000012 /* AppAnalytics.swift in Sources */,
 				EC0610000000000000000012 /* AtomicSessionStore.swift in Sources */,
+				EC0620000000000000000012 /* SessionRefreshCoordinator.swift in Sources */,
 				EC0610000000000000000022 /* EmailConversionCoordinator.swift in Sources */,
 				EC0610000000000000000032 /* EmailConversionView.swift in Sources */,
 				EC0610000000000000000042 /* AppAuthComposition.swift in Sources */,
@@ -899,6 +906,7 @@
 			files = (
 				AN0000000000000000000014 /* AppAnalytics.swift in Sources */,
 				EC0610000000000000000014 /* AtomicSessionStore.swift in Sources */,
+				EC0620000000000000000014 /* SessionRefreshCoordinator.swift in Sources */,
 				EC0610000000000000000044 /* AppAuthComposition.swift in Sources */,
 				EC0610000000000000000054 /* EmailConversionService.swift in Sources */,
 				9F6C823755755D3F6E7AB141 /* Config.swift in Sources */,
@@ -927,6 +935,7 @@
 			files = (
 				AN0000000000000000000011 /* AppAnalytics.swift in Sources */,
 				EC0610000000000000000011 /* AtomicSessionStore.swift in Sources */,
+				EC0620000000000000000011 /* SessionRefreshCoordinator.swift in Sources */,
 				EC0610000000000000000021 /* EmailConversionCoordinator.swift in Sources */,
 				EC0610000000000000000031 /* EmailConversionView.swift in Sources */,
 				EC0610000000000000000041 /* AppAuthComposition.swift in Sources */,
@@ -983,6 +992,7 @@
 			files = (
 				AN0000000000000000000013 /* AppAnalytics.swift in Sources */,
 				EC0610000000000000000013 /* AtomicSessionStore.swift in Sources */,
+				EC0620000000000000000013 /* SessionRefreshCoordinator.swift in Sources */,
 				EC0610000000000000000043 /* AppAuthComposition.swift in Sources */,
 				EC0610000000000000000053 /* EmailConversionService.swift in Sources */,
 				A1000020001 /* ShareViewController.swift in Sources */,

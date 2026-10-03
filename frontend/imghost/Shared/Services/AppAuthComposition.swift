@@ -4,7 +4,9 @@ extension AuthState {
     #if !SHARE_EXTENSION
     func makeEmailConversionFlow() -> EmailConversionCoordinator {
         EmailConversionCoordinator(service: EmailConversionService(baseURL: URL(string: Config.backendURL)!),
-            authState: self, login: { try await AuthService.shared.login(email: $0, password: $1) })
+            authState: self,
+            prepareSession: { try await AuthService.shared.prepareConversionSession($0) },
+            login: { try await AuthService.shared.login(email: $0, password: $1) })
     }
 
     #endif

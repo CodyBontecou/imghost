@@ -44,6 +44,20 @@ final class AtomicSessionStore {
             guard !session.accessToken.isEmpty, !session.refreshToken.isEmpty,
                   session.expiresAt > Date() else { throw Failure.invalidSession }
         }
+        try write(session, replacing: expected)
+    }
+
+    /// Import only into a completely empty destination. Expired legacy access tokens are
+    /// expected; preserving their refresh credential lets ordinary refresh recover on launch.
+    /// This does NOT relax validation of new login, refresh or conversion responses.
+    func importLegacySession(_ session: AccountSession, replacing expected: Snapshot) throws {
+        guard expected.data == nil, expected.session == nil,
+              !session.accessToken.isEmpty, !session.refreshToken.isEmpty,
+              session.expiresAt.timeIntervalSince1970.isFinite else { throw Failure.invalidSession }
+        try write(session, replacing: expected)
+    }
+
+    private func write(_ session: AccountSession?, replacing expected: Snapshot) throws {
         let data = try JSONEncoder().encode(Envelope(revision: UUID(), session: session))
         try operations.locked {
             let actual = try self.readUnlocked()
@@ -77,6 +91,7 @@ final class AtomicSessionStore {
     /// no test-only adoption/state model and no real credential writes in hosted tests.
     static func keychain(service: String, accessGroup: String?, lockURL: URL?,
                          calls: SecurityCalls = .system,
+                         locked: ((@escaping () throws -> Void) throws -> Void)? = nil,
                          legacy: @escaping () throws -> AccountSession?) -> AtomicSessionStore {
         var query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
                                    kSecAttrService as String: service,
@@ -106,7 +121,7 @@ final class AtomicSessionStore {
                 status = calls.add(add)
             }
             guard status == errSecSuccess else { throw Failure.keychain(status) }
-        }, locked: { action in
+        }, locked: locked ?? { action in
             try SessionFileLock.withLock(url: lockURL, action: action)
         }))
     }
@@ -116,7 +131,7 @@ private enum SessionFileLock {
     // flock alone does not serialize threads sharing one process on all platforms.
     static let processLock = NSRecursiveLock()
     static func withLock(url: URL?, action: () throws -> Void) throws {
-        processLock.lock()
+        guard processLock.try() else { throw AtomicSessionStore.Failure.lockUnavailable }
         defer { processLock.unlock() }
         guard let url else { throw AtomicSessionStore.Failure.lockUnavailable }
         let descriptor = open(url.path, O_CREAT | O_RDWR | O_NOFOLLOW, S_IRUSR | S_IWUSR)

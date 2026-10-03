@@ -149,8 +149,15 @@ struct MacSettingsView: View {
                     .accessibilityIdentifier("account.emailConversion")
             }
 
+            if let message = authState.logoutError ?? authState.sessionStorageMessage {
+                Text(verbatim: message)
+                    .font(.callout)
+                    .foregroundStyle(Color.brutalError)
+                    .accessibilityIdentifier("account.sessionStorageError")
+            }
             Button(action: logout) {
-                Text("settings.account.button.sign_out")
+                Text(authState.logoutError == nil
+                     ? String(localized: "settings.account.button.sign_out") : String(localized: "Retry sign out"))
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .tracking(1)

@@ -4,7 +4,7 @@ import SwiftUI
 /// Real Settings orchestration; no registration/unlinking, global logout or local-data reset.
 @MainActor
 final class EmailConversionCoordinator: ObservableObject {
-    enum Stage: Equatable { case idle, apple, email, recovery, done }
+    enum Stage: Equatable { case idle, apple, email, recovery, invalidated, done }
     @Published private(set) var stage: Stage = .idle
     @Published private(set) var busy = false
     @Published private(set) var message: String?
@@ -16,6 +16,7 @@ final class EmailConversionCoordinator: ObservableObject {
     private let service: EmailConversionService
     private let authState: AuthState
     private let login: (String, String) async throws -> AuthResponse
+    private let prepareSession: (AtomicSessionStore.Snapshot) async throws -> AtomicSessionStore.Snapshot
     private var snapshot: AtomicSessionStore.Snapshot?
     private var sourceID: String?
     private var epoch = UUID()
@@ -24,9 +25,11 @@ final class EmailConversionCoordinator: ObservableObject {
     private var lease: UUID?
 
     init(service: EmailConversionService, authState: AuthState,
+         prepareSession: @escaping (AtomicSessionStore.Snapshot) async throws -> AtomicSessionStore.Snapshot,
          login: @escaping (String, String) async throws -> AuthResponse) {
         self.service = service
         self.authState = authState
+        self.prepareSession = prepareSession
         self.login = login
     }
 
@@ -44,9 +47,11 @@ final class EmailConversionCoordinator: ObservableObject {
             self.lease = lease
             sourceID = authState.currentUser?.id
             snapshot = captured
-            let result = try await service.challenge(accessToken: captured.session!.accessToken)
+            let ready = try await prepare(operation: operation)
+            let result = try await service.challenge(accessToken: ready.session!.accessToken)
             try Task.checkCancellation()
             guard operation == epoch else { return }
+            try validate(ready)
             guard !result.nonce.isEmpty, !result.challengeID.isEmpty,
                   result.expiresAt > Date().timeIntervalSince1970 * 1000 else {
                 throw EmailConversionService.Failure.invalidInput
@@ -58,45 +63,57 @@ final class EmailConversionCoordinator: ObservableObject {
                 releaseLease()
                 snapshot = nil
                 sourceID = nil
+                if error is AuthState.ConversionFailure { stage = .invalidated }
                 message = Self.errorMessage(error)
             }
         }
     }
 
     func authorize(identityToken: String) async {
-        guard !busy, stage == .apple, let challenge, let token = snapshot?.session?.accessToken else { return }
+        guard !busy, stage == .apple, let challenge else { return }
         let operation = epoch
         busy = true
         message = nil
         defer { if operation == epoch { busy = false } }
         do {
+            let ready = try await prepare(operation: operation)
             guard !identityToken.isEmpty, challenge.expiresAt > Date().timeIntervalSince1970 * 1000 else {
                 throw EmailConversionService.Failure.invalidInput
             }
             try await service.start(challenge: challenge, identityToken: identityToken,
-                                    destinationEmail: chosenDestination, accessToken: token)
+                                    destinationEmail: chosenDestination, accessToken: ready.session!.accessToken)
             try Task.checkCancellation()
             guard operation == epoch else { return }
+            try validate(ready)
             stage = .email
-        } catch { if operation == epoch { message = Self.errorMessage(error) } }
+        } catch {
+            if operation == epoch {
+                if error is AuthState.ConversionFailure { invalidate() }
+                message = Self.errorMessage(error)
+            }
+        }
     }
 
     func appleAuthorizationFailed(cancelled: Bool) {
+        guard stage == .apple else { return }
         message = cancelled ? String(localized: "Apple authorization cancelled. Your credentials are unchanged. You can try again.")
             : String(localized: "Apple authorization failed. Try again with a new authorization, or restart this flow.")
     }
 
     func complete() async {
-        guard !busy, stage == .email, let challenge, let snapshot, let sourceID else { return }
+        guard !busy, stage == .email, let challenge, let sourceID else { return }
         let operation = epoch
         let chosenPassword = password
+        var dispatched = false
         busy = true
         message = nil
         defer { if operation == epoch { busy = false } }
         do {
+            let ready = try await prepare(operation: operation)
+            dispatched = true
             let result = try await service.complete(challenge: challenge, code: code, password: password,
                 passwordConfirmation: confirmation, sourceUserID: sourceID,
-                accessToken: snapshot.session!.accessToken)
+                accessToken: ready.session!.accessToken)
             guard operation == epoch else { return }
             // The server committed. Every subsequent error has a recovery path, not a rollback claim.
             stage = .recovery
@@ -105,37 +122,78 @@ final class EmailConversionCoordinator: ObservableObject {
                 throw EmailConversionService.Failure.wrongAccount
             }
             try Task.checkCancellation()
-            guard operation == epoch else { return }
-            try await verifyAndAdopt(replacing: snapshot, password: chosenPassword, operation: operation)
+            try await verifyAndAdopt(replacing: ready, password: chosenPassword, operation: operation)
         } catch {
             guard operation == epoch else { return }
+            if !dispatched, error is AuthState.ConversionFailure {
+                invalidate()
+                message = Self.errorMessage(error)
+                return
+            }
             if (error as? EmailConversionService.Failure) == .uncertainCompletion ||
-                (error as? EmailConversionService.Failure) == .wrongAccount || error is CancellationError {
+                (error as? EmailConversionService.Failure) == .wrongAccount ||
+                (dispatched && error is CancellationError) {
                 stage = .recovery
             }
             message = stage == .recovery ? Self.recoveryMessage : Self.errorMessage(error)
         }
     }
 
-    /// Explicit recovery after lost response/login or persistence failure. Do not resend a consumed code.
+    /// Explicit recovery logs in only. Completion may have revoked the old refresh token;
+    /// do NOT run preflight/refresh or rebase this flow onto a new login/account here.
     func recover() async {
         guard !busy, stage == .recovery else { return }
         let operation = epoch
         busy = true
         defer { if operation == epoch { busy = false } }
         do {
+            guard let lease, let sourceID else { throw AuthState.ConversionFailure.sourceChanged }
+            try authState.validateConversionLease(lease, sourceUserID: sourceID)
             guard password == confirmation, (8...1024).contains(password.utf16.count) else {
                 throw EmailConversionService.Failure.invalidInput
             }
             let current = try authState.conversionSnapshot()
             try await verifyAndAdopt(replacing: current, password: password, operation: operation)
-        } catch { if operation == epoch { message = Self.recoveryMessage } }
+        } catch {
+            if operation == epoch {
+                message = Self.recoveryMessage
+                if error is AuthState.ConversionFailure { message! += " " + Self.sourceChangedMessage }
+            }
+        }
+    }
+
+    private func prepare(operation: UUID) async throws -> AtomicSessionStore.Snapshot {
+        guard let captured = snapshot else { throw AuthState.ConversionFailure.sourceChanged }
+        try validate(captured)
+        let ready: AtomicSessionStore.Snapshot
+        do { ready = try await prepareSession(captured) }
+        catch AtomicSessionStore.Failure.changedSession { throw AuthState.ConversionFailure.sourceChanged }
+        try Task.checkCancellation()
+        guard operation == epoch else { throw CancellationError() }
+        // No await between validating the renewed source and dispatching a new server write.
+        try validateLease()
+        guard let lease, let sourceID else { throw AuthState.ConversionFailure.sourceChanged }
+        try authState.validateConversionSession(lease, sourceUserID: sourceID, replacing: ready)
+        snapshot = ready
+        return ready
+    }
+
+    private func validateLease() throws {
+        guard let lease, let sourceID else { throw AuthState.ConversionFailure.sourceChanged }
+        try authState.validateConversionLease(lease, sourceUserID: sourceID)
+    }
+
+    private func validate(_ captured: AtomicSessionStore.Snapshot) throws {
+        try validateLease()
+        try authState.validateConversionSession(lease!, sourceUserID: sourceID!, replacing: captured)
     }
 
     private func verifyAndAdopt(replacing snapshot: AtomicSessionStore.Snapshot, password: String, operation: UUID) async throws {
+        try validate(snapshot)
         let response = try await login(chosenDestination, password)
         try Task.checkCancellation()
         guard operation == epoch else { return }
+        try validate(snapshot)
         guard response.userId == sourceID, response.emailVerified, response.isAnonymous != true,
               Self.canonical(response.email) == chosenDestination, let sourceID else {
             throw EmailConversionService.Failure.wrongAccount
@@ -170,11 +228,21 @@ final class EmailConversionCoordinator: ObservableObject {
         code = ""
     }
 
+    private func invalidate() {
+        releaseLease()
+        stage = .invalidated
+        snapshot = nil
+        password = ""
+        confirmation = ""
+        code = ""
+    }
+
     private func releaseLease() {
         if let lease { authState.endConversionLease(lease) }
         lease = nil
     }
 
+    static let sourceChangedMessage = String(localized: "The signed-in account or session changed. This flow cannot continue or switch accounts. Close and reopen Account settings for the intended account. Requests already sent may have completed; Apple access remains.")
     static let recoveryMessage = String(localized: "The server may have changed your login email, but this device has not saved the new session. Apple access remains. Check new email login to recover; do not create another account. If that fails, reopen this flow or sign in with Apple.")
     private static func canonical(_ email: String) -> String {
         email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -185,8 +253,9 @@ final class EmailConversionCoordinator: ObservableObject {
             && value.range(of: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", options: .regularExpression) != nil
     }
     private static func errorMessage(_ error: Error) -> String {
-        if error is AtomicSessionStore.Failure {
-            return String(localized: "Secure session storage is unavailable or another sign-in is in progress. No new local session was saved. Keep Apple access; close and retry.")
+        if error is AuthState.ConversionFailure { return sourceChangedMessage }
+        if error is AtomicSessionStore.Failure || error is DecodingError || SessionRefreshCoordinator.isLocalFailure(error) {
+            return AuthState.storageGuidance
         }
         switch error as? EmailConversionService.Failure {
         case .unavailable: return String(localized: "Email/password conversion is not available yet, or the service cannot be reached. Keep using Apple sign-in. Retry later; do not register another account.")

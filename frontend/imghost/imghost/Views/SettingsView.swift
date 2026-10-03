@@ -532,8 +532,16 @@ struct SettingsView: View {
                     }
                     .padding(.bottom, 24)
 
-                    // Sign Out
-                    BrutalSecondaryButton(title: String(localized: "settings.button.sign_out")) {
+                    // Persistence failure is not a completed sign-out. Explicit retry never
+                    // deletes the old credentials or resets the subscription on failure.
+                    if let message = authState.logoutError ?? authState.sessionStorageMessage {
+                        Text(verbatim: message)
+                            .font(.callout)
+                            .padding(.horizontal, 24)
+                            .accessibilityIdentifier("account.sessionStorageError")
+                    }
+                    BrutalSecondaryButton(title: authState.logoutError == nil
+                        ? String(localized: "settings.button.sign_out") : String(localized: "Retry sign out")) {
                         authState.logout()
                     }
                     .padding(.horizontal, 24)

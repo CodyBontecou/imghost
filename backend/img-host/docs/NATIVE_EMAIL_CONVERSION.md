@@ -2,6 +2,8 @@
 
 Refs https://github.com/CodyBontecou/imghost/issues/6 and https://github.com/CodyBontecou/imghost/issues/5.
 This adds native Settings/adoption to the historical staged contract in [EMAIL_CONVERSION.md](EMAIL_CONVERSION.md).
+The additive [NATIVE_SESSION_CORRECTION.md](NATIVE_SESSION_CORRECTION.md) supersedes session/preflight/
+logout details below for five introduced defects; historical observations and evidence remain preserved.
 Keep `EMAIL_CONVERSION_ENABLED` **unset**, PR #9 **draft** and the issue **open**. No deployment or real account/email/billing operations are authorized.
 
 ## Discoverability and proof

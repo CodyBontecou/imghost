@@ -31,7 +31,8 @@ struct ImghostMacApp: App {
                     Task {
                         // Migrate tokens from legacy keychain access group
                         // so the share extension can read them.
-                        KeychainService.shared.migrateFromLegacyAccessGroupIfNeeded()
+                        do { try KeychainService.shared.migrateFromLegacyAccessGroupIfNeeded() }
+                        catch { authState.reportSessionStorageFailure() }
 
                         await authState.checkAuthStatus()
                         storeKit.startListening()

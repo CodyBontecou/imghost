@@ -14,6 +14,10 @@ final class AuthState: ObservableObject {
     @Published var isEmailVerified = false
     @Published var currentUser: User?
     @Published var isLoading = true
+    @Published private(set) var logoutError: String?
+    @Published private(set) var sessionStorageMessage: String?
+    enum ConversionFailure: Error { case sourceChanged }
+    static let storageGuidance = String(localized: "Secure session storage is unavailable or damaged. No local credentials were removed. Close other imghost activity and retry. If this persists, keep Apple access and contact support privately; do not delete credentials or create a replacement account.")
     private let dependencies: Dependencies
     private var generation = 0
     private var conversionLease: UUID?
@@ -32,7 +36,9 @@ final class AuthState: ObservableObject {
         isLoading = true
         defer { if start == generation { isLoading = false } }
         // A Keychain read failure is not proof of logout. Preserve state and durable credentials.
-        guard let snapshot = try? dependencies.sessions.snapshot() else { return }
+        let snapshot: AtomicSessionStore.Snapshot
+        do { snapshot = try dependencies.sessions.snapshot() }
+        catch { reportSessionStorageFailure(); return }
         guard snapshot.session != nil else {
             if start == generation { publish(nil) }
             return
@@ -41,17 +47,21 @@ final class AuthState: ObservableObject {
             let user = try await dependencies.user()
             guard start == generation, conversionLease == nil else { return }
             publish(user)
+            sessionStorageMessage = nil
             await dependencies.sync()
         } catch {
             guard start == generation else { return }
+            if Self.isStorageFailure(error) { reportSessionStorageFailure(); return }
             do {
                 try await dependencies.refresh()
                 let user = try await dependencies.user()
                 guard start == generation, conversionLease == nil else { return }
                 publish(user)
+                sessionStorageMessage = nil
                 await dependencies.sync()
             } catch {
                 guard start == generation else { return }
+                if Self.isStorageFailure(error) { reportSessionStorageFailure(); return }
                 // Do not erase a newer app/extension session on a stale request failure.
                 guard let now = try? dependencies.sessions.snapshot(), now == snapshot else { return }
                 logout()
@@ -61,8 +71,16 @@ final class AuthState: ObservableObject {
 
     /// Ordinary login also uses one durable write; memory is unchanged if persistence fails.
     func setAuthenticated(response: AuthResponse) async throws {
-        let snapshot = try dependencies.sessions.snapshot()
-        try dependencies.sessions.commit(Self.session(response), replacing: snapshot)
+        do {
+            let snapshot = try dependencies.sessions.snapshot()
+            try dependencies.sessions.commit(Self.session(response), replacing: snapshot)
+        } catch {
+            if Self.isStorageFailure(error) { reportSessionStorageFailure() }
+            throw error
+        }
+        conversionLease = nil // Durable replacement invalidates every old flow, including same-ID login.
+        logoutError = nil
+        sessionStorageMessage = nil
         generation += 1
         publish(User(id: response.userId, email: response.email, emailVerified: response.emailVerified,
                      storageUsedBytes: 0, storageLimitBytes: 0, imageCount: nil, isAnonymous: response.isAnonymous))
@@ -78,6 +96,9 @@ final class AuthState: ObservableObject {
               response.userId == sourceUserID, response.emailVerified,
               response.isAnonymous != true else { throw EmailConversionService.Failure.wrongAccount }
         try dependencies.sessions.commit(Self.session(response), replacing: snapshot)
+        conversionLease = nil
+        logoutError = nil
+        sessionStorageMessage = nil
         generation += 1
         isLoading = false
         publish(User(id: user.id, email: response.email, emailVerified: true,
@@ -97,6 +118,18 @@ final class AuthState: ObservableObject {
 
     func endConversionLease(_ lease: UUID) {
         if conversionLease == lease { conversionLease = nil }
+    }
+
+    func validateConversionLease(_ lease: UUID, sourceUserID: String) throws {
+        guard conversionLease == lease, isAuthenticated, currentUser?.id == sourceUserID else {
+            throw ConversionFailure.sourceChanged
+        }
+    }
+
+    func validateConversionSession(_ lease: UUID, sourceUserID: String,
+                                   replacing expected: AtomicSessionStore.Snapshot) throws {
+        try validateConversionLease(lease, sourceUserID: sourceUserID)
+        guard try conversionSnapshot() == expected else { throw ConversionFailure.sourceChanged }
     }
 
     func conversionSnapshot() throws -> AtomicSessionStore.Snapshot {
@@ -134,14 +167,31 @@ final class AuthState: ObservableObject {
         publish(user)
     }
 
-    func logout() {
+    @discardableResult
+    func logout() -> Bool {
         do {
             let snapshot = try dependencies.sessions.snapshot()
             try dependencies.sessions.commit(nil, replacing: snapshot)
-        } catch { return } // Keep memory intact if the durable logout cannot be committed.
+        } catch {
+            logoutError = String(localized: "Sign-out was not saved. You are still signed in on this device. ") + Self.storageGuidance
+            return false // Keep memory, lease, credentials and subscription coherent on failure.
+        }
+        conversionLease = nil
+        logoutError = nil
+        sessionStorageMessage = nil
         generation += 1
         publish(nil)
         isLoading = false
         dependencies.resetSubscription()
+        return true
+    }
+
+    func reportSessionStorageFailure() { sessionStorageMessage = Self.storageGuidance }
+
+    private static func isStorageFailure(_ error: Error) -> Bool {
+        if error is AtomicSessionStore.Failure || error is DecodingError ||
+            SessionRefreshCoordinator.isLocalFailure(error) { return true }
+        if let error = error as? ImghostError, case .keychainError = error { return true }
+        return false
     }
 }

@@ -103,6 +103,12 @@ struct MacLoginView: View {
                             MacBrutalTextField(label: String(localized: "auth.login.field.password"), text: $password, isSecure: true)
                         }
 
+                        if let message = authState.sessionStorageMessage {
+                            Text(verbatim: message)
+                                .font(.callout)
+                                .foregroundStyle(Color.brutalError)
+                                .accessibilityIdentifier("auth.sessionStorageError")
+                        }
                         // Error
                         if let errorMessage = errorMessage {
                             Text(errorMessage.uppercased())

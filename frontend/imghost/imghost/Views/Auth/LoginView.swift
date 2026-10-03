@@ -93,6 +93,12 @@ struct LoginView: View {
                                 )
                             }
 
+                            if let message = authState.sessionStorageMessage {
+                                Text(verbatim: message)
+                                    .font(.callout)
+                                    .foregroundStyle(Color.brutalError)
+                                    .accessibilityIdentifier("auth.sessionStorageError")
+                            }
                             // Error message
                             if let errorMessage = errorMessage {
                                 Text(errorMessage.uppercased())

@@ -10,7 +10,8 @@ let package = Package(
     products: [.library(name: "AccountConversion", targets: ["AccountConversion"])],
     targets: [
         .target(name: "AccountConversion", path: "Shared", sources: [
-            "AccountConversion", "Models/AuthState.swift", "Models/AuthResponse.swift", "Models/User.swift"
+            "AccountConversion", "Models/AuthState.swift", "Models/AuthResponse.swift", "Models/User.swift",
+            "Services/KeychainService.swift", "Config.swift", "Models/ImghostError.swift"
         ]),
         .testTarget(name: "AccountConversionTests", dependencies: ["AccountConversion"],
                     path: "Tests/AccountConversionTests")

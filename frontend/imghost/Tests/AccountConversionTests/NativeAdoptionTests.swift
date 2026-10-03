@@ -28,6 +28,11 @@ final class NativeAdoptionTests: XCTestCase {
         let oldSession = AccountSession(accessToken: "old-access", refreshToken: "old-refresh",
                                        expiresAt: Date().addingTimeInterval(3600), userID: "same-user")
         lazy var store = makeStore()
+        lazy var refresher = SessionRefreshCoordinator(sessions: store,
+            baseURL: URL(string: "https://nonproduction.invalid")!, transport: { _ in
+                XCTFail("One-hour source fixture must not need an HTTP refresh")
+                throw URLError(.unsupportedURL)
+            })
         lazy var auth = AuthState(dependencies: .init(sessions: store,
             user: { self.oldUser }, refresh: {}, sync: { self.syncCalls += 1 },
             resetSubscription: { self.resetCalls += 1 }))
@@ -80,7 +85,9 @@ final class NativeAdoptionTests: XCTestCase {
                 } else { XCTFail("Unexpected account endpoint") }
                 return (data, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: nil)!)
             }
-            let flow = EmailConversionCoordinator(service: service, authState: auth, login: login ?? { email, password in
+            let flow = EmailConversionCoordinator(service: service, authState: auth,
+                prepareSession: { try await self.refresher.ensureValidSession(replacing: $0) },
+                login: login ?? { email, password in
                 self.loginCalls += 1
                 XCTAssertEqual(email, "new@example.test")
                 XCTAssertEqual(password, "chosen password")
