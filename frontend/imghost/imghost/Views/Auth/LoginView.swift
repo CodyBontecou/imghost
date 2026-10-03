@@ -182,7 +182,7 @@ struct LoginView: View {
                     email: email.trimmingCharacters(in: .whitespaces),
                     password: password
                 )
-                await authState.setAuthenticated(response: response)
+                try await authState.setAuthenticated(response: response)
             } catch let error as AuthError {
                 await MainActor.run {
                     errorMessage = error.errorDescription
@@ -238,7 +238,7 @@ struct LoginView: View {
         Task {
             do {
                 let response = try await AuthService.shared.signInWithApple(result: result)
-                await authState.setAuthenticated(response: response)
+                try await authState.setAuthenticated(response: response)
             } catch let error as AuthError {
                 await MainActor.run {
                     errorMessage = error.errorDescription

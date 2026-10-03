@@ -172,9 +172,9 @@ final class AuthService {
     }
 
     func refreshTokens() async throws {
-        guard let refreshToken = keychainService.loadRefreshToken() else {
-            throw AuthError.noRefreshToken
-        }
+        let snapshot = try keychainService.sessions.snapshot()
+        guard let source = snapshot.session else { throw AuthError.noRefreshToken }
+        let refreshToken = source.refreshToken
 
         let url = URL(string: "\(baseURL)/auth/refresh")!
         var request = URLRequest(url: url)
@@ -196,15 +196,17 @@ final class AuthService {
 
         let refreshResponse = try JSONDecoder().decode(RefreshResponse.self, from: data)
 
-        // Save new tokens
-        try keychainService.saveAccessToken(refreshResponse.accessToken)
-        try keychainService.saveRefreshToken(refreshResponse.refreshToken)
-        let expiry = Date().addingTimeInterval(TimeInterval(refreshResponse.expiresIn))
-        try keychainService.saveTokenExpiry(expiry)
+        guard source.userID == nil || source.userID == refreshResponse.userId else {
+            throw EmailConversionService.Failure.wrongAccount
+        }
+        try keychainService.sessions.commit(AccountSession(accessToken: refreshResponse.accessToken,
+            refreshToken: refreshResponse.refreshToken,
+            expiresAt: Date().addingTimeInterval(TimeInterval(refreshResponse.expiresIn)),
+            userID: refreshResponse.userId), replacing: snapshot)
     }
 
-    func logout() {
-        keychainService.clearAllTokens()
+    func logout() throws {
+        try keychainService.clearAllTokens()
     }
 
     // MARK: - Password Reset
@@ -349,7 +351,7 @@ final class AuthService {
         switch httpResponse.statusCode {
         case 200:
             // Clear local tokens after successful deletion
-            keychainService.clearAllTokens()
+            try keychainService.clearAllTokens()
             return
         case 401:
             // Token is invalid even after refresh attempt - session is expired

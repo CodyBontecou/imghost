@@ -3,7 +3,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-/// Staged transport contract shared by iOS/macOS. Not exposed in Settings until QA passes.
+/// Gated transport contract shared by iOS/macOS Settings. Rollout stays disabled until QA passes.
 /// Never registers, merges accounts, deletes local history or unlinks Apple.
 struct EmailConversionService {
     typealias Transport = (URLRequest) async throws -> (Data, HTTPURLResponse)

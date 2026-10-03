@@ -2,6 +2,11 @@
 
 Refs https://github.com/CodyBontecou/imghost/issues/6
 
+**Native follow-up:** [NATIVE_EMAIL_CONVERSION.md](NATIVE_EMAIL_CONVERSION.md) describes the added
+Settings/coordinator/single-item Keychain path and its verification surface. The original staged
+observations and initial evidence below are retained for provenance; statements that native UI/adoption
+are not implemented describe the first iteration, not the follow-up. Rollout gates still apply.
+
 **Partial implementation, disabled by default, not a supported production recovery flow yet.**
 Do not enable `EMAIL_CONVERSION_ENABLED=true` until the gates below pass. No deployment,
 account writes, real email delivery or hardware QA have been performed for this change.

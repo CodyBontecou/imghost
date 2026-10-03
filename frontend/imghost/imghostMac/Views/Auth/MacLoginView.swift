@@ -199,7 +199,7 @@ struct MacLoginView: View {
                     email: email.trimmingCharacters(in: .whitespaces),
                     password: password
                 )
-                await authState.setAuthenticated(response: response)
+                try await authState.setAuthenticated(response: response)
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }
             } catch {
@@ -217,7 +217,7 @@ struct MacLoginView: View {
             do {
                 let response = try await AuthService.shared.continueAnonymously()
                 await MainActor.run { showUpgradeAfterAnonymousAuth = true }
-                await authState.setAuthenticated(response: response)
+                try await authState.setAuthenticated(response: response)
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }
             } catch {
@@ -250,7 +250,7 @@ struct MacLoginView: View {
             Task {
                 do {
                     let response = try await AuthService.shared.signInWithApple(result: appleResult)
-                    await authState.setAuthenticated(response: response)
+                    try await authState.setAuthenticated(response: response)
                 } catch let error as AuthError {
                     await MainActor.run { errorMessage = error.errorDescription }
                 } catch {

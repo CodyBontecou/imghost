@@ -4,6 +4,7 @@ struct MacSettingsView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var subscriptionState: SubscriptionState
 
+    @State private var showEmailConversion = false
     @State private var showDeleteAccountConfirm = false
     @State private var isDeleting = false
     @State private var errorMessage: String?
@@ -81,6 +82,10 @@ struct MacSettingsView: View {
         } message: {
             Text("settings.alert.delete_account.message")
         }
+        .sheet(isPresented: $showEmailConversion) {
+            EmailConversionView(flow: authState.makeEmailConversionFlow())
+                .frame(width: 520)
+        }
         .sheet(isPresented: $showPaywall) {
             MacPaywallView(allowDismiss: true)
                 .environmentObject(subscriptionState)
@@ -137,6 +142,11 @@ struct MacSettingsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.brutalSurface)
                 .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
+            }
+
+            if authState.currentUser?.isAnonymous != true {
+                Button("Add email/password login") { showEmailConversion = true }
+                    .accessibilityIdentifier("account.emailConversion")
             }
 
             Button(action: logout) {

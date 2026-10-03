@@ -117,7 +117,7 @@ struct MacRegisterView: View {
                     email: email.trimmingCharacters(in: .whitespaces),
                     password: password
                 )
-                await authState.setAuthenticated(response: response)
+                try await authState.setAuthenticated(response: response)
                 await MainActor.run { dismiss() }
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }

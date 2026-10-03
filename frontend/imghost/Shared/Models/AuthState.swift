@@ -3,152 +3,126 @@ import SwiftUI
 
 @MainActor
 final class AuthState: ObservableObject {
-    static let shared = AuthState()
-
+    struct Dependencies {
+        let sessions: AtomicSessionStore
+        let user: () async throws -> User
+        let refresh: () async throws -> Void
+        let sync: () async -> Void
+        let resetSubscription: () -> Void
+    }
     @Published var isAuthenticated = false
     @Published var isEmailVerified = false
     @Published var currentUser: User?
     @Published var isLoading = true
+    private let dependencies: Dependencies
+    private var generation = 0
+
+    init(dependencies: Dependencies) { self.dependencies = dependencies }
 
     var isAnonymous: Bool { currentUser?.isAnonymous == true }
     var hasVerifiedEmailOrAnonymous: Bool { isEmailVerified || isAnonymous }
     var requiresEmailVerification: Bool { isAuthenticated && !hasVerifiedEmailOrAnonymous }
 
-    private let keychainService = KeychainService.shared
-
-    private init() {}
-
-    /// Check authentication status on app launch
     func checkAuthStatus() async {
+        let start = generation
         isLoading = true
-
-        // Check if we have tokens stored
-        guard keychainService.hasValidTokens else {
-            isAuthenticated = false
-            isEmailVerified = false
-            currentUser = nil
-            isLoading = false
+        defer { if start == generation { isLoading = false } }
+        // A Keychain read failure is not proof of logout. Preserve state and durable credentials.
+        guard let snapshot = try? dependencies.sessions.snapshot() else { return }
+        guard snapshot.session != nil else {
+            if start == generation { publish(nil) }
             return
         }
-
-        // Try to get current user to validate token
         do {
-            let user = try await AuthService.shared.getCurrentUser()
-            currentUser = user
-            isEmailVerified = user.emailVerified || user.isAnonymous == true
-            isAuthenticated = true
-
-            // Sync images from backend after successful auth check
-            await syncImagesFromBackend()
+            let user = try await dependencies.user()
+            guard start == generation else { return }
+            publish(user)
+            await dependencies.sync()
         } catch {
-            // Token might be expired, try to refresh
+            guard start == generation else { return }
             do {
-                try await AuthService.shared.refreshTokens()
-                let user = try await AuthService.shared.getCurrentUser()
-                currentUser = user
-                isEmailVerified = user.emailVerified || user.isAnonymous == true
-                isAuthenticated = true
-
-                // Sync images from backend after successful token refresh
-                await syncImagesFromBackend()
+                try await dependencies.refresh()
+                let user = try await dependencies.user()
+                guard start == generation else { return }
+                publish(user)
+                await dependencies.sync()
             } catch {
-                // Refresh failed, user needs to log in again
+                guard start == generation else { return }
+                // Do not erase a newer app/extension session on a stale request failure.
+                guard let now = try? dependencies.sessions.snapshot(), now == snapshot else { return }
                 logout()
             }
         }
+    }
 
+    /// Ordinary login also uses one durable write; memory is unchanged if persistence fails.
+    func setAuthenticated(response: AuthResponse) async throws {
+        let snapshot = try dependencies.sessions.snapshot()
+        try dependencies.sessions.commit(Self.session(response), replacing: snapshot)
+        generation += 1
+        publish(User(id: response.userId, email: response.email, emailVerified: response.emailVerified,
+                     storageUsedBytes: 0, storageLimitBytes: 0, imageCount: nil, isAnonymous: response.isAnonymous))
         isLoading = false
+        await dependencies.sync()
     }
 
-    /// Set authenticated state after successful login/register
-    func setAuthenticated(response: AuthResponse) async {
-        // Save tokens (log errors instead of silently swallowing)
-        do {
-            try keychainService.saveAccessToken(response.accessToken)
-        } catch {
-            print("[AuthState] ⚠️ Failed to save access token to keychain: \(error)")
-        }
-
-        do {
-            try keychainService.saveRefreshToken(response.refreshToken)
-        } catch {
-            print("[AuthState] ⚠️ Failed to save refresh token to keychain: \(error)")
-        }
-
-        // Calculate and save expiry
-        let expiry = Date().addingTimeInterval(TimeInterval(response.expiresIn))
-        do {
-            try keychainService.saveTokenExpiry(expiry)
-        } catch {
-            print("[AuthState] ⚠️ Failed to save token expiry to keychain: \(error)")
-        }
-
-        let isAnonymousAccount = response.isAnonymous == true
-        let isVerifiedOrAnonymous = response.emailVerified || isAnonymousAccount
-
-        // Create user from response (subscription status comes from SubscriptionState)
-        currentUser = User(
-            id: response.userId,
-            email: response.email,
-            emailVerified: isVerifiedOrAnonymous,
-            storageUsedBytes: 0,
-            storageLimitBytes: 0,
-            imageCount: nil,
-            isAnonymous: response.isAnonymous
-        )
-
-        // Update state after currentUser exists so views can immediately route anonymous users past email verification
-        isEmailVerified = isVerifiedOrAnonymous
-        isAuthenticated = true
-
-        // Sync images from backend after login
-        await syncImagesFromBackend()
+    /// Synchronous commit-to-publication boundary: no await/cancellation between durable write
+    /// and memory publication. Preserve quota/library/subscription; never route through logout.
+    func adoptConversion(_ response: AuthResponse, sourceUserID: String,
+                         replacing snapshot: AtomicSessionStore.Snapshot) throws {
+        guard let user = currentUser, isAuthenticated, user.id == sourceUserID,
+              response.userId == sourceUserID, response.emailVerified,
+              response.isAnonymous != true else { throw EmailConversionService.Failure.wrongAccount }
+        try dependencies.sessions.commit(Self.session(response), replacing: snapshot)
+        generation += 1
+        isLoading = false
+        publish(User(id: user.id, email: response.email, emailVerified: true,
+                     storageUsedBytes: user.storageUsedBytes, storageLimitBytes: user.storageLimitBytes,
+                     imageCount: user.imageCount, isAnonymous: user.isAnonymous))
     }
 
-    /// Sync images from backend to local storage
-    private func syncImagesFromBackend() async {
-        #if !SHARE_EXTENSION
-        do {
-            try await ImageSyncService.shared.syncImages()
-        } catch {
-            // Sync failures are non-fatal - user can still use the app
-            print("Image sync failed: \(error.localizedDescription)")
+    func conversionSnapshot() throws -> AtomicSessionStore.Snapshot {
+        let snapshot = try dependencies.sessions.snapshot()
+        guard isAuthenticated, let user = currentUser, user.isAnonymous != true,
+              let session = snapshot.session,
+              session.userID == nil || session.userID == user.id else {
+            throw EmailConversionService.Failure.reauthenticate
         }
-        #endif
+        return snapshot
     }
 
-    /// Update email verified status
-    func setEmailVerified(_ verified: Bool) {
-        isEmailVerified = verified
-        if let user = currentUser {
-            currentUser = User(
-                id: user.id,
-                email: user.email,
-                emailVerified: verified,
-                storageUsedBytes: user.storageUsedBytes,
-                storageLimitBytes: user.storageLimitBytes,
-                imageCount: user.imageCount,
-                isAnonymous: user.isAnonymous
-            )
-        }
+    private static func session(_ response: AuthResponse) -> AccountSession {
+        AccountSession(accessToken: response.accessToken, refreshToken: response.refreshToken,
+                       expiresAt: Date().addingTimeInterval(TimeInterval(response.expiresIn)), userID: response.userId)
     }
 
-    /// Update current user
-    func updateUser(_ user: User) {
+    private func publish(_ user: User?) {
         currentUser = user
-        isEmailVerified = user.emailVerified || user.isAnonymous == true
+        isEmailVerified = user.map { $0.emailVerified || $0.isAnonymous == true } ?? false
+        isAuthenticated = user != nil
     }
 
-    /// Logout and clear all tokens
-    func logout() {
-        keychainService.clearAllTokens()
-        isAuthenticated = false
-        isEmailVerified = false
-        currentUser = nil
+    func setEmailVerified(_ verified: Bool) {
+        guard let user = currentUser else { return }
+        generation += 1
+        publish(User(id: user.id, email: user.email, emailVerified: verified,
+                     storageUsedBytes: user.storageUsedBytes, storageLimitBytes: user.storageLimitBytes,
+                     imageCount: user.imageCount, isAnonymous: user.isAnonymous))
+    }
 
-        // Reset subscription state (not available in share extension)
-        #if !SHARE_EXTENSION
-        SubscriptionState.shared.reset()
-        #endif
+    func updateUser(_ user: User) {
+        generation += 1
+        publish(user)
+    }
+
+    func logout() {
+        do {
+            let snapshot = try dependencies.sessions.snapshot()
+            try dependencies.sessions.commit(nil, replacing: snapshot)
+        } catch { return } // Keep memory intact if the durable logout cannot be committed.
+        generation += 1
+        publish(nil)
+        isLoading = false
+        dependencies.resetSubscription()
     }
 }

@@ -7,6 +7,18 @@ final class KeychainService {
     private let service: String
     private let accessGroup: String?
 
+    var sessions: AtomicSessionStore { AtomicSessionStore.keychain(
+        service: service, accessGroup: accessGroup,
+        lockURL: Config.sharedContainerURL?.appendingPathComponent("auth-session.lock"),
+        legacy: { [unowned self] in
+            guard let access = try self.load(key: self.accessTokenKey),
+                  let refresh = try self.load(key: self.refreshTokenKey),
+                  let expiry = try self.load(key: self.tokenExpiryKey),
+                  let timestamp = Double(expiry) else { return nil }
+            return AccountSession(accessToken: access, refreshToken: refresh,
+                                  expiresAt: Date(timeIntervalSince1970: timestamp), userID: nil)
+        }) }
+
     init(service: String = Config.keychainService, accessGroup: String? = Config.keychainAccessGroup) {
         self.service = service
         self.accessGroup = accessGroup
@@ -117,52 +129,23 @@ final class KeychainService {
     private let refreshTokenKey = "refreshToken"
     private let tokenExpiryKey = "tokenExpiry"
 
-    func saveAccessToken(_ token: String) throws {
-        try save(key: accessTokenKey, value: token)
-    }
-
     func loadAccessToken() -> String? {
-        try? load(key: accessTokenKey)
-    }
-
-    func deleteAccessToken() throws {
-        try delete(key: accessTokenKey)
-    }
-
-    func saveRefreshToken(_ token: String) throws {
-        try save(key: refreshTokenKey, value: token)
+        try? sessions.snapshot().session?.accessToken
     }
 
     func loadRefreshToken() -> String? {
-        try? load(key: refreshTokenKey)
-    }
-
-    func deleteRefreshToken() throws {
-        try delete(key: refreshTokenKey)
-    }
-
-    func saveTokenExpiry(_ date: Date) throws {
-        let timestamp = String(date.timeIntervalSince1970)
-        try save(key: tokenExpiryKey, value: timestamp)
+        try? sessions.snapshot().session?.refreshToken
     }
 
     func loadTokenExpiry() -> Date? {
-        guard let timestampString = try? load(key: tokenExpiryKey),
-              let timestamp = Double(timestampString) else {
-            return nil
-        }
-        return Date(timeIntervalSince1970: timestamp)
-    }
-
-    func deleteTokenExpiry() throws {
-        try delete(key: tokenExpiryKey)
+        try? sessions.snapshot().session?.expiresAt
     }
 
     /// Clears all authentication tokens
-    func clearAllTokens() {
-        try? deleteAccessToken()
-        try? deleteRefreshToken()
-        try? deleteTokenExpiry()
+    func clearAllTokens() throws {
+        let snapshot = try sessions.snapshot()
+        try sessions.commit(nil, replacing: snapshot)
+        // The tombstone is authoritative. Legacy JWT items are never read after logout.
         try? deleteUploadToken()
     }
 
@@ -192,8 +175,9 @@ final class KeychainService {
         // Extensions can't read the legacy group – skip.
         return
         #else
-        // If we already have tokens under the new shared group, nothing to do.
-        if loadAccessToken() != nil { return }
+        // A new-format item (including logout tombstone) must never be overwritten.
+        guard let snapshot = try? sessions.snapshot(), snapshot.data == nil,
+              snapshot.session == nil else { return }
 
         // --- Attempt 1: migrate from nil access group (app-identifier default) ---
         // Previous builds used keychainAccessGroup = nil, which saved tokens under
@@ -204,14 +188,10 @@ final class KeychainService {
             let tokenExpiry = nilGroupService.loadTokenExpiry()
 
             do {
-                try saveAccessToken(accessToken)
-                if let rt = refreshToken { try saveRefreshToken(rt) }
-                if let exp = tokenExpiry { try saveTokenExpiry(exp) }
-
-                // Clean up old items
-                try? nilGroupService.deleteAccessToken()
-                try? nilGroupService.deleteRefreshToken()
-                try? nilGroupService.deleteTokenExpiry()
+                guard let refreshToken, let tokenExpiry else { return }
+                try sessions.commit(AccountSession(accessToken: accessToken, refreshToken: refreshToken,
+                    expiresAt: tokenExpiry, userID: nil), replacing: snapshot)
+                // Preserve legacy items; the new single item is authoritative.
 
                 print("[KeychainService] ✅ Migrated tokens from nil (app-identifier) access group")
                 return
@@ -229,14 +209,10 @@ final class KeychainService {
                 let tokenExpiry = legacyService.loadTokenExpiry()
 
                 do {
-                    try saveAccessToken(accessToken)
-                    if let rt = refreshToken { try saveRefreshToken(rt) }
-                    if let exp = tokenExpiry { try saveTokenExpiry(exp) }
-
-                    // Clean up legacy items
-                    try? legacyService.deleteAccessToken()
-                    try? legacyService.deleteRefreshToken()
-                    try? legacyService.deleteTokenExpiry()
+                    guard let refreshToken, let tokenExpiry else { return }
+                    try sessions.commit(AccountSession(accessToken: accessToken, refreshToken: refreshToken,
+                        expiresAt: tokenExpiry, userID: nil), replacing: snapshot)
+                    // Preserve legacy items; the new single item is authoritative.
 
                     print("[KeychainService] ✅ Migrated tokens from legacy access group")
                 } catch {
