@@ -51,7 +51,7 @@ jobs:
           printf 'RECEIPTS=%s\n' "$RECEIPTS" >> "$GITHUB_ENV"
           mkdir -p "$RECEIPTS"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$(git show -s --format=%P HEAD)" = c5faf15a8b9f2e6de3da425cc9c91dadc95f5ea6
+          test "$(git show -s --format=%P HEAD)" = 341118edd5dd5e9f36d7e75c58e9a5c83b77c45e
           {
             printf 'source=%s\nevent=%s\nworkflow_sha=%s\nworkflow_ref=%s\n' "$SOURCE_SHA" "$EVENT_SHA" "$WORKFLOW_SHA" "$WORKFLOW_REF"
             git show -s --format='commit=%H%ntree=%T%nparents=%P' HEAD
@@ -138,7 +138,7 @@ jobs:
             DESTINATION='platform=macOS'
           fi
           xcodebuild -project imghost.xcodeproj -scheme "$UI_SCHEME" -configuration Debug \
-            -destination "$DESTINATION" -jobs 2 -parallel-testing-enabled NO -test-iterations 1 \
+            -destination "$DESTINATION" -jobs 2 -parallel-testing-enabled NO \
             -test-timeouts-enabled YES -default-test-execution-time-allowance 120 \
             -maximum-test-execution-time-allowance 120 -collect-test-diagnostics never \
             -derivedDataPath "$RUNNER_TEMP/reset-isolated-ui" \
