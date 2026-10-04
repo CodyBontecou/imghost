@@ -1594,6 +1594,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = "tech.isolated.synthetic.ResetCodeEntryHost.iOS";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Tests/ResetCodeEntryTests/ResetCodeEntryHost-Info.plist";
 				INFOPLIST_KEY_BackendURL = "https://reset-code-entry.invalid";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				SDKROOT = iphoneos;
@@ -1614,6 +1615,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = "tech.isolated.synthetic.ResetCodeEntryHost.macOS";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Tests/ResetCodeEntryTests/ResetCodeEntryHost-Info.plist";
 				INFOPLIST_KEY_BackendURL = "https://reset-code-entry.invalid";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
