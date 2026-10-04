@@ -7,6 +7,8 @@ struct MacBrutalTextField: View {
     let label: String
     @Binding var text: String
     var isSecure: Bool = false
+    var fieldAccessibilityIdentifier: String? = nil
+    var fieldAccessibilityLabel: String? = nil
 
     @FocusState private var isFocused: Bool
 
@@ -16,13 +18,13 @@ struct MacBrutalTextField: View {
                 .brutalTypography(.monoSmall, color: isFocused ? Color.white : Color.brutalTextSecondary)
                 .tracking(2)
 
-            Group {
+            accessibleField(Group {
                 if isSecure {
                     SecureField("", text: $text)
                 } else {
                     TextField("", text: $text)
                 }
-            }
+            })
             .focused($isFocused)
             .textFieldStyle(.plain)
             .disableAutocorrection(true)
@@ -34,6 +36,19 @@ struct MacBrutalTextField: View {
                 Rectangle()
                     .stroke(isFocused ? Color.white : Color.brutalBorder, lineWidth: isFocused ? 2 : 1)
             )
+        }
+    }
+
+    @ViewBuilder
+    private func accessibleField<Content: View>(_ content: Content) -> some View {
+        if let label = fieldAccessibilityLabel, let identifier = fieldAccessibilityIdentifier {
+            content.accessibilityLabel(label).accessibilityIdentifier(identifier)
+        } else if let label = fieldAccessibilityLabel {
+            content.accessibilityLabel(label)
+        } else if let identifier = fieldAccessibilityIdentifier {
+            content.accessibilityIdentifier(identifier)
+        } else {
+            content
         }
     }
 }

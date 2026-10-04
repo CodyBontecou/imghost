@@ -4,6 +4,11 @@
    ========================================================= */
 
 
+// MARK: - Existing reset code entry
+"auth.forgot_password.button.existing_code" = "我已有重置码";
+"auth.forgot_password.request_accepted" = "如果此邮箱对应的账户存在，将发送重置说明。";
+"auth.reset_password.button.back" = "返回";
+
 "button.ok" = "好";
 "button.cancel" = "取消";
 "button.done" = "完成";

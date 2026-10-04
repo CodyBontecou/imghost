@@ -3,6 +3,11 @@
    Localizable.strings (Japanese)
    ========================================================= */
 
+// MARK: - Existing reset code entry
+"auth.forgot_password.button.existing_code" = "すでにリセットコードを持っています";
+"auth.forgot_password.request_accepted" = "このメールアドレスのアカウントが存在する場合、リセット手順が送信されます。";
+"auth.reset_password.button.back" = "戻る";
+
 // MARK: - Common Buttons
 "button.ok" = "OK";
 "button.cancel" = "キャンセル";

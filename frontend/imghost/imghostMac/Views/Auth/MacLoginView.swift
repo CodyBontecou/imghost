@@ -4,6 +4,12 @@ import AuthenticationServices
 struct MacLoginView: View {
     @EnvironmentObject var authState: AuthState
 
+    let passwordResetService: AuthService
+
+    init(passwordResetService: AuthService = .shared) {
+        self.passwordResetService = passwordResetService
+    }
+
     @State private var email = ""
     @State private var password = ""
     @State private var isLoading = false
@@ -162,6 +168,7 @@ struct MacLoginView: View {
                                     .tracking(1)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityIdentifier("auth.login.forgotPassword")
                         }
                     }
                     .frame(maxWidth: 340)
@@ -179,7 +186,7 @@ struct MacLoginView: View {
                 .frame(width: 420, height: 560)
         }
         .sheet(isPresented: $showForgotPassword) {
-            MacForgotPasswordView()
+            MacForgotPasswordView(passwordResetService: passwordResetService)
                 .frame(width: 420, height: 480)
         }
     }

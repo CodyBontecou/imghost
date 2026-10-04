@@ -3,11 +3,22 @@ import SwiftUI
 struct ForgotPasswordView: View {
     @Environment(\.dismiss) var dismiss
 
+    let passwordResetService: AuthService
+    let onReturnToSignIn: (() -> Void)?
+
+    init(passwordResetService: AuthService = .shared, onReturnToSignIn: (() -> Void)? = nil) {
+        self.passwordResetService = passwordResetService
+        self.onReturnToSignIn = onReturnToSignIn
+    }
+
     @State private var email = ""
     @State private var isLoading = false
     @State private var errorMessage: String?
-    @State private var isEmailSent = false
+    @State private var isRequestAccepted = false
+    @State private var acceptedEmail = ""
     @State private var showResetPassword = false
+    @State private var isActive = false
+    @State private var requestOperation: UUID?
 
     var body: some View {
         ZStack {
@@ -27,7 +38,7 @@ struct ForgotPasswordView: View {
                                 .fill(Color.white)
                                 .frame(width: 24, height: 1)
 
-                            Text(isEmailSent
+                            Text(isRequestAccepted
                                  ? "auth.forgot_password.subtitle.check_email"
                                  : "auth.forgot_password.subtitle.enter_email")
                                 .brutalTypography(.monoSmall, color: .brutalTextSecondary)
@@ -39,7 +50,7 @@ struct ForgotPasswordView: View {
                     .padding(.top, 24)
                     .padding(.bottom, 40)
 
-                    if isEmailSent {
+                    if isRequestAccepted {
                         // Success state
                         VStack(spacing: 24) {
                             BrutalCard(backgroundColor: .brutalSurface) {
@@ -48,11 +59,12 @@ struct ForgotPasswordView: View {
                                         .font(.system(size: 48, weight: .bold, design: .monospaced))
                                         .foregroundStyle(Color.brutalSuccess)
 
-                                    Text("auth.forgot_password.code_sent_to")
+                                    Text("auth.forgot_password.request_accepted")
                                         .brutalTypography(.monoSmall, color: .brutalTextSecondary)
                                         .tracking(2)
+                                        .accessibilityIdentifier("auth.forgot.requestAccepted")
 
-                                    Text(verbatim: email)
+                                    Text(verbatim: acceptedEmail)
                                         .brutalTypography(.bodyLarge)
 
                                     Text("auth.forgot_password.spam_hint")
@@ -64,13 +76,16 @@ struct ForgotPasswordView: View {
 
                             BrutalPrimaryButton(
                                 title: String(localized: "auth.forgot_password.button.enter_code"),
-                                action: { showResetPassword = true }
+                                action: enterExistingCode
                             )
+                            .accessibilityIdentifier("auth.forgot.enterCode")
                             .padding(.horizontal, 24)
 
                             BrutalTextButton(title: String(localized: "auth.forgot_password.button.send_again")) {
-                                isEmailSent = false
+                                requestOperation = nil
+                                isRequestAccepted = false
                             }
+                            .accessibilityIdentifier("auth.forgot.sendAgain")
                         }
                     } else {
                         // Form
@@ -80,7 +95,9 @@ struct ForgotPasswordView: View {
                                 text: $email,
                                 keyboardType: .emailAddress,
                                 textContentType: .emailAddress,
-                                autocapitalization: .never
+                                autocapitalization: .never,
+                                fieldAccessibilityIdentifier: "auth.forgot.email",
+                                fieldAccessibilityLabel: String(localized: "auth.forgot_password.field.email")
                             )
                             .padding(.horizontal, 24)
 
@@ -91,6 +108,7 @@ struct ForgotPasswordView: View {
                                     .tracking(1)
                                     .multilineTextAlignment(.center)
                                     .padding(.horizontal, 24)
+                                    .accessibilityIdentifier("auth.forgot.error")
                             }
 
                             BrutalPrimaryButton(
@@ -99,7 +117,15 @@ struct ForgotPasswordView: View {
                                 isLoading: isLoading,
                                 isDisabled: !isFormValid
                             )
+                            .accessibilityIdentifier("auth.forgot.sendCode")
                             .padding(.horizontal, 24)
+
+                            BrutalTextButton(
+                                title: String(localized: "auth.forgot_password.button.existing_code"),
+                                action: enterExistingCode
+                            )
+                            .disabled(isLoading)
+                            .accessibilityIdentifier("auth.forgot.existingCode")
                         }
                     }
 
@@ -111,7 +137,13 @@ struct ForgotPasswordView: View {
         .toolbarBackground(Color.brutalBackground, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .navigationDestination(isPresented: $showResetPassword) {
-            ResetPasswordView()
+            ResetPasswordView(passwordResetService: passwordResetService, onReturnToSignIn: onReturnToSignIn)
+        }
+        .onAppear { isActive = true }
+        .onDisappear {
+            isActive = false
+            requestOperation = nil
+            isLoading = false
         }
         .preferredColorScheme(.dark)
     }
@@ -120,33 +152,38 @@ struct ForgotPasswordView: View {
         !email.isEmpty && email.contains("@")
     }
 
-    private func sendResetEmail() {
-        guard isFormValid else { return }
+    @MainActor
+    private func enterExistingCode() {
+        guard isActive, !isLoading else { return }
+        requestOperation = nil
+        showResetPassword = true
+    }
 
+    @MainActor
+    private func sendResetEmail() {
+        guard isActive, isFormValid, !isLoading else { return }
+        let submittedEmail = email.trimmingCharacters(in: .whitespaces)
+        let operation = UUID()
+        requestOperation = operation
         isLoading = true
         errorMessage = nil
 
-        Task {
+        Task { @MainActor in
             do {
-                try await AuthService.shared.forgotPassword(
-                    email: email.trimmingCharacters(in: .whitespaces)
-                )
-                await MainActor.run {
-                    isEmailSent = true
-                }
+                try await passwordResetService.forgotPassword(email: submittedEmail)
+                guard isActive, requestOperation == operation else { return }
+                acceptedEmail = submittedEmail
+                isRequestAccepted = true
             } catch let error as AuthError {
-                await MainActor.run {
-                    errorMessage = error.errorDescription
-                }
+                guard isActive, requestOperation == operation else { return }
+                errorMessage = error.errorDescription
             } catch {
-                await MainActor.run {
-                    errorMessage = String(localized: "auth.forgot_password.error.unexpected")
-                }
+                guard isActive, requestOperation == operation else { return }
+                errorMessage = String(localized: "auth.forgot_password.error.unexpected")
             }
-
-            await MainActor.run {
-                isLoading = false
-            }
+            guard isActive, requestOperation == operation else { return }
+            requestOperation = nil
+            isLoading = false
         }
     }
 }

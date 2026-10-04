@@ -140,6 +140,100 @@
 		AN0000000000000000000012 /* AppAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
 		AN0000000000000000000013 /* AppAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
 		AN0000000000000000000014 /* AppAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
+		E7000000011 = {isa = PBXBuildFile; fileRef = E7000000001; };
+		E7000000012 = {isa = PBXBuildFile; fileRef = E7000000002; };
+		E7000000021 = {isa = PBXBuildFile; fileRef = E7000000001; };
+		E7000000022 = {isa = PBXBuildFile; fileRef = E7000000002; };
+		E7000000031 = {isa = PBXBuildFile; fileRef = E7000000003; };
+		E7000000041 = {isa = PBXBuildFile; fileRef = E7000000003; };
+		E7001000001 = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
+		E7001000002 = {isa = PBXBuildFile; fileRef = A1000002000 /* ContentView.swift */; };
+		E7001000003 = {isa = PBXBuildFile; fileRef = A1000003000 /* SettingsView.swift */; };
+		E7001000004 = {isa = PBXBuildFile; fileRef = A1000004000 /* HistoryView.swift */; };
+		E7001000005 = {isa = PBXBuildFile; fileRef = A1000005000 /* UploadDetailView.swift */; };
+		E7001000006 = {isa = PBXBuildFile; fileRef = G1000001000 /* UploadView.swift */; };
+		E7001000007 = {isa = PBXBuildFile; fileRef = DC000001000 /* DiscordBanner.swift */; };
+		E7001000008 = {isa = PBXBuildFile; fileRef = AD000001000 /* AdManager.swift */; };
+		E7001000009 = {isa = PBXBuildFile; fileRef = A100001B000 /* LoginView.swift */; };
+		E7001000010 = {isa = PBXBuildFile; fileRef = A100001C000 /* RegisterView.swift */; };
+		E7001000011 = {isa = PBXBuildFile; fileRef = A100001D000 /* EmailVerificationView.swift */; };
+		E7001000012 = {isa = PBXBuildFile; fileRef = A100001E000 /* ForgotPasswordView.swift */; };
+		E7001000013 = {isa = PBXBuildFile; fileRef = A100001F000 /* ResetPasswordView.swift */; };
+		E7001000014 = {isa = PBXBuildFile; fileRef = A1000010000 /* Config.swift */; };
+		E7001000015 = {isa = PBXBuildFile; fileRef = A1000011000 /* UploadRecord.swift */; };
+		E7001000016 = {isa = PBXBuildFile; fileRef = A1000012000 /* ImghostError.swift */; };
+		E7001000017 = {isa = PBXBuildFile; fileRef = A1000013000 /* KeychainService.swift */; };
+		E7001000018 = {isa = PBXBuildFile; fileRef = A1000014000 /* HistoryService.swift */; };
+		E7001000019 = {isa = PBXBuildFile; fileRef = A1000015000 /* ImageProcessor.swift */; };
+		E7001000020 = {isa = PBXBuildFile; fileRef = A1000016000 /* UploadService.swift */; };
+		E7001000021 = {isa = PBXBuildFile; fileRef = A1000017000 /* AuthService.swift */; };
+		E7001000022 = {isa = PBXBuildFile; fileRef = A1000018000 /* AuthResponse.swift */; };
+		E7001000023 = {isa = PBXBuildFile; fileRef = A1000019000 /* User.swift */; };
+		E7001000024 = {isa = PBXBuildFile; fileRef = A100001A000 /* AuthState.swift */; };
+		E7001000025 = {isa = PBXBuildFile; fileRef = 0F8915CA80904ADBA74F2AB9 /* ExportService.swift */; };
+		E7001000026 = {isa = PBXBuildFile; fileRef = H1000001000 /* PhotosExportService.swift */; };
+		E7001000027 = {isa = PBXBuildFile; fileRef = I1000001000 /* ImageSyncService.swift */; };
+		E7001000028 = {isa = PBXBuildFile; fileRef = 77EF9A77B62440BA76E7919A /* GoogleColors.swift */; };
+		E7001000029 = {isa = PBXBuildFile; fileRef = A3FBA8EDF575959E863DA8C8 /* GoogleTypography.swift */; };
+		E7001000030 = {isa = PBXBuildFile; fileRef = 4A09518DA218CA8C573BCEEF /* GoogleSpacing.swift */; };
+		E7001000031 = {isa = PBXBuildFile; fileRef = 33B2B177AAB3C2D4F56ED74B /* GoogleComponents.swift */; };
+		E7001000032 = {isa = PBXBuildFile; fileRef = 43B2B177AAB3C2D4F56ED74C /* BrutalComponents.swift */; };
+		E7001000033 = {isa = PBXBuildFile; fileRef = 92EC531C9EE3CD96675D03D8 /* PhotoGridView.swift */; };
+		E7001000034 = {isa = PBXBuildFile; fileRef = B1000001000 /* OnboardingView.swift */; };
+		E7001000035 = {isa = PBXBuildFile; fileRef = D1000001000 /* LinkFormatService.swift */; };
+		E7001000036 = {isa = PBXBuildFile; fileRef = E1000001000 /* SubscriptionState.swift */; };
+		E7001000037 = {isa = PBXBuildFile; fileRef = E1000002000 /* SubscriptionService.swift */; };
+		E7001000038 = {isa = PBXBuildFile; fileRef = E1000003000 /* StoreKitManager.swift */; };
+		E7001000039 = {isa = PBXBuildFile; fileRef = F1000001000 /* PaywallView.swift */; };
+		E7001000040 = {isa = PBXBuildFile; fileRef = F1000002000 /* SubscriptionStatusView.swift */; };
+		E7001000041 = {isa = PBXBuildFile; fileRef = J1000001000 /* UploadQualityService.swift */; };
+		E7001000042 = {isa = PBXBuildFile; fileRef = FB000001000 /* FeedbackHelper.swift */; };
+		E7001000043 = {isa = PBXBuildFile; fileRef = RR000001000 /* ReviewRequestService.swift */; };
+		E7002000001 = {isa = PBXBuildFile; fileRef = AN0000000000000000000001 /* AppAnalytics.swift */; };
+		E7002000002 = {isa = PBXBuildFile; fileRef = A22512A751B999C854FE3BA1 /* MacBrutalComponents.swift */; };
+		E7002000003 = {isa = PBXBuildFile; fileRef = D0F4668E2429EDB4F6EA2448 /* MacContentView.swift */; };
+		E7002000004 = {isa = PBXBuildFile; fileRef = 3275B71610368ABB7FD83EA5 /* MacImageSyncService.swift */; };
+		E7002000005 = {isa = PBXBuildFile; fileRef = 0CCAAE79EF4C084422BFA775 /* MacUploadService.swift */; };
+		E7002000006 = {isa = PBXBuildFile; fileRef = D620286BAE758FC54171B205 /* MacEmailVerificationView.swift */; };
+		E7002000007 = {isa = PBXBuildFile; fileRef = 508DE51ED34D28B1427CB933 /* MacForgotPasswordView.swift */; };
+		E7002000008 = {isa = PBXBuildFile; fileRef = 1BBC4E12232045D8B7721410 /* MacLoginView.swift */; };
+		E7002000009 = {isa = PBXBuildFile; fileRef = 1AA81CA82C5642420DB9E90F /* MacRegisterView.swift */; };
+		E7002000010 = {isa = PBXBuildFile; fileRef = 5B4CA97A2C8A52DDB7773832 /* MacHistoryView.swift */; };
+		E7002000011 = {isa = PBXBuildFile; fileRef = 5B4CA97A2C8A52DDB7773830 /* MacMediaView.swift */; };
+		E7002000012 = {isa = PBXBuildFile; fileRef = C5DA472A43F563CE78AB94B9 /* MacOnboardingView.swift */; };
+		E7002000013 = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF77 /* MacExportView.swift */; };
+		E7002000014 = {isa = PBXBuildFile; fileRef = 0999511660DD5E6D463F7DF8 /* MacSettingsView.swift */; };
+		E7002000015 = {isa = PBXBuildFile; fileRef = FB000001000 /* FeedbackHelper.swift */; };
+		E7002000016 = {isa = PBXBuildFile; fileRef = FB000002000 /* MacFeedbackSettingsView.swift */; };
+		E7002000017 = {isa = PBXBuildFile; fileRef = 1040C9A1CA69D632C30E4554 /* MacUploadDetailView.swift */; };
+		E7002000018 = {isa = PBXBuildFile; fileRef = 14F2AC8D68F29B962385ECC7 /* MacUploadView.swift */; };
+		E7002000019 = {isa = PBXBuildFile; fileRef = 50461452072EC76077903A65 /* MacPaywallView.swift */; };
+		E7002000020 = {isa = PBXBuildFile; fileRef = A1000010000 /* Config.swift */; };
+		E7002000021 = {isa = PBXBuildFile; fileRef = A1000018000 /* AuthResponse.swift */; };
+		E7002000022 = {isa = PBXBuildFile; fileRef = A100001A000 /* AuthState.swift */; };
+		E7002000023 = {isa = PBXBuildFile; fileRef = A1000012000 /* ImghostError.swift */; };
+		E7002000024 = {isa = PBXBuildFile; fileRef = E1000001000 /* SubscriptionState.swift */; };
+		E7002000025 = {isa = PBXBuildFile; fileRef = A1000011000 /* UploadRecord.swift */; };
+		E7002000026 = {isa = PBXBuildFile; fileRef = A1000019000 /* User.swift */; };
+		E7002000027 = {isa = PBXBuildFile; fileRef = A1000017000 /* AuthService.swift */; };
+		E7002000028 = {isa = PBXBuildFile; fileRef = 0F8915CA80904ADBA74F2AB9 /* ExportService.swift */; };
+		E7002000029 = {isa = PBXBuildFile; fileRef = A1000014000 /* HistoryService.swift */; };
+		E7002000030 = {isa = PBXBuildFile; fileRef = A1000013000 /* KeychainService.swift */; };
+		E7002000031 = {isa = PBXBuildFile; fileRef = D1000001000 /* LinkFormatService.swift */; };
+		E7002000032 = {isa = PBXBuildFile; fileRef = E1000003000 /* StoreKitManager.swift */; };
+		E7002000033 = {isa = PBXBuildFile; fileRef = E1000002000 /* SubscriptionService.swift */; };
+		E7002000034 = {isa = PBXBuildFile; fileRef = 2176F70E7A81BD20B52041F1 /* MacUploadQualityService.swift */; };
+		E7002000035 = {isa = PBXBuildFile; fileRef = 8CDE341F2B2C2F8ADB6BD68B /* MacBrutalDesignSystem.swift */; };
+		E7002000036 = {isa = PBXBuildFile; fileRef = 9DEC8567A4F703CD4976EAF6 /* MenuBarManager.swift */; };
+		E7002000037 = {isa = PBXBuildFile; fileRef = 5476A8079EAF1802B5607F14 /* MenuBarPopoverView.swift */; };
+		E7001000101 = {isa = PBXBuildFile; fileRef = C1000001000 /* Assets.xcassets */; };
+		E7001000102 = {isa = PBXBuildFile; fileRef = DC175DD57F91819D610A1780 /* Localizable.strings */; };
+		E7001000103 = {isa = PBXBuildFile; fileRef = CB5BD3FBA48D83B8FF29317F /* Localizable.stringsdict */; };
+		E7002000101 = {isa = PBXBuildFile; fileRef = C1000001000 /* Assets.xcassets */; };
+		E7002000102 = {isa = PBXBuildFile; fileRef = 90C6DAAD95E021F4C49FFC61 /* Localizable.strings */; };
+		E7002000201 = {isa = PBXBuildFile; fileRef = 555A5A7CA698117B65CCB23A /* Cocoa.framework */; };
+		E7002000202 = {isa = PBXBuildFile; fileRef = BBC9CF58171A40A2D5DF37C7 /* AuthenticationServices.framework */; };
+		E7002000203 = {isa = PBXBuildFile; fileRef = 4470F77C9598F7A661CB26D4 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -314,6 +408,13 @@
 		I1000001000 /* ImageSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSyncService.swift; sourceTree = "<group>"; };
 		J1000001000 /* UploadQualityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadQualityService.swift; sourceTree = "<group>"; };
 		AN0000000000000000000001 /* AppAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnalytics.swift; sourceTree = "<group>"; };
+		E7000000001 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetCodeEntryTestApp.swift; sourceTree = "<group>"; };
+		E7000000002 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetCodeEntryURLProtocol.swift; sourceTree = "<group>"; };
+		E7000000003 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetCodeEntryUITests.swift; sourceTree = "<group>"; };
+		E7000010001 = {isa = PBXFileReference; explicitFileType = wrapper.application; path = ResetCodeEntryHost-iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7000020001 = {isa = PBXFileReference; explicitFileType = wrapper.application; path = ResetCodeEntryHost-macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7000030001 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = ResetCodeEntryUITests-iOS.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7000040001 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = ResetCodeEntryUITests-macOS.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -350,6 +451,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E7000010003 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E7000020003 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (E7002000201, E7002000202, E7002000203, ); runOnlyForDeploymentPostprocessing = 0; };
+		E7000030003 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E7000040003 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -483,6 +588,7 @@
 				45E4D9E399F33815B8DF912A /* Frameworks */,
 				8C9A841E8355E62421B5ADFC /* imghostMac */,
 				155B967DE898052E35CDFF10 /* MacShareExtension */,
+				E7000000004 /* ResetCodeEntryTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -604,6 +710,10 @@
 				A1000040000 /* ShareExtension.appex */,
 				4A69739601E0174857359C1D /* imghost.app */,
 				33C12964A312DC16C820B724 /* MacShareExtension.appex */,
+				E7000010001 /* ResetCodeEntryHost-iOS.app */,
+				E7000020001 /* ResetCodeEntryHost-macOS.app */,
+				E7000030001 /* ResetCodeEntryUITests-iOS.xctest */,
+				E7000040001 /* ResetCodeEntryUITests-macOS.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -645,6 +755,7 @@
 			path = Auth;
 			sourceTree = "<group>";
 		};
+		E7000000004 = {isa = PBXGroup; children = (E7000000001, E7000000002, E7000000003, ); path = Tests/ResetCodeEntryTests; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -720,6 +831,50 @@
 			productReference = 33C12964A312DC16C820B724 /* MacShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		E7000010000 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E7000010100;
+			buildPhases = (E7000010002, E7000010003, E7000010004, );
+			buildRules = ();
+			dependencies = ();
+			name = "ResetCodeEntryHost-iOS";
+			productName = "ResetCodeEntryHost-iOS";
+			productReference = E7000010001;
+			productType = "com.apple.product-type.application";
+		};
+		E7000020000 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E7000020100;
+			buildPhases = (E7000020002, E7000020003, E7000020004, );
+			buildRules = ();
+			dependencies = ();
+			name = "ResetCodeEntryHost-macOS";
+			productName = "ResetCodeEntryHost-macOS";
+			productReference = E7000020001;
+			productType = "com.apple.product-type.application";
+		};
+		E7000030000 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E7000030100;
+			buildPhases = (E7000030002, E7000030003, );
+			buildRules = ();
+			dependencies = (E7000030005, );
+			name = "ResetCodeEntryUITests-iOS";
+			productName = "ResetCodeEntryUITests-iOS";
+			productReference = E7000030001;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		E7000040000 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E7000040100;
+			buildPhases = (E7000040002, E7000040003, );
+			buildRules = ();
+			dependencies = (E7000040005, );
+			name = "ResetCodeEntryUITests-macOS";
+			productName = "ResetCodeEntryUITests-macOS";
+			productReference = E7000040001;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -730,6 +885,10 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					E7000010000 = {CreatedOnToolsVersion = 16.4; };
+					E7000020000 = {CreatedOnToolsVersion = 16.4; };
+					E7000030000 = {CreatedOnToolsVersion = 16.4; TestTargetID = E7000010000; };
+					E7000040000 = {CreatedOnToolsVersion = 16.4; TestTargetID = E7000020000; };
 					A1000060000 = {
 						CreatedOnToolsVersion = 15.0;
 					};
@@ -764,6 +923,10 @@
 				A1000060000 /* ShareExtension */,
 				3953672CF2B18CA551B981D2 /* imghostMac */,
 				F6D94486427B05CC1EB95C75 /* MacShareExtension */,
+				E7000010000 /* ResetCodeEntryHost-iOS */,
+				E7000020000 /* ResetCodeEntryHost-macOS */,
+				E7000030000 /* ResetCodeEntryUITests-iOS */,
+				E7000040000 /* ResetCodeEntryUITests-macOS */,
 			);
 		};
 /* End PBXProject section */
@@ -806,6 +969,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E7000010004 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (E7001000101, E7001000102, E7001000103, ); runOnlyForDeploymentPostprocessing = 0; };
+		E7000020004 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (E7002000101, E7002000102, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -953,6 +1118,39 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		// Host source membership mirrors each original app, except its @main.
+		// All references point to production files; only the isolated entry/transport are new.
+		E7000010002 = {
+			isa = PBXSourcesBuildPhase; buildActionMask = 2147483647;
+			files = (
+				E7000000011, E7000000012,
+				E7001000001, E7001000002, E7001000003, E7001000004, E7001000005,
+				E7001000006, E7001000007, E7001000008, E7001000009, E7001000010,
+				E7001000011, E7001000012, E7001000013, E7001000014, E7001000015,
+				E7001000016, E7001000017, E7001000018, E7001000019, E7001000020,
+				E7001000021, E7001000022, E7001000023, E7001000024, E7001000025,
+				E7001000026, E7001000027, E7001000028, E7001000029, E7001000030,
+				E7001000031, E7001000032, E7001000033, E7001000034, E7001000035,
+				E7001000036, E7001000037, E7001000038, E7001000039, E7001000040,
+				E7001000041, E7001000042, E7001000043,
+			); runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7000020002 = {
+			isa = PBXSourcesBuildPhase; buildActionMask = 2147483647;
+			files = (
+				E7000000021, E7000000022,
+				E7002000001, E7002000002, E7002000003, E7002000004, E7002000005,
+				E7002000006, E7002000007, E7002000008, E7002000009, E7002000010,
+				E7002000011, E7002000012, E7002000013, E7002000014, E7002000015,
+				E7002000016, E7002000017, E7002000018, E7002000019, E7002000020,
+				E7002000021, E7002000022, E7002000023, E7002000024, E7002000025,
+				E7002000026, E7002000027, E7002000028, E7002000029, E7002000030,
+				E7002000031, E7002000032, E7002000033, E7002000034, E7002000035,
+				E7002000036, E7002000037,
+			); runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7000030002 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (E7000000031, ); runOnlyForDeploymentPostprocessing = 0; };
+		E7000040002 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (E7000000041, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -967,6 +1165,8 @@
 			target = F6D94486427B05CC1EB95C75 /* MacShareExtension */;
 			targetProxy = 485F9DA1A3F1752A7175AAAA /* PBXContainerItemProxy */;
 		};
+		E7000030005 = {isa = PBXTargetDependency; target = E7000010000; };
+		E7000040005 = {isa = PBXTargetDependency; target = E7000020000; };
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -1388,6 +1588,85 @@
 			};
 			name = Debug;
 		};
+		E7000010101 = {
+			isa = XCBuildConfiguration; name = Debug;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "tech.isolated.synthetic.ResetCodeEntryHost.iOS";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Tests/ResetCodeEntryTests/ResetCodeEntryHost-Info.plist";
+				INFOPLIST_KEY_BackendURL = "https://reset-code-entry.invalid";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				SWIFT_VERSION = 5.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG RESET_CODE_ENTRY_TEST_HOST";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+			};
+		};
+		E7000020101 = {
+			isa = XCBuildConfiguration; name = Debug;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "tech.isolated.synthetic.ResetCodeEntryHost.macOS";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Tests/ResetCodeEntryTests/ResetCodeEntryHost-Info.plist";
+				INFOPLIST_KEY_BackendURL = "https://reset-code-entry.invalid";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SWIFT_VERSION = 5.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG RESET_CODE_ENTRY_TEST_HOST";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = NO;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+			};
+		};
+		E7000030101 = {
+			isa = XCBuildConfiguration; name = Debug;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "tech.isolated.synthetic.ResetCodeEntryUITests.iOS";
+				GENERATE_INFOPLIST_FILE = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				SWIFT_VERSION = 5.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG RESET_CODE_ENTRY_UI_TESTS";
+				TEST_TARGET_NAME = "ResetCodeEntryHost-iOS";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+			};
+		};
+		E7000040101 = {
+			isa = XCBuildConfiguration; name = Debug;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "tech.isolated.synthetic.ResetCodeEntryUITests.macOS";
+				GENERATE_INFOPLIST_FILE = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SWIFT_VERSION = 5.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG RESET_CODE_ENTRY_UI_TESTS";
+				TEST_TARGET_NAME = "ResetCodeEntryHost-macOS";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = NO;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+			};
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1436,6 +1715,10 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		E7000010100 = {isa = XCConfigurationList; buildConfigurations = (E7000010101, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		E7000020100 = {isa = XCConfigurationList; buildConfigurations = (E7000020101, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		E7000030100 = {isa = XCConfigurationList; buildConfigurations = (E7000030101, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		E7000040100 = {isa = XCConfigurationList; buildConfigurations = (E7000040101, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
 /* End XCConfigurationList section */
 	};
 	rootObject = A1000000000 /* Project object */;

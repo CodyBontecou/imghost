@@ -3,6 +3,11 @@
    Localizable.strings (Korean)
    ========================================================= */
 
+// MARK: - Existing reset code entry
+"auth.forgot_password.button.existing_code" = "이미 재설정 코드가 있습니다";
+"auth.forgot_password.request_accepted" = "이 이메일로 등록된 계정이 있으면 재설정 안내가 전송됩니다.";
+"auth.reset_password.button.back" = "뒤로";
+
 // MARK: - Common Buttons
 "button.ok" = "OK";
 "button.cancel" = "취소";

@@ -8,9 +8,12 @@ JWT_SECRET=your-secret-key-here-generate-with-openssl
 # Legacy support (optional)
 UPLOAD_TOKEN=legacy-test-token
 
-# Email configuration (optional - emails will be logged if not configured)
-EMAIL_FROM=noreply@your-domain.com
-EMAIL_API_KEY=your-sendgrid-or-postmark-api-key
+# SES configuration (required for delivery; missing credentials fail without secret logs)
+# Use a verified sender/recipient in a disposable test environment. Never commit credentials.
+EMAIL_FROM=noreply@your-verified-domain.com
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-test-access-key
+AWS_SECRET_ACCESS_KEY=your-test-secret-key
 
-# Base URL for email links (used in verification and reset emails)
-BASE_URL=http://localhost:8787
+# Reset emails contain native copyable codes, not BASE_URL links.
+# See SETUP_AUTH.md for SES sandbox and Apple private-relay requirements.

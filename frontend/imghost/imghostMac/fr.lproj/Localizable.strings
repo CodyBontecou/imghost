@@ -3,6 +3,11 @@
    Localizable.strings (French)
    ========================================================= */
 
+// MARK: - Existing reset code entry
+"auth.forgot_password.button.existing_code" = "J’ai déjà un code de réinitialisation";
+"auth.forgot_password.request_accepted" = "Si un compte existe pour cette adresse e-mail, des instructions de réinitialisation seront envoyées.";
+"auth.reset_password.button.back" = "Retour";
+
 // MARK: - Common Buttons
 "button.ok" = "OK";
 "button.cancel" = "Annuler";
