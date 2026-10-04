@@ -115,6 +115,7 @@ struct MacForgotPasswordView: View {
             }
             .buttonStyle(.plain)
             .disabled(email.isEmpty || !email.contains("@") || isLoading)
+            .accessibilityLabel(Text("auth.forgot_password.button.send_code"))
             .accessibilityIdentifier("auth.forgot.sendCode")
 
             Button(action: enterExistingCode) {
@@ -140,6 +141,7 @@ struct MacForgotPasswordView: View {
                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                 .foregroundStyle(Color.brutalTextSecondary)
                 .tracking(2)
+                .accessibilityLabel(Text("auth.forgot_password.request_accepted"))
                 .accessibilityIdentifier("auth.forgot.requestAccepted")
 
             Text(verbatim: acceptedEmail)
@@ -210,6 +212,7 @@ struct MacForgotPasswordView: View {
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalError)
                     .tracking(1)
+                    .accessibilityLabel(Text(resetError.uppercased()))
                     .accessibilityIdentifier("auth.reset.error")
             }
 
@@ -232,6 +235,7 @@ struct MacForgotPasswordView: View {
             }
             .buttonStyle(.plain)
             .disabled(!isResetFormValid || isResetting)
+            .accessibilityLabel(Text("auth.reset_password.button.reset"))
             .accessibilityIdentifier("auth.reset.submit")
 
             Button(action: {

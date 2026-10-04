@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 7
+          fetch-depth: 8
           persist-credentials: false
       - name: Exact source, tool and frozen graph provenance
         shell: bash
@@ -51,7 +51,7 @@ jobs:
           printf 'RECEIPTS=%s\n' "$RECEIPTS" >> "$GITHUB_ENV"
           mkdir -p "$RECEIPTS"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$(git show -s --format=%P HEAD)" = 3f60f6106008ce24d27de43e61b4c43e197bc4be
+          test "$(git show -s --format=%P HEAD)" = 4bae3c05048c6298c08a71c2cd9d55d5b4c26772
           {
             printf 'source=%s\nevent=%s\nworkflow_sha=%s\nworkflow_ref=%s\n' "$SOURCE_SHA" "$EVENT_SHA" "$WORKFLOW_SHA" "$WORKFLOW_REF"
             git show -s --format='commit=%H%ntree=%T%nparents=%P' HEAD
