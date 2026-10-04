@@ -148,7 +148,7 @@ beforeEach(async () => {
   await db.createImage(userId, 'library/photo.png', 'photo.png', 300, 'image/png', 'unchanged-delete-token');
   await db.createImage(userId, 'library/video.mov', 'video.mov', 700, 'video/quicktime', 'second-delete-token', NOW + 500000);
   await db.createRefreshToken(userId, 'old-refresh', 999999);
-  await db.setPasswordResetToken(userId, 'old-reset', 999999);
+  await db.setPasswordResetToken(userId, user.email, user.password_hash, 'old-reset', 999999);
   await db.setEmailVerificationToken(userId, 'old-verification', 999999);
   access = await Auth.createJWT({ sub: userId, email: SOURCE, tier: 'enterprise', type: 'access' }, 3600, env.JWT_SECRET);
   emails = [];

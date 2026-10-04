@@ -23,13 +23,34 @@ jobs:
         working-directory: backend/img-host
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
           cache-dependency-path: backend/img-host/package-lock.json
+      - name: Record immutable source and frozen-manifest provenance
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_SHA: ${{ github.sha }}
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          printf 'source=%s\nevent=%s\nworkflow=%s\nworkflow_ref=%s\n' \
+            "$SOURCE_SHA" "$EVENT_SHA" "$WORKFLOW_SHA" "$WORKFLOW_REF"
+          git show -s --format='checkout=%H tree=%T parents=%P' HEAD
+          node --version
+          npm --version
+          sha256sum ../../package.json ../../package-lock.json package.json package-lock.json \
+            | tee "$RUNNER_TEMP/backend-frozen-manifests.sha256"
       # Same scoped workflow as pending PR 8. Existing lockfile pairs Vitest 3
       # with unused coverage-v8 4; honor it without invoking coverage or changing dependencies.
       - run: npm ci --legacy-peer-deps
-      - name: Run all backend behavior tests
-        run: npm test -- --maxWorkers=2
+      - name: Run all individually named backend behavior tests
+        run: npm test -- --maxWorkers=2 --reporter=verbose
+      - name: Verify frozen manifests and locks after execution
+        if: always()
+        run: sha256sum --check "$RUNNER_TEMP/backend-frozen-manifests.sha256"

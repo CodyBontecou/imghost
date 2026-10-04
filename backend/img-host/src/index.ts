@@ -33,6 +33,7 @@ import {
 import type { ExportJobResponse } from './types';
 import { appAnalyticsCorsHeaders, handleAppAnalyticsIngest } from './app-analytics';
 import { handleEmailConversion } from './email-conversion';
+import { handlePasswordResetPage } from './password-reset-page';
 
 // CORS configuration
 const ALLOWED_ORIGINS = [
@@ -1394,6 +1395,11 @@ export default {
       // POST /auth/forgot-password - Request password reset
       if (method === 'POST' && path === '/auth/forgot-password') {
         return withCors(await handleForgotPassword(request, env));
+      }
+
+      // GET /auth/reset-password - Read-only instructions for previously emailed links
+      if (method === 'GET' && path === '/auth/reset-password') {
+        return handlePasswordResetPage(request);
       }
 
       // POST /auth/reset-password - Reset password with token
