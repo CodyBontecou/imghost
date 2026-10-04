@@ -3,11 +3,21 @@ import SwiftUI
 struct MacForgotPasswordView: View {
     @Environment(\.dismiss) var dismiss
 
+    let passwordResetService: AuthService
+
+    init(passwordResetService: AuthService = .shared) {
+        self.passwordResetService = passwordResetService
+    }
+
     @State private var email = ""
     @State private var isLoading = false
     @State private var errorMessage: String?
-    @State private var isEmailSent = false
+    @State private var isRequestAccepted = false
+    @State private var acceptedEmail = ""
     @State private var showResetPassword = false
+    @State private var isActive = false
+    @State private var requestOperation: UUID?
+    @State private var resetOperation: UUID?
 
     // Reset password fields
     @State private var resetCode = ""
@@ -29,12 +39,14 @@ struct MacForgotPasswordView: View {
                         .foregroundStyle(Color.white)
                         .tracking(2)
                     Spacer()
-                    Button(action: { dismiss() }) {
+                    Button(action: closeSheet) {
                         Image(systemName: "xmark")
                             .font(.system(size: 12))
                             .foregroundStyle(Color.brutalTextSecondary)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(String(localized: "button.cancel"))
+                    .accessibilityIdentifier("auth.forgot.cancel")
                 }
                 .padding(16)
                 .background(Color.brutalSurface)
@@ -47,7 +59,7 @@ struct MacForgotPasswordView: View {
                             successView
                         } else if showResetPassword {
                             resetPasswordView
-                        } else if isEmailSent {
+                        } else if isRequestAccepted {
                             emailSentView
                         } else {
                             requestCodeView
@@ -57,6 +69,8 @@ struct MacForgotPasswordView: View {
                 }
             }
         }
+        .onAppear { isActive = true }
+        .onDisappear { retireOperations(); isActive = false }
     }
 
     // MARK: - Request Code
@@ -68,13 +82,18 @@ struct MacForgotPasswordView: View {
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            MacBrutalTextField(label: String(localized: "auth.forgot_password.field.email"), text: $email)
+            MacBrutalTextField(
+                label: String(localized: "auth.forgot_password.field.email"), text: $email,
+                fieldAccessibilityIdentifier: "auth.forgot.email",
+                fieldAccessibilityLabel: String(localized: "auth.forgot_password.field.email")
+            )
 
             if let errorMessage = errorMessage {
                 Text(errorMessage.uppercased())
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalError)
                     .tracking(1)
+                    .accessibilityIdentifier("auth.forgot.error")
             }
 
             Button(action: sendResetEmail) {
@@ -96,6 +115,16 @@ struct MacForgotPasswordView: View {
             }
             .buttonStyle(.plain)
             .disabled(email.isEmpty || !email.contains("@") || isLoading)
+            .accessibilityIdentifier("auth.forgot.sendCode")
+
+            Button(action: enterExistingCode) {
+                Text("auth.forgot_password.button.existing_code")
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundStyle(Color.brutalTextSecondary)
+            }
+            .buttonStyle(.plain)
+            .disabled(isLoading)
+            .accessibilityIdentifier("auth.forgot.existingCode")
         }
     }
 
@@ -107,16 +136,17 @@ struct MacForgotPasswordView: View {
                 .font(.system(size: 48, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.brutalSuccess)
 
-            Text("auth.forgot_password.code_sent_to")
+            Text("auth.forgot_password.request_accepted")
                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                 .foregroundStyle(Color.brutalTextSecondary)
                 .tracking(2)
+                .accessibilityIdentifier("auth.forgot.requestAccepted")
 
-            Text(verbatim: email)
+            Text(verbatim: acceptedEmail)
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(Color.white)
 
-            Button(action: { showResetPassword = true }) {
+            Button(action: enterExistingCode) {
                 Text("auth.forgot_password.button.enter_code")
                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.black)
@@ -126,14 +156,19 @@ struct MacForgotPasswordView: View {
                     .background(Color.white)
             }
             .buttonStyle(.plain)
+            .accessibilityIdentifier("auth.forgot.enterCode")
 
-            Button(action: { isEmailSent = false }) {
+            Button(action: {
+                retireOperations()
+                isRequestAccepted = false
+            }) {
                 Text("auth.forgot_password.button.send_again")
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .tracking(1)
             }
             .buttonStyle(.plain)
+            .accessibilityIdentifier("auth.forgot.sendAgain")
         }
     }
 
@@ -146,9 +181,21 @@ struct MacForgotPasswordView: View {
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            MacBrutalTextField(label: String(localized: "auth.reset_password.field.code"), text: $resetCode)
-            MacBrutalTextField(label: String(localized: "auth.reset_password.field.new_password"), text: $newPassword, isSecure: true)
-            MacBrutalTextField(label: String(localized: "auth.reset_password.field.confirm_password"), text: $confirmPassword, isSecure: true)
+            MacBrutalTextField(
+                label: String(localized: "auth.reset_password.field.code"), text: $resetCode,
+                fieldAccessibilityIdentifier: "auth.reset.code",
+                fieldAccessibilityLabel: String(localized: "auth.reset_password.field.code")
+            )
+            MacBrutalTextField(
+                label: String(localized: "auth.reset_password.field.new_password"), text: $newPassword, isSecure: true,
+                fieldAccessibilityIdentifier: "auth.reset.newPassword",
+                fieldAccessibilityLabel: String(localized: "auth.reset_password.field.new_password")
+            )
+            MacBrutalTextField(
+                label: String(localized: "auth.reset_password.field.confirm_password"), text: $confirmPassword, isSecure: true,
+                fieldAccessibilityIdentifier: "auth.reset.confirmPassword",
+                fieldAccessibilityLabel: String(localized: "auth.reset_password.field.confirm_password")
+            )
 
             VStack(alignment: .leading, spacing: 8) {
                 MacRequirement(text: String(localized: "auth.reset_password.requirement.min_chars"), isMet: newPassword.count >= 8)
@@ -163,6 +210,7 @@ struct MacForgotPasswordView: View {
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalError)
                     .tracking(1)
+                    .accessibilityIdentifier("auth.reset.error")
             }
 
             Button(action: resetPassword) {
@@ -184,6 +232,17 @@ struct MacForgotPasswordView: View {
             }
             .buttonStyle(.plain)
             .disabled(!isResetFormValid || isResetting)
+            .accessibilityIdentifier("auth.reset.submit")
+
+            Button(action: {
+                // Internal stages do not disappear as separate views.
+                retireOperations()
+                showResetPassword = false
+            }) {
+                Text("auth.reset_password.button.back")
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("auth.reset.back")
         }
     }
 
@@ -203,8 +262,9 @@ struct MacForgotPasswordView: View {
                 .font(.system(size: 12))
                 .foregroundStyle(Color.brutalTextSecondary)
                 .multilineTextAlignment(.center)
+                .accessibilityIdentifier("auth.reset.success")
 
-            Button(action: { dismiss() }) {
+            Button(action: closeSheet) {
                 Text("auth.reset_password.success.button.sign_in")
                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.black)
@@ -214,6 +274,7 @@ struct MacForgotPasswordView: View {
                     .background(Color.white)
             }
             .buttonStyle(.plain)
+            .accessibilityIdentifier("auth.reset.backToSignIn")
         }
     }
 
@@ -223,41 +284,82 @@ struct MacForgotPasswordView: View {
         !resetCode.isEmpty && newPassword.count >= 8 && newPassword == confirmPassword
     }
 
+    @MainActor
+    private func retireOperations() {
+        requestOperation = nil
+        resetOperation = nil
+        isLoading = false
+        isResetting = false
+    }
+
+    @MainActor
+    private func closeSheet() {
+        retireOperations()
+        isActive = false
+        dismiss()
+    }
+
+    @MainActor
+    private func enterExistingCode() {
+        guard isActive, !isLoading, !isResetting else { return }
+        retireOperations()
+        showResetPassword = true
+    }
+
+    @MainActor
     private func sendResetEmail() {
+        guard isActive, !showResetPassword, !isRequestAccepted,
+              !email.isEmpty, email.contains("@"), !isLoading else { return }
+        let submittedEmail = email.trimmingCharacters(in: .whitespaces)
+        let operation = UUID()
+        requestOperation = operation
         isLoading = true
         errorMessage = nil
 
-        Task {
+        Task { @MainActor in
             do {
-                try await AuthService.shared.forgotPassword(email: email.trimmingCharacters(in: .whitespaces))
-                await MainActor.run { isEmailSent = true }
+                try await passwordResetService.forgotPassword(email: submittedEmail)
+                guard isActive, requestOperation == operation else { return }
+                acceptedEmail = submittedEmail
+                isRequestAccepted = true
             } catch let error as AuthError {
-                await MainActor.run { errorMessage = error.errorDescription }
+                guard isActive, requestOperation == operation else { return }
+                errorMessage = error.errorDescription
             } catch {
-                await MainActor.run { errorMessage = String(localized: "auth.forgot_password.error.unexpected") }
+                guard isActive, requestOperation == operation else { return }
+                errorMessage = String(localized: "auth.forgot_password.error.unexpected")
             }
-            await MainActor.run { isLoading = false }
+            guard isActive, requestOperation == operation else { return }
+            requestOperation = nil
+            isLoading = false
         }
     }
 
+    @MainActor
     private func resetPassword() {
-        guard isResetFormValid else { return }
+        guard isActive, showResetPassword, isResetFormValid, !isResetting else { return }
+        let submittedCode = resetCode.trimmingCharacters(in: .whitespaces)
+        let submittedPassword = newPassword
+        let operation = UUID()
+        resetOperation = operation
         isResetting = true
         resetError = nil
 
-        Task {
+        Task { @MainActor in
             do {
-                try await AuthService.shared.resetPassword(
-                    token: resetCode.trimmingCharacters(in: .whitespaces),
-                    newPassword: newPassword
-                )
-                await MainActor.run { isResetSuccessful = true }
+                try await passwordResetService.resetPassword(token: submittedCode, newPassword: submittedPassword)
+                guard isActive, resetOperation == operation else { return }
+                isResetSuccessful = true
             } catch let error as AuthError {
-                await MainActor.run { resetError = error.errorDescription }
+                guard isActive, resetOperation == operation else { return }
+                resetError = error.errorDescription
             } catch {
-                await MainActor.run { resetError = String(localized: "auth.reset_password.error.unexpected") }
+                guard isActive, resetOperation == operation else { return }
+                resetError = String(localized: "auth.reset_password.error.unexpected")
             }
-            await MainActor.run { isResetting = false }
+            guard isActive, resetOperation == operation else { return }
+            resetOperation = nil
+            isResetting = false
         }
     }
 }

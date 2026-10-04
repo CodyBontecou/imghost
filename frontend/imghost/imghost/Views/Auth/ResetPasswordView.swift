@@ -3,12 +3,22 @@ import SwiftUI
 struct ResetPasswordView: View {
     @Environment(\.dismiss) var dismiss
 
+    let passwordResetService: AuthService
+    let onReturnToSignIn: (() -> Void)?
+
+    init(passwordResetService: AuthService = .shared, onReturnToSignIn: (() -> Void)? = nil) {
+        self.passwordResetService = passwordResetService
+        self.onReturnToSignIn = onReturnToSignIn
+    }
+
     @State private var resetCode = ""
     @State private var newPassword = ""
     @State private var confirmPassword = ""
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var isResetSuccessful = false
+    @State private var isActive = false
+    @State private var resetOperation: UUID?
 
     var body: some View {
         ZStack {
@@ -54,6 +64,7 @@ struct ResetPasswordView: View {
                                     Text("auth.reset_password.success.message")
                                         .brutalTypography(.bodyMedium, color: .brutalTextSecondary)
                                         .multilineTextAlignment(.center)
+                                        .accessibilityIdentifier("auth.reset.success")
                                 }
                                 .frame(maxWidth: .infinity)
                             }
@@ -61,8 +72,13 @@ struct ResetPasswordView: View {
 
                             BrutalPrimaryButton(
                                 title: String(localized: "auth.reset_password.button.back_to_sign_in"),
-                                action: { dismiss() }
+                                action: {
+                                    isActive = false
+                                    resetOperation = nil
+                                    if let onReturnToSignIn { onReturnToSignIn() } else { dismiss() }
+                                }
                             )
+                            .accessibilityIdentifier("auth.reset.backToSignIn")
                             .padding(.horizontal, 24)
                         }
                     } else {
@@ -71,21 +87,27 @@ struct ResetPasswordView: View {
                             BrutalTextField(
                                 label: String(localized: "auth.reset_password.field.reset_code"),
                                 text: $resetCode,
-                                autocapitalization: .never
+                                autocapitalization: .never,
+                                fieldAccessibilityIdentifier: "auth.reset.code",
+                                fieldAccessibilityLabel: String(localized: "auth.reset_password.field.reset_code")
                             )
 
                             BrutalTextField(
                                 label: String(localized: "auth.reset_password.field.new_password"),
                                 text: $newPassword,
                                 isSecure: true,
-                                textContentType: .newPassword
+                                textContentType: .newPassword,
+                                fieldAccessibilityIdentifier: "auth.reset.newPassword",
+                                fieldAccessibilityLabel: String(localized: "auth.reset_password.field.new_password")
                             )
 
                             BrutalTextField(
                                 label: String(localized: "auth.reset_password.field.confirm_password"),
                                 text: $confirmPassword,
                                 isSecure: true,
-                                textContentType: .newPassword
+                                textContentType: .newPassword,
+                                fieldAccessibilityIdentifier: "auth.reset.confirmPassword",
+                                fieldAccessibilityLabel: String(localized: "auth.reset_password.field.confirm_password")
                             )
 
                             // Password requirements
@@ -113,6 +135,7 @@ struct ResetPasswordView: View {
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 24)
                                 .padding(.top, 16)
+                                .accessibilityIdentifier("auth.reset.error")
                         }
 
                         // Reset button
@@ -122,6 +145,7 @@ struct ResetPasswordView: View {
                             isLoading: isLoading,
                             isDisabled: !isFormValid
                         )
+                        .accessibilityIdentifier("auth.reset.submit")
                         .padding(.horizontal, 24)
                         .padding(.top, 24)
                     }
@@ -133,6 +157,12 @@ struct ResetPasswordView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Color.brutalBackground, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        .onAppear { isActive = true }
+        .onDisappear {
+            isActive = false
+            resetOperation = nil
+            isLoading = false
+        }
         .preferredColorScheme(.dark)
     }
 
@@ -142,34 +172,31 @@ struct ResetPasswordView: View {
         newPassword == confirmPassword
     }
 
+    @MainActor
     private func resetPassword() {
-        guard isFormValid else { return }
-
+        guard isActive, isFormValid, !isLoading else { return }
+        let submittedCode = resetCode.trimmingCharacters(in: .whitespaces)
+        let submittedPassword = newPassword
+        let operation = UUID()
+        resetOperation = operation
         isLoading = true
         errorMessage = nil
 
-        Task {
+        Task { @MainActor in
             do {
-                try await AuthService.shared.resetPassword(
-                    token: resetCode.trimmingCharacters(in: .whitespaces),
-                    newPassword: newPassword
-                )
-                await MainActor.run {
-                    isResetSuccessful = true
-                }
+                try await passwordResetService.resetPassword(token: submittedCode, newPassword: submittedPassword)
+                guard isActive, resetOperation == operation else { return }
+                isResetSuccessful = true
             } catch let error as AuthError {
-                await MainActor.run {
-                    errorMessage = error.errorDescription
-                }
+                guard isActive, resetOperation == operation else { return }
+                errorMessage = error.errorDescription
             } catch {
-                await MainActor.run {
-                    errorMessage = String(localized: "auth.reset_password.error.unexpected")
-                }
+                guard isActive, resetOperation == operation else { return }
+                errorMessage = String(localized: "auth.reset_password.error.unexpected")
             }
-
-            await MainActor.run {
-                isLoading = false
-            }
+            guard isActive, resetOperation == operation else { return }
+            resetOperation = nil
+            isLoading = false
         }
     }
 }

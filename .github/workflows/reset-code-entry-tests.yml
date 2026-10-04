@@ -1,0 +1,194 @@
+name: Native cold reset code entry
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/imghost/**'
+      - '.github/workflows/reset-code-entry-tests.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reset-code-entry-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    runs-on: macos-15
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - platform: iOS
+            app_scheme: imghost
+            ui_scheme: ResetCodeEntry-iOS
+          - platform: macOS
+            app_scheme: imghostMac
+            ui_scheme: ResetCodeEntry-macOS
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      APP_SCHEME: ${{ matrix.app_scheme }}
+      UI_SCHEME: ${{ matrix.ui_scheme }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      EVENT_SHA: ${{ github.sha }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+      WORKFLOW_REF: ${{ github.workflow_ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Exact source, tool and frozen graph provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RUNNER_TEMP:?Runner temporary directory is unavailable}"
+          export RECEIPTS="$RUNNER_TEMP/reset-entry-receipts"
+          printf 'RECEIPTS=%s\n' "$RECEIPTS" >> "$GITHUB_ENV"
+          mkdir -p "$RECEIPTS"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git show -s --format=%P HEAD)" = c5faf15a8b9f2e6de3da425cc9c91dadc95f5ea6
+          {
+            printf 'source=%s\nevent=%s\nworkflow_sha=%s\nworkflow_ref=%s\n' "$SOURCE_SHA" "$EVENT_SHA" "$WORKFLOW_SHA" "$WORKFLOW_REF"
+            git show -s --format='commit=%H%ntree=%T%nparents=%P' HEAD
+            printf 'run=%s\nattempt=%s\njob=%s\nplatform=%s\nref=%s\nevent_name=%s\nimage=%s/%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_JOB" "$PLATFORM" "$GITHUB_REF" "$GITHUB_EVENT_NAME" "${ImageOS:-unknown}" "${ImageVersion:-unknown}"
+            sw_vers
+            xcodebuild -version
+            xcrun swift --version
+            xcodebuild -showsdks
+          } | tee "$RECEIPTS/provenance.txt"
+          printf '%s\n' \
+            'd75ed55143bb46a8e565bab3cef08aff5bfe644bd140102d6057660fa31f98db  package.json' \
+            'd8796c212823cc056b44796c92f92876d728b9c55287e353acd5567b1681e6df  package-lock.json' \
+            '843d28b89187fa99a3517caea11dc8ee7d7e84d769414f663a6c47ff0b160d97  backend/img-host/package.json' \
+            '0edda0d1feeae00769ac43bf44835bacf5295dd719be4f9eea94504d25fc4ad0  backend/img-host/package-lock.json' > "$RECEIPTS/frozen.sha256"
+          shasum -a 256 -c "$RECEIPTS/frozen.sha256"
+          git diff --exit-code c5faf15a8b9f2e6de3da425cc9c91dadc95f5ea6 HEAD -- backend/img-host package.json package-lock.json
+      - name: Original target graph and actual UI source registration (not UI execution)
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROJECT=frontend/imghost/imghost.xcodeproj/project.pbxproj
+          git show c5faf15a8b9f2e6de3da425cc9c91dadc95f5ea6:"$PROJECT" > "$RECEIPTS/baseline.pbxproj"
+          plutil -lint "$PROJECT"
+          plutil -convert json -o "$RECEIPTS/current-project.json" "$PROJECT"
+          plutil -convert json -o "$RECEIPTS/baseline-project.json" "$RECEIPTS/baseline.pbxproj"
+          python3 - <<'PY'
+          import copy, json, os, pathlib, re, xml.etree.ElementTree as ET
+          root = pathlib.Path('frontend/imghost')
+          out = pathlib.Path(os.environ['RECEIPTS'])
+          current = json.loads((out/'current-project.json').read_text())['objects']
+          baseline = json.loads((out/'baseline-project.json').read_text())['objects']
+          stripped = copy.deepcopy(current)
+          stripped['A10000A0000']['children'].remove('E7000000004')
+          for item in ['E7000010001','E7000020001','E7000030001','E7000040001']:
+              stripped['A10000E0000']['children'].remove(item)
+          for item in ['E7000010000','E7000020000','E7000030000','E7000040000']:
+              stripped['A1000000000']['targets'].remove(item)
+              del stripped['A1000000000']['attributes']['TargetAttributes'][item]
+          for identifier, body in baseline.items():
+              assert stripped[identifier] == body, ('original object changed', identifier)
+          def files(target, kind):
+              phases = [current[p] for p in current[target]['buildPhases'] if current[p]['isa'] == kind]
+              assert len(phases) == 1
+              return [current[f]['fileRef'] for f in phases[0]['files']]
+          for original, host, entry, ui, scheme in [
+              ('A10000F0000','E7000010000','A1000001000','E7000030000','ResetCodeEntry-iOS'),
+              ('3953672CF2B18CA551B981D2','E7000020000','DF02C598282236C1976A945C','E7000040000','ResetCodeEntry-macOS')]:
+              inherited = [f for f in files(original,'PBXSourcesBuildPhase') if f != entry]
+              assert files(host,'PBXSourcesBuildPhase') == ['E7000000001','E7000000002'] + inherited
+              assert files(host,'PBXResourcesBuildPhase') == files(original,'PBXResourcesBuildPhase')
+              assert files(ui,'PBXSourcesBuildPhase') == ['E7000000003']
+              assert current[host]['dependencies'] == []
+              tree = ET.parse(root/'imghost.xcodeproj/xcshareddata/xcschemes'/f'{scheme}.xcscheme')
+              refs = tree.findall('.//TestableReference')
+              assert len(refs) == 1 and refs[0].get('skipped') == 'NO'
+              assert refs[0].find('BuildableReference').get('BlueprintIdentifier') == ui
+              assert not tree.findall('.//SkippedTests') and not tree.findall('.//SelectedTests')
+          source = (root/'Tests/ResetCodeEntryTests/ResetCodeEntryUITests.swift').read_text()
+          names = re.findall(r'^    func (test\w+)\(\) throws \{', source, re.M)
+          assert len(names) == len(set(names)) == 16
+          (out/'registered-methods.json').write_text(json.dumps(names, indent=2)+'\n')
+          print('SOURCE REGISTRATION ONLY: original objects unchanged; both hosts use actual source references; 16 bodies/platform')
+          print('\n'.join(names))
+          PY
+      - name: Compile complete original app and embedded extension unsigned (no launch)
+        shell: bash
+        working-directory: frontend/imghost
+        run: |
+          set -euo pipefail
+          if [[ "$PLATFORM" == iOS ]]; then DESTINATION='generic/platform=iOS Simulator'; else DESTINATION='platform=macOS'; fi
+          xcodebuild -project imghost.xcodeproj -scheme "$APP_SCHEME" -configuration Debug \
+            -destination "$DESTINATION" -jobs 2 -derivedDataPath "$RUNNER_TEMP/reset-original-build" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee "$RECEIPTS/original-build.log"
+          grep -F '** BUILD SUCCEEDED **' "$RECEIPTS/original-build.log"
+      - name: Run registered genuine native controls in isolated hosts (ad-hoc only)
+        shell: bash
+        working-directory: frontend/imghost
+        run: |
+          set -euo pipefail
+          if [[ "$PLATFORM" == iOS ]]; then
+            DEVICE=$(xcrun simctl list devices available -j | python3 -c 'import sys,json; d=json.load(sys.stdin); a=[v["udid"] for k,vs in d["devices"].items() if "iOS" in k for v in vs if v["name"].startswith("iPhone")]; assert a; print(a[0])')
+            DESTINATION="platform=iOS Simulator,id=$DEVICE"
+          else
+            DESTINATION='platform=macOS'
+          fi
+          xcodebuild -project imghost.xcodeproj -scheme "$UI_SCHEME" -configuration Debug \
+            -destination "$DESTINATION" -jobs 2 -parallel-testing-enabled NO -test-iterations 1 \
+            -test-timeouts-enabled YES -default-test-execution-time-allowance 120 \
+            -maximum-test-execution-time-allowance 120 -collect-test-diagnostics never \
+            -derivedDataPath "$RUNNER_TEMP/reset-isolated-ui" \
+            -resultBundlePath "$RUNNER_TEMP/reset-isolated-ui.xcresult" \
+            CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= CODE_SIGN_ENTITLEMENTS= \
+            test 2>&1 | tee "$RECEIPTS/native-ui.log"
+          grep -F '** TEST SUCCEEDED **' "$RECEIPTS/native-ui.log"
+          python3 - <<'PY'
+          import json, os, pathlib, re
+          root = pathlib.Path(os.environ['RECEIPTS'])
+          data = (root/'native-ui.log').read_bytes()
+          assert len(data) <= 4*1024*1024, 'native log budget exceeded (no truncation for green)'
+          log = data.decode()
+          expected = json.loads((root/'registered-methods.json').read_text())
+          passed = re.findall(r"^Test Case '[^\n']*[ .](test\w+)(?:\(\)|\])?' passed", log, re.M)
+          assert len(passed) == 16 and len(set(passed)) == 16 and set(passed) == set(expected), passed
+          assert re.search(r'Executed 16 tests, with 0 failures', log), 'missing XCTest footer'
+          assert 'SYNTHETIC_RECEIPT ' in log and 'NATIVE_FIELD_OBSERVATION ' in log
+          assert 'CRLF/tab/clipboard NOT QUALIFIED' in log
+          print('Actual individually named native PASS receipts matched all 16 registered bodies; bounded fixture/native evidence only')
+          PY
+      - name: Recheck frozen manifests after builds/tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RECEIPTS:?Receipts path was not established}"
+          test -f "$RECEIPTS/frozen.sha256"
+          shasum -a 256 -c "$RECEIPTS/frozen.sha256"
+      - name: Prepare bounded raw receipts only (no screenshots/video/xcresult upload)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RECEIPTS:?Receipts path was not established}"
+          test -d "$RECEIPTS"
+          mkdir -p "$RUNNER_TEMP/reset-entry-upload"
+          for file in provenance.txt frozen.sha256 registered-methods.json original-build.log native-ui.log; do
+            if [[ -f "$RECEIPTS/$file" ]]; then
+              SIZE=$(wc -c < "$RECEIPTS/$file")
+              test "$SIZE" -le 4194304
+              cp "$RECEIPTS/$file" "$RUNNER_TEMP/reset-entry-upload/$file"
+            fi
+          done
+          shasum -a 256 "$RUNNER_TEMP/reset-entry-upload/"* > "$RUNNER_TEMP/reset-entry-upload/receipt-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reset-code-entry-${{ matrix.platform }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/reset-entry-upload/
+          retention-days: 1
+          compression-level: 9
+          if-no-files-found: error

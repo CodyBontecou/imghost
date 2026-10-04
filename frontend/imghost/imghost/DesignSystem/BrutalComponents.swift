@@ -156,6 +156,8 @@ struct BrutalTextField: View {
     var keyboardType: UIKeyboardType = .default
     var textContentType: UITextContentType?
     var autocapitalization: TextInputAutocapitalization = .sentences
+    var fieldAccessibilityIdentifier: String? = nil
+    var fieldAccessibilityLabel: String? = nil
 
     @FocusState private var isFocused: Bool
 
@@ -165,7 +167,7 @@ struct BrutalTextField: View {
                 .brutalTypography(.monoSmall, color: isFocused ? .white : .brutalTextSecondary)
                 .tracking(2)
 
-            Group {
+            accessibleField(Group {
                 if isSecure {
                     SecureField("", text: $text)
                 } else {
@@ -174,7 +176,7 @@ struct BrutalTextField: View {
                         .textContentType(textContentType)
                         .textInputAutocapitalization(autocapitalization)
                 }
-            }
+            })
             .focused($isFocused)
             .autocorrectionDisabled()
             .brutalTypography(.bodyLarge)
@@ -185,6 +187,20 @@ struct BrutalTextField: View {
                 Rectangle()
                     .stroke(isFocused ? Color.white : Color.brutalBorder, lineWidth: isFocused ? 2 : 1)
             )
+        }
+    }
+
+    // Nil opts out entirely: existing callers keep their accessibility behavior.
+    @ViewBuilder
+    private func accessibleField<Content: View>(_ content: Content) -> some View {
+        if let label = fieldAccessibilityLabel, let identifier = fieldAccessibilityIdentifier {
+            content.accessibilityLabel(label).accessibilityIdentifier(identifier)
+        } else if let label = fieldAccessibilityLabel {
+            content.accessibilityLabel(label)
+        } else if let identifier = fieldAccessibilityIdentifier {
+            content.accessibilityIdentifier(identifier)
+        } else {
+            content
         }
     }
 }

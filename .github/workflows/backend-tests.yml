@@ -23,13 +23,42 @@ jobs:
         working-directory: backend/img-host
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
           cache-dependency-path: backend/img-host/package-lock.json
+      - name: Exact source and frozen manifest provenance
+        working-directory: ${{ github.workspace }}
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_SHA: ${{ github.sha }}
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          printf 'source=%s\nevent=%s\nworkflow_sha=%s\nworkflow_ref=%s\n' "$SOURCE_SHA" "$EVENT_SHA" "$WORKFLOW_SHA" "$WORKFLOW_REF"
+          git show -s --format='commit=%H%ntree=%T%nparents=%P' HEAD
+          printf 'run=%s\nattempt=%s\njob=%s\nref=%s\nevent_name=%s\nimage=%s/%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_JOB" "$GITHUB_REF" "$GITHUB_EVENT_NAME" "${ImageOS:-unknown}" "${ImageVersion:-unknown}"
+          node --version
+          npm --version
+          printf '%s\n' \
+            'd75ed55143bb46a8e565bab3cef08aff5bfe644bd140102d6057660fa31f98db  package.json' \
+            'd8796c212823cc056b44796c92f92876d728b9c55287e353acd5567b1681e6df  package-lock.json' \
+            '843d28b89187fa99a3517caea11dc8ee7d7e84d769414f663a6c47ff0b160d97  backend/img-host/package.json' \
+            '0edda0d1feeae00769ac43bf44835bacf5295dd719be4f9eea94504d25fc4ad0  backend/img-host/package-lock.json' > "$RUNNER_TEMP/reset-backend-frozen.sha256"
+          sha256sum --check "$RUNNER_TEMP/reset-backend-frozen.sha256"
       # Existing lockfile pairs Vitest 3 with the unused coverage-v8 4 plugin.
       # Honor that lockfile without changing dependencies; this job does not use coverage.
       - run: npm ci --legacy-peer-deps
       - name: Run all backend behavior tests (including password-reset.test.ts)
-        run: npm test -- --maxWorkers=2
+        run: npm test -- --maxWorkers=2 --reporter=verbose
+      - name: Preserve all four manifests/locks after full-suite execution
+        if: always()
+        working-directory: ${{ github.workspace }}
+        run: sha256sum --check "$RUNNER_TEMP/reset-backend-frozen.sha256"
