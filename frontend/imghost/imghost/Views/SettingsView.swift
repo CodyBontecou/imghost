@@ -4,6 +4,7 @@ struct SettingsView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var subscriptionState: SubscriptionState
 
+    @State private var showEmailConversion = false
     @State private var isLoadingUser = false
     @State private var showAlert = false
     @State private var alertTitle = ""
@@ -71,6 +72,11 @@ struct SettingsView: View {
                                         Text("settings.account.email_verified")
                                             .brutalTypography(.monoSmall, color: .brutalSuccess)
                                             .tracking(1)
+                                    }
+                                    if user.isAnonymous != true {
+                                        Button("Add email/password login") { showEmailConversion = true }
+                                            .padding(.top, 12)
+                                            .accessibilityIdentifier("account.emailConversion")
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -526,8 +532,16 @@ struct SettingsView: View {
                     }
                     .padding(.bottom, 24)
 
-                    // Sign Out
-                    BrutalSecondaryButton(title: String(localized: "settings.button.sign_out")) {
+                    // Persistence failure is not a completed sign-out. Explicit retry never
+                    // deletes the old credentials or resets the subscription on failure.
+                    if let message = authState.logoutError ?? authState.sessionStorageMessage {
+                        Text(verbatim: message)
+                            .font(.callout)
+                            .padding(.horizontal, 24)
+                            .accessibilityIdentifier("account.sessionStorageError")
+                    }
+                    BrutalSecondaryButton(title: authState.logoutError == nil
+                        ? String(localized: "settings.button.sign_out") : String(localized: "Retry sign out")) {
                         authState.logout()
                     }
                     .padding(.horizontal, 24)
@@ -569,6 +583,11 @@ struct SettingsView: View {
             Button(String(localized: "settings.alert.delete_account.button.cancel"), role: .cancel) {}
         } message: {
             Text("settings.alert.delete_account.message")
+        }
+        .sheet(isPresented: $showEmailConversion) {
+            ScrollView {
+                EmailConversionView(flow: authState.makeEmailConversionFlow())
+            }
         }
         .sheet(isPresented: $showCustomFormatSheet) {
             CustomLinkFormatSheet(
@@ -640,12 +659,14 @@ struct SettingsView: View {
 
     private func refreshUserInfo() {
         isLoadingUser = true
+        let sourceUser = authState.currentUser
 
         Task {
             do {
                 let user = try await AuthService.shared.getCurrentUser()
                 await MainActor.run {
-                    authState.updateUser(user)
+                    // Do not publish an old Settings response over conversion/account changes.
+                    if authState.currentUser == sourceUser { authState.updateUser(user) }
                     isLoadingUser = false
                 }
             } catch {

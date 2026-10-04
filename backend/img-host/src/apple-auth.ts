@@ -25,6 +25,7 @@ export interface AppleTokenPayload {
   is_private_email?: string; // "true" if using Hide My Email
   auth_time: number;        // Authentication timestamp
   nonce_supported: boolean;
+  nonce?: string;
 }
 
 export class AppleAuth {
@@ -57,24 +58,27 @@ export class AppleAuth {
    */
   static async verifyIdentityToken(
     identityToken: string,
-    expectedAudience: string | string[]
+    expectedAudience: string | string[],
+    freshProof?: { nonce: string; issuedAfter: number }
   ): Promise<AppleTokenPayload | null> {
     try {
       // Decode JWT header to get key ID
-      const [headerB64, payloadB64, signatureB64] = identityToken.split('.');
-      if (!headerB64 || !payloadB64 || !signatureB64) {
+      const parts = identityToken.split('.');
+      const [headerB64, payloadB64, signatureB64] = parts;
+      if (parts.length !== 3 || !headerB64 || !payloadB64 || !signatureB64) {
         console.error('Invalid token format');
         return null;
       }
 
       const header = JSON.parse(this.base64UrlDecode(headerB64));
+      if (freshProof && header.alg !== 'RS256') return null;
 
       // Get Apple's public keys
       const keys = await this.getApplePublicKeys();
       const key = keys.find(k => k.kid === header.kid);
 
       if (!key) {
-        console.error('Apple public key not found for kid:', header.kid);
+        console.error('Apple public key not found');
         return null;
       }
 
@@ -114,14 +118,14 @@ export class AppleAuth {
 
       // Validate issuer
       if (payload.iss !== 'https://appleid.apple.com') {
-        console.error('Invalid issuer:', payload.iss);
+        console.error('Invalid Apple issuer');
         return null;
       }
 
       // Validate audience (your app's Bundle ID — may be iOS or macOS)
       const audiences = Array.isArray(expectedAudience) ? expectedAudience : [expectedAudience];
       if (!audiences.includes(payload.aud)) {
-        console.error('Invalid audience:', payload.aud, 'expected one of:', audiences);
+        console.error('Invalid Apple audience');
         return null;
       }
 
@@ -132,9 +136,17 @@ export class AppleAuth {
         return null;
       }
 
+      // Conversion requires a newly requested, nonce-bound proof, not a saved login token.
+      if (freshProof && (
+        !Number.isFinite(payload.exp) || payload.exp <= now ||
+        !Number.isFinite(payload.iat) || payload.iat < freshProof.issuedAfter ||
+        payload.iat > now + 30 || !payload.sub || payload.nonce !== freshProof.nonce
+      )) return null;
+
       return payload;
-    } catch (error) {
-      console.error('Apple token verification error:', error);
+    } catch {
+      // JSON/parser/provider errors can include identity data; never log them.
+      console.error('Apple token verification failed');
       return null;
     }
   }

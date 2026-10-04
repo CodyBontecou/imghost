@@ -6,10 +6,37 @@ final class KeychainService {
 
     private let service: String
     private let accessGroup: String?
+    private let lockURL: URL?
+    private let calls: AtomicSessionStore.SecurityCalls
+    private let now: () -> Date
+    private let deleteCall: ([String: Any]) -> OSStatus
 
-    init(service: String = Config.keychainService, accessGroup: String? = Config.keychainAccessGroup) {
+    var sessions: AtomicSessionStore { AtomicSessionStore.keychain(
+        service: service, accessGroup: accessGroup, lockURL: lockURL, calls: calls, now: now,
+        legacy: { [unowned self] in
+            let access = try self.load(key: self.accessTokenKey)
+            let refresh = try self.load(key: self.refreshTokenKey)
+            let expiry = try self.load(key: self.tokenExpiryKey)
+            if access == nil, refresh == nil, expiry == nil { return nil }
+            guard let access, !access.isEmpty, let refresh, !refresh.isEmpty,
+                  let expiry, let timestamp = Double(expiry), timestamp.isFinite else {
+                throw AtomicSessionStore.Failure.invalidSession
+            }
+            return AccountSession(accessToken: access, refreshToken: refresh,
+                                  expiresAt: Date(timeIntervalSince1970: timestamp), userID: nil)
+        }) }
+
+    init(service: String = Config.keychainService, accessGroup: String? = Config.keychainAccessGroup,
+         lockURL: URL? = Config.sharedContainerURL?.appendingPathComponent("auth-session.lock"),
+         calls: AtomicSessionStore.SecurityCalls = .system,
+         now: @escaping () -> Date = Date.init,
+         deleteCall: @escaping ([String: Any]) -> OSStatus = { SecItemDelete($0 as CFDictionary) }) {
         self.service = service
         self.accessGroup = accessGroup
+        self.lockURL = lockURL
+        self.calls = calls
+        self.now = now
+        self.deleteCall = deleteCall
     }
 
     // MARK: - Public Methods
@@ -46,7 +73,7 @@ final class KeychainService {
 
         applyPlatformAttributes(to: &query)
 
-        let status = SecItemAdd(query as CFDictionary, nil)
+        let status = calls.add(query)
 
         guard status == errSecSuccess else {
             throw ImghostError.keychainError(status: status)
@@ -64,14 +91,13 @@ final class KeychainService {
 
         applyPlatformAttributes(to: &query)
 
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        let (status, result) = calls.read(query)
 
         switch status {
         case errSecSuccess:
-            guard let data = result as? Data,
+            guard let data = result,
                   let string = String(data: data, encoding: .utf8) else {
-                return nil
+                throw ImghostError.keychainError(status: errSecDecode)
             }
             return string
         case errSecItemNotFound:
@@ -90,7 +116,7 @@ final class KeychainService {
 
         applyPlatformAttributes(to: &query)
 
-        let status = SecItemDelete(query as CFDictionary)
+        let status = deleteCall(query)
 
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw ImghostError.keychainError(status: status)
@@ -117,52 +143,23 @@ final class KeychainService {
     private let refreshTokenKey = "refreshToken"
     private let tokenExpiryKey = "tokenExpiry"
 
-    func saveAccessToken(_ token: String) throws {
-        try save(key: accessTokenKey, value: token)
-    }
-
     func loadAccessToken() -> String? {
-        try? load(key: accessTokenKey)
-    }
-
-    func deleteAccessToken() throws {
-        try delete(key: accessTokenKey)
-    }
-
-    func saveRefreshToken(_ token: String) throws {
-        try save(key: refreshTokenKey, value: token)
+        try? sessions.snapshot().session?.accessToken
     }
 
     func loadRefreshToken() -> String? {
-        try? load(key: refreshTokenKey)
-    }
-
-    func deleteRefreshToken() throws {
-        try delete(key: refreshTokenKey)
-    }
-
-    func saveTokenExpiry(_ date: Date) throws {
-        let timestamp = String(date.timeIntervalSince1970)
-        try save(key: tokenExpiryKey, value: timestamp)
+        try? sessions.snapshot().session?.refreshToken
     }
 
     func loadTokenExpiry() -> Date? {
-        guard let timestampString = try? load(key: tokenExpiryKey),
-              let timestamp = Double(timestampString) else {
-            return nil
-        }
-        return Date(timeIntervalSince1970: timestamp)
-    }
-
-    func deleteTokenExpiry() throws {
-        try delete(key: tokenExpiryKey)
+        try? sessions.snapshot().session?.expiresAt
     }
 
     /// Clears all authentication tokens
-    func clearAllTokens() {
-        try? deleteAccessToken()
-        try? deleteRefreshToken()
-        try? deleteTokenExpiry()
+    func clearAllTokens() throws {
+        let snapshot = try sessions.snapshot()
+        try sessions.commit(nil, replacing: snapshot)
+        // The tombstone is authoritative. Legacy JWT items are never read after logout.
         try? deleteUploadToken()
     }
 
@@ -187,61 +184,27 @@ final class KeychainService {
     /// Call once on main-app launch.  It is a no-op when there is nothing to
     /// migrate, or when running inside an extension (which can't read the
     /// legacy group anyway).
-    func migrateFromLegacyAccessGroupIfNeeded() {
+    func migrateFromLegacyAccessGroupIfNeeded() throws {
         #if SHARE_EXTENSION
-        // Extensions can't read the legacy group – skip.
-        return
+        return // Extensions cannot read the old app-only groups.
         #else
-        // If we already have tokens under the new shared group, nothing to do.
-        if loadAccessToken() != nil { return }
-
-        // --- Attempt 1: migrate from nil access group (app-identifier default) ---
-        // Previous builds used keychainAccessGroup = nil, which saved tokens under
-        // the app's own identifier. Create a service with nil group to read those.
-        let nilGroupService = KeychainService(service: service, accessGroup: nil)
-        if let accessToken = nilGroupService.loadAccessToken() {
-            let refreshToken = nilGroupService.loadRefreshToken()
-            let tokenExpiry = nilGroupService.loadTokenExpiry()
-
-            do {
-                try saveAccessToken(accessToken)
-                if let rt = refreshToken { try saveRefreshToken(rt) }
-                if let exp = tokenExpiry { try saveTokenExpiry(exp) }
-
-                // Clean up old items
-                try? nilGroupService.deleteAccessToken()
-                try? nilGroupService.deleteRefreshToken()
-                try? nilGroupService.deleteTokenExpiry()
-
-                print("[KeychainService] ✅ Migrated tokens from nil (app-identifier) access group")
-                return
-            } catch {
-                print("[KeychainService] ⚠️ Migration from nil access group failed: \(error)")
-            }
-        }
-
-        // --- Attempt 2: migrate from bare (unprefixed) app group ---
-        if let legacyGroup = Config.legacyKeychainAccessGroup {
-            let legacyService = KeychainService(service: service, accessGroup: legacyGroup)
-
-            if let accessToken = legacyService.loadAccessToken() {
-                let refreshToken = legacyService.loadRefreshToken()
-                let tokenExpiry = legacyService.loadTokenExpiry()
-
-                do {
-                    try saveAccessToken(accessToken)
-                    if let rt = refreshToken { try saveRefreshToken(rt) }
-                    if let exp = tokenExpiry { try saveTokenExpiry(exp) }
-
-                    // Clean up legacy items
-                    try? legacyService.deleteAccessToken()
-                    try? legacyService.deleteRefreshToken()
-                    try? legacyService.deleteTokenExpiry()
-
-                    print("[KeychainService] ✅ Migrated tokens from legacy access group")
-                } catch {
-                    print("[KeychainService] ⚠️ Migration from legacy access group failed: \(error)")
-                }
+        // Read/permission/decode failure is never absence. Never overwrite a tombstone.
+        let destination = try sessions.snapshot()
+        guard destination.data == nil, destination.session == nil else { return }
+        let oldGroups: [String?] = [nil, Config.legacyKeychainAccessGroup]
+        for group in oldGroups {
+            let old = KeychainService(service: service, accessGroup: group, lockURL: lockURL,
+                                      calls: calls, now: now, deleteCall: deleteCall)
+            // Snapshot the complete old item/triplet under the same production lock.
+            // An inaccessible obsolete group is not authority to delete anything; the
+            // other historical group can still contain a readable session.
+            let source: AtomicSessionStore.Snapshot
+            do { source = try old.sessions.snapshot() }
+            catch ImghostError.keychainError(let status) where status == errSecMissingEntitlement { continue }
+            catch AtomicSessionStore.Failure.keychain(let status) where status == errSecMissingEntitlement { continue }
+            if let session = source.session {
+                try sessions.importLegacySession(session, replacing: destination)
+                return // Keep every old item intact; new authoritative item wins.
             }
         }
         #endif

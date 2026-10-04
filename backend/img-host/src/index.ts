@@ -32,6 +32,8 @@ import {
 } from './subscription-handlers';
 import type { ExportJobResponse } from './types';
 import { appAnalyticsCorsHeaders, handleAppAnalyticsIngest } from './app-analytics';
+import { handleEmailConversion } from './email-conversion';
+import { handlePasswordResetPage } from './password-reset-page';
 
 // CORS configuration
 const ALLOWED_ORIGINS = [
@@ -87,6 +89,10 @@ export interface Env {
   EMAIL_FROM?: string;
   BASE_URL?: string;
   APPLE_BUNDLE_ID?: string;
+  APPLE_CLIENT_ID?: string;
+  APPLE_MAC_CLIENT_ID?: string;
+  /** Staged; keep unset until client/delivery/runtime verification is complete. */
+  EMAIL_CONVERSION_ENABLED?: string;
   AWS_ACCESS_KEY_ID?: string;
   AWS_SECRET_ACCESS_KEY?: string;
   AWS_REGION?: string;
@@ -1361,6 +1367,11 @@ export default {
         return await handleStaticAsset(env, 'sitemap.xml', 'application/xml; charset=utf-8', 'public, max-age=3600');
       }
 
+      // Staged same-account conversion; disabled by default, never a support override.
+      if (path.startsWith('/auth/email-conversion/')) {
+        return withCors(await handleEmailConversion(request, env));
+      }
+
       // POST /auth/register - Enhanced with JWT and email verification
       if (method === 'POST' && path === '/auth/register') {
         return withCors(await handleRegisterV2(request, env));
@@ -1384,6 +1395,11 @@ export default {
       // POST /auth/forgot-password - Request password reset
       if (method === 'POST' && path === '/auth/forgot-password') {
         return withCors(await handleForgotPassword(request, env));
+      }
+
+      // GET /auth/reset-password - Read-only instructions for previously emailed links
+      if (method === 'GET' && path === '/auth/reset-password') {
+        return handlePasswordResetPage(request);
       }
 
       // POST /auth/reset-password - Reset password with token

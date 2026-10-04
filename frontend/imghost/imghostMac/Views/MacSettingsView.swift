@@ -4,6 +4,7 @@ struct MacSettingsView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var subscriptionState: SubscriptionState
 
+    @State private var showEmailConversion = false
     @State private var showDeleteAccountConfirm = false
     @State private var isDeleting = false
     @State private var errorMessage: String?
@@ -81,6 +82,10 @@ struct MacSettingsView: View {
         } message: {
             Text("settings.alert.delete_account.message")
         }
+        .sheet(isPresented: $showEmailConversion) {
+            EmailConversionView(flow: authState.makeEmailConversionFlow())
+                .frame(width: 520)
+        }
         .sheet(isPresented: $showPaywall) {
             MacPaywallView(allowDismiss: true)
                 .environmentObject(subscriptionState)
@@ -139,8 +144,20 @@ struct MacSettingsView: View {
                 .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
             }
 
+            if authState.currentUser?.isAnonymous != true {
+                Button("Add email/password login") { showEmailConversion = true }
+                    .accessibilityIdentifier("account.emailConversion")
+            }
+
+            if let message = authState.logoutError ?? authState.sessionStorageMessage {
+                Text(verbatim: message)
+                    .font(.callout)
+                    .foregroundStyle(Color.brutalError)
+                    .accessibilityIdentifier("account.sessionStorageError")
+            }
             Button(action: logout) {
-                Text("settings.account.button.sign_out")
+                Text(authState.logoutError == nil
+                     ? String(localized: "settings.account.button.sign_out") : String(localized: "Retry sign out"))
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color.brutalTextSecondary)
                     .tracking(1)

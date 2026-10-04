@@ -581,12 +581,18 @@ export class Database {
   }
 
   // Password reset operations
-  async setPasswordResetToken(userId: string, token: string, expiresInMs: number): Promise<void> {
+  async setPasswordResetToken(
+    userId: string, email: string, passwordHash: string, token: string, expiresInMs: number
+  ): Promise<boolean> {
     const expiresAt = Date.now() + expiresInMs;
-    await this.db
-      .prepare('UPDATE users SET password_reset_token = ?, password_reset_token_expires = ? WHERE id = ?')
-      .bind(token, expiresAt, userId)
+    // Bind to the original lookup snapshot, not a reread after a credential change.
+    // A miss must leave any newer challenge and all credentials/sessions untouched.
+    const result = await this.db
+      .prepare(`UPDATE users SET password_reset_token = ?, password_reset_token_expires = ?
+        WHERE id = ? AND email = ? AND password_hash = ?`)
+      .bind(token, expiresAt, userId, email, passwordHash)
       .run();
+    return result.meta.changes === 1;
   }
 
   async getUserByPasswordResetToken(token: string): Promise<User | null> {
@@ -596,6 +602,26 @@ export class Database {
       .bind(token, now)
       .first<User>();
     return result || null;
+  }
+
+  async consumePasswordResetToken(userId: string, token: string, passwordHash: string): Promise<boolean> {
+    const now = Date.now();
+    // D1 batch executes sequentially as one transaction. Both statements use the
+    // same account/challenge/expiry guard: invalid or reused codes revoke nothing,
+    // and any storage error rolls back password, challenge and session changes.
+    const results = await this.db.batch([
+      this.db.prepare(
+        `UPDATE refresh_tokens SET revoked = 1
+         WHERE user_id = ? AND EXISTS (
+           SELECT 1 FROM users WHERE id = ? AND password_reset_token = ? AND password_reset_token_expires > ?
+         )`
+      ).bind(userId, userId, token, now),
+      this.db.prepare(
+        `UPDATE users SET password_hash = ?, password_reset_token = NULL, password_reset_token_expires = NULL
+         WHERE id = ? AND password_reset_token = ? AND password_reset_token_expires > ?`
+      ).bind(passwordHash, userId, token, now),
+    ]);
+    return results[1].meta.changes === 1;
   }
 
   async updatePassword(userId: string, passwordHash: string): Promise<void> {
@@ -634,6 +660,21 @@ export class Database {
       .bind(token, Date.now())
       .first<RefreshToken>();
     return result || null;
+  }
+
+  // Atomic rotation: conversion/logout revocation must beat any in-flight refresh.
+  // D1 batch rolls back both statements on error; changes() gates issuance on single-use.
+  async rotateRefreshToken(token: string, userId: string, replacement: string, expiresInMs: number): Promise<boolean> {
+    const now = Date.now();
+    const results = await this.db.batch([
+      this.db.prepare(`UPDATE refresh_tokens SET revoked = 1
+        WHERE token = ? AND user_id = ? AND revoked = 0 AND expires_at > ?`)
+        .bind(token, userId, now),
+      this.db.prepare(`INSERT INTO refresh_tokens (id, user_id, token, expires_at, created_at, revoked)
+        SELECT ?, ?, ?, ?, ?, 0 WHERE changes() = 1`)
+        .bind(crypto.randomUUID(), userId, replacement, now + expiresInMs, now),
+    ]);
+    return results[0].meta.changes === 1;
   }
 
   async revokeRefreshToken(token: string): Promise<void> {
