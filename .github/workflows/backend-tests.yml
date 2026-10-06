@@ -50,8 +50,8 @@ jobs:
           printf '%s\n' \
             'd75ed55143bb46a8e565bab3cef08aff5bfe644bd140102d6057660fa31f98db  package.json' \
             'd8796c212823cc056b44796c92f92876d728b9c55287e353acd5567b1681e6df  package-lock.json' \
-            '843d28b89187fa99a3517caea11dc8ee7d7e84d769414f663a6c47ff0b160d97  backend/img-host/package.json' \
-            '0edda0d1feeae00769ac43bf44835bacf5295dd719be4f9eea94504d25fc4ad0  backend/img-host/package-lock.json' > "$RUNNER_TEMP/reset-backend-frozen.sha256"
+            'a9a81ee6db78c71214f45245398870dfea753474da73ae700a844cc897ce6f51  backend/img-host/package.json' \
+            '5a9846e3c7f6dbec6d337c685318b7e81a3be320a7f7351bf163545e67ca8f75  backend/img-host/package-lock.json' > "$RUNNER_TEMP/reset-backend-frozen.sha256"
           sha256sum --check "$RUNNER_TEMP/reset-backend-frozen.sha256"
       # Existing lockfile pairs Vitest 3 with the unused coverage-v8 4 plugin.
       # Honor that lockfile without changing dependencies; this job does not use coverage.
