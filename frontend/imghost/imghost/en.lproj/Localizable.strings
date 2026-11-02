@@ -413,3 +413,7 @@
 "discord.banner.accessibility_label" = "Join the Discord community.";
 "discord.banner.button.join.accessibility_label" = "Join the Discord community.";
 "discord.banner.button.dismiss.accessibility_label" = "Dismiss Discord banner.";
+
+// MARK: - Subscription Trial
+"paywall.trial.renewal_format" = "7 days free, then %@, billed %@. Cancel at least 24 hours before the trial ends to avoid being charged.";
+"paywall.legal.subscription_notice" = "Subscriptions renew automatically unless cancelled at least 24 hours before the current period ends. Manage or cancel in your App Store account settings.";

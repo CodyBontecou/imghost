@@ -258,7 +258,7 @@
 "paywall.error.loading" = "Unable to load subscription options";
 "paywall.button.retry" = "RETRY";
 "paywall.badge.save" = "SAVE 30%";
-"paywall.button.start_trial" = "START FREE TRIAL";
+"paywall.button.start_trial" = "START 7-DAY FREE TRIAL";
 "paywall.button.continue_free" = "CONTINUE WITH FREE";
 "paywall.button.restore" = "RESTORE PURCHASES";
 "paywall.legal.renewal_notice" = "After your 7-day free trial, your subscription will automatically renew. Cancel anytime in Settings.";
@@ -360,3 +360,7 @@
 "paywall.tier.ultimate.name" = "ULTIMATE";
 "paywall.billing.monthly" = "Monthly";
 "paywall.billing.yearly" = "Yearly";
+
+// MARK: - Subscription Trial
+"paywall.trial.renewal_format" = "7 days free, then %@, billed %@. Cancel at least 24 hours before the trial ends to avoid being charged.";
+"paywall.legal.subscription_notice" = "Subscriptions renew automatically unless cancelled at least 24 hours before the current period ends. Manage or cancel in your App Store account settings.";

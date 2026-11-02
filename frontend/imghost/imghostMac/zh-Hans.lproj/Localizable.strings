@@ -504,3 +504,7 @@
 "paywall.tier.ultimate.name" = "ULTIMATE";
 "paywall.billing.monthly" = "每月";
 "paywall.billing.yearly" = "每年";
+
+// MARK: - Subscription Trial
+"paywall.trial.renewal_format" = "免费试用7天，之后%@，计费方式：%@。请至少在试用结束前24小时取消，以免扣费。";
+"paywall.legal.subscription_notice" = "订阅将自动续订，除非您在当前订阅期结束前至少24小时取消。您可以在App Store账户设置中管理或取消订阅。";

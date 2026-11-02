@@ -109,6 +109,20 @@ final class StoreKitManager: ObservableObject {
         await loadProducts()
     }
 
+    /// Only advertise the seven-day trial when the App Store offers it to this customer.
+    func isEligibleForSevenDayTrial(_ product: Product?) async -> Bool {
+        guard let subscription = product?.subscription,
+              let offer = subscription.introductoryOffer,
+              offer.paymentMode == .freeTrial,
+              offer.periodCount == 1 else { return false }
+
+        let period = offer.period
+        let isSevenDays = (period.unit == .day && period.value == 7)
+            || (period.unit == .week && period.value == 1)
+        guard isSevenDays else { return false }
+        return await subscription.isEligibleForIntroOffer
+    }
+
     /// Purchase a subscription product.
     func purchase(_ product: Product) async throws -> Transaction? {
         try await purchase(product) {

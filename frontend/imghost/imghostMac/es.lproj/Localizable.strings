@@ -503,3 +503,7 @@
 "settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";
 "settings.feedback.diagnostics.title" = "Diagnostics";
 "settings.feedback.diagnostics.description" = "The following info will be included automatically:";
+
+// MARK: - Subscription Trial
+"paywall.trial.renewal_format" = "7 días gratis, luego %@, facturación: %@. Cancela al menos 24 horas antes de que termine la prueba para evitar el cobro.";
+"paywall.legal.subscription_notice" = "Las suscripciones se renuevan automáticamente salvo que canceles al menos 24 horas antes de finalizar el período actual. Gestiona o cancela en los ajustes de tu cuenta de App Store.";

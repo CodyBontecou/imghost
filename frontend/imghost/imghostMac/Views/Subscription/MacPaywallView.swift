@@ -9,6 +9,7 @@ struct MacPaywallView: View {
     @State private var isYearly = false
     @State private var isPurchasing = false
     @State private var isRestoring = false
+    @State private var isEligibleForTrial = false
     @State private var errorMessage: String?
     @State private var showError = false
     @State private var hostWindow: NSWindow?
@@ -24,163 +25,183 @@ struct MacPaywallView: View {
         ZStack {
             Color.brutalBackground.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                Spacer()
+            ScrollView {
+                VStack(spacing: 0) {
+                    Spacer()
 
-                VStack(spacing: 32) {
-                    // Hero
-                    VStack(spacing: 12) {
-                        Text("paywall.title.unlock")
-                            .font(.system(size: 16, weight: .bold, design: .monospaced))
-                            .foregroundStyle(Color.white)
-                            .tracking(4)
-
-                        Text("paywall.title.pro")
-                            .font(.system(size: 64, weight: .black))
-                            .foregroundStyle(Color.white)
-                            .tracking(8)
-
-                        Text("paywall.title.trial")
-                            .font(.system(size: 13, weight: .medium, design: .monospaced))
-                            .foregroundStyle(Color.brutalSuccess)
-                            .tracking(2)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .overlay(Rectangle().stroke(Color.brutalSuccess, lineWidth: 1))
-                    }
-
-                    // Tier comparison
-                    MacTierComparisonView()
-
-                    // Products
-                    if storeKit.isLoading {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    } else if storeKit.products.isEmpty {
+                    VStack(spacing: 32) {
+                        // Hero
                         VStack(spacing: 12) {
-                            Text("paywall.error.loading")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Color.brutalError)
-                            Button(action: { Task { await storeKit.reloadProducts() } }) {
-                                Text("paywall.button.retry")
-                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                    .foregroundStyle(Color.brutalAccent)
-                                    .tracking(1)
+                            Text("paywall.title.unlock")
+                                .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                .foregroundStyle(Color.white)
+                                .tracking(4)
+
+                            Text("paywall.title.pro")
+                                .font(.system(size: 64, weight: .black))
+                                .foregroundStyle(Color.white)
+                                .tracking(8)
+
+                            if isEligibleForTrial {
+                                Text("paywall.title.trial")
+                                    .font(.system(size: 13, weight: .medium, design: .monospaced))
+                                    .foregroundStyle(Color.brutalSuccess)
+                                    .tracking(2)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 8)
-                                    .overlay(Rectangle().stroke(Color.brutalAccent, lineWidth: 1))
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    } else {
-                        // Tier selector
-                        HStack(spacing: 12) {
-                            MacTierButton(label: String(localized: "paywall.tier.starter.name"), storage: "10 GB",
-                                          product: storeKit.starterMonthlyProduct,
-                                          isSelected: selectedProduct?.id == storeKit.starterMonthlyProduct?.id ||
-                                                      selectedProduct?.id == storeKit.starterYearlyProduct?.id) {
-                                selectedProduct = isYearly ? storeKit.starterYearlyProduct : storeKit.starterMonthlyProduct
-                                AppAnalytics.shared.trackPaywallTierSelected("pro", context: analyticsContext)
+                                    .overlay(Rectangle().stroke(Color.brutalSuccess, lineWidth: 1))
                             }
                         }
-                        .frame(maxWidth: 220)
 
-                        // Billing toggle
-                        HStack(spacing: 0) {
-                            Button(action: {
-                                isYearly = false
-                                updateProductForBilling()
-                                AppAnalytics.shared.trackPaywallBillingSelected(.monthly, context: analyticsContext)
-                            }) {
-                                Text(String(localized: "paywall.billing.monthly"))
-                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                    .foregroundStyle(!isYearly ? Color.black : Color.brutalTextSecondary)
-                                    .padding(.horizontal, 20).padding(.vertical, 8)
-                                    .background(!isYearly ? Color.white : Color.brutalSurface)
-                                    .overlay(Rectangle().stroke(!isYearly ? Color.white : Color.brutalBorder, lineWidth: 1))
-                            }.buttonStyle(.plain)
-                            Button(action: {
-                                isYearly = true
-                                updateProductForBilling()
-                                AppAnalytics.shared.trackPaywallBillingSelected(.yearly, context: analyticsContext)
-                            }) {
-                                HStack(spacing: 6) {
-                                    Text(String(localized: "paywall.billing.yearly"))
-                                    Text(String(localized: "paywall.badge.save"))
-                                        .font(.system(size: 9, weight: .bold, design: .monospaced))
-                                        .foregroundStyle(isYearly ? Color.brutalSuccess : Color.brutalTextTertiary)
-                                }
-                                .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                .foregroundStyle(isYearly ? Color.black : Color.brutalTextSecondary)
-                                .padding(.horizontal, 20).padding(.vertical, 8)
-                                .background(isYearly ? Color.white : Color.brutalSurface)
-                                .overlay(Rectangle().stroke(isYearly ? Color.white : Color.brutalBorder, lineWidth: 1))
-                            }.buttonStyle(.plain)
-                        }
+                        // Tier comparison
+                        MacTierComparisonView()
 
-                        // Subscribe button
-                        Button(action: { Task { await purchase() } }) {
-                            HStack {
-                                if isPurchasing {
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .black))
-                                        .scaleEffect(0.7)
-                                } else {
-                                    Text("paywall.button.subscribe")
-                                        .font(.system(size: 13, weight: .bold, design: .monospaced))
+                        // Products
+                        if storeKit.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        } else if storeKit.products.isEmpty {
+                            VStack(spacing: 12) {
+                                Text("paywall.error.loading")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Color.brutalError)
+                                Button(action: { Task { await storeKit.reloadProducts() } }) {
+                                    Text("paywall.button.retry")
+                                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                        .foregroundStyle(Color.brutalAccent)
                                         .tracking(1)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .overlay(Rectangle().stroke(Color.brutalAccent, lineWidth: 1))
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        } else {
+                            // Tier selector
+                            HStack(spacing: 12) {
+                                MacTierButton(label: String(localized: "paywall.tier.starter.name"), storage: "10 GB",
+                                              product: storeKit.starterMonthlyProduct,
+                                              isSelected: selectedProduct?.id == storeKit.starterMonthlyProduct?.id ||
+                                                          selectedProduct?.id == storeKit.starterYearlyProduct?.id) {
+                                    selectedProduct = isYearly ? storeKit.starterYearlyProduct : storeKit.starterMonthlyProduct
+                                    AppAnalytics.shared.trackPaywallTierSelected("pro", context: analyticsContext)
                                 }
                             }
-                            .foregroundStyle(Color.black)
-                            .frame(width: 280, height: 48)
-                            .background(selectedProduct != nil ? Color.white : Color.brutalTextTertiary)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(selectedProduct == nil || isPurchasing)
+                            .frame(maxWidth: 220)
 
-                        // Restore
-                        Button(action: { Task { await restore() } }) {
-                            Text("paywall.button.restore")
-                                .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                .foregroundStyle(Color.brutalTextSecondary)
-                                .tracking(1)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(isRestoring)
-                    }
+                            // Billing toggle
+                            HStack(spacing: 0) {
+                                Button(action: {
+                                    isYearly = false
+                                    updateProductForBilling()
+                                    AppAnalytics.shared.trackPaywallBillingSelected(.monthly, context: analyticsContext)
+                                }) {
+                                    Text(String(localized: "paywall.billing.monthly"))
+                                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                        .foregroundStyle(!isYearly ? Color.black : Color.brutalTextSecondary)
+                                        .padding(.horizontal, 20).padding(.vertical, 8)
+                                        .background(!isYearly ? Color.white : Color.brutalSurface)
+                                        .overlay(Rectangle().stroke(!isYearly ? Color.white : Color.brutalBorder, lineWidth: 1))
+                                }.buttonStyle(.plain)
+                                Button(action: {
+                                    isYearly = true
+                                    updateProductForBilling()
+                                    AppAnalytics.shared.trackPaywallBillingSelected(.yearly, context: analyticsContext)
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Text(String(localized: "paywall.billing.yearly"))
+                                        Text(String(localized: "paywall.badge.save"))
+                                            .font(.system(size: 9, weight: .bold, design: .monospaced))
+                                            .foregroundStyle(isYearly ? Color.brutalSuccess : Color.brutalTextTertiary)
+                                    }
+                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                    .foregroundStyle(isYearly ? Color.black : Color.brutalTextSecondary)
+                                    .padding(.horizontal, 20).padding(.vertical, 8)
+                                    .background(isYearly ? Color.white : Color.brutalSurface)
+                                    .overlay(Rectangle().stroke(isYearly ? Color.white : Color.brutalBorder, lineWidth: 1))
+                                }.buttonStyle(.plain)
+                            }
 
-                    // Legal
-                    VStack(spacing: 8) {
-                        Text("paywall.legal.renewal_notice")
-                            .font(.system(size: 10))
-                            .foregroundStyle(Color.brutalTextTertiary)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: 400)
-
-                        HStack(spacing: 12) {
-                            Button(action: { MacURLOpener.open("https://imghost.isolated.tech/terms") }) {
-                                Text("paywall.legal.button.terms")
-                                    .font(.system(size: 10, design: .monospaced))
+                            if isEligibleForTrial, let product = selectedProduct {
+                                Text(trialDisclosure(for: product))
+                                    .font(.system(size: 11))
                                     .foregroundStyle(Color.brutalTextSecondary)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: 420)
+                            }
+
+                            // Subscribe button
+                            Button(action: { Task { await purchase() } }) {
+                                HStack {
+                                    if isPurchasing {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .black))
+                                            .scaleEffect(0.7)
+                                    } else {
+                                        Text(LocalizedStringKey(isEligibleForTrial ? "paywall.button.start_trial" : "paywall.button.subscribe"))
+                                            .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                            .tracking(1)
+                                    }
+                                }
+                                .foregroundStyle(Color.black)
+                                .frame(width: 280, height: 48)
+                                .background(selectedProduct != nil ? Color.white : Color.brutalTextTertiary)
                             }
                             .buttonStyle(.plain)
+                            .disabled(selectedProduct == nil || isPurchasing)
 
-                            Text("|")
+                            // Restore
+                            Button(action: { Task { await restore() } }) {
+                                Text("paywall.button.restore")
+                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                    .foregroundStyle(Color.brutalTextSecondary)
+                                    .tracking(1)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(isRestoring)
+                        }
+
+                        // Legal
+                        VStack(spacing: 8) {
+                            Text("paywall.legal.subscription_notice")
                                 .font(.system(size: 10))
                                 .foregroundStyle(Color.brutalTextTertiary)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: 400)
 
-                            Button(action: { MacURLOpener.open("https://imghost.isolated.tech/privacy") }) {
-                                Text("paywall.legal.button.privacy")
-                                    .font(.system(size: 10, design: .monospaced))
-                                    .foregroundStyle(Color.brutalTextSecondary)
+                            HStack(spacing: 12) {
+                                Button(action: { MacURLOpener.open("https://imghost.isolated.tech/terms") }) {
+                                    Text("paywall.legal.button.terms")
+                                        .font(.system(size: 10, design: .monospaced))
+                                        .foregroundStyle(Color.brutalTextSecondary)
+                                }
+                                .buttonStyle(.plain)
+
+                                Text("|")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(Color.brutalTextTertiary)
+
+                                Button(action: { MacURLOpener.open("https://imghost.isolated.tech/privacy") }) {
+                                    Text("paywall.legal.button.privacy")
+                                        .font(.system(size: 10, design: .monospaced))
+                                        .foregroundStyle(Color.brutalTextSecondary)
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
                         }
                     }
-                }
 
-                Spacer()
+                    Spacer()
+                }
+                .padding(.vertical, 24)
+                .frame(maxWidth: .infinity)
             }
+        }
+        .task(id: selectedProduct?.id) {
+            isEligibleForTrial = false
+            let eligible = await storeKit.isEligibleForSevenDayTrial(selectedProduct)
+            guard !Task.isCancelled else { return }
+            isEligibleForTrial = eligible
         }
         .task {
             if storeKit.products.isEmpty {
@@ -212,6 +233,14 @@ struct MacPaywallView: View {
         selectedProduct = isYearly
             ? storeKit.yearlyProduct(for: tier)
             : storeKit.monthlyProduct(for: tier)
+    }
+
+    private func trialDisclosure(for product: Product) -> String {
+        String(
+            format: String(localized: "paywall.trial.renewal_format"),
+            product.displayPrice,
+            String(localized: isYearly ? "paywall.billing.yearly" : "paywall.billing.monthly")
+        )
     }
 
     private func purchase() async {

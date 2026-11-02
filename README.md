@@ -58,6 +58,8 @@ The hosted imghost service requires an active App Store subscription or subscrip
 
 Self-hosted deployments can change tiers, quotas, and billing logic in the Worker migrations and subscription handlers.
 
+Monthly and annual subscriptions offer a 7-day free trial to eligible customers through App Store introductory offers. Apple determines eligibility; the paywall shows the trial CTA and post-trial price only when StoreKit confirms eligibility for that selected product. Starting a trial requires confirming the subscription with Apple.
+
 The app gates access until the backend confirms a current subscription or subscription trial. Uploads and exports enforce the same policy for app, share extension, and API requests. Existing free accounts can subscribe or restore purchases; their stored images are not deleted by this change.
 
 Rollout requires deploying the Worker, publishing `landing/index.html` and `landing/terms.html` to their R2 objects, and releasing updated iOS and macOS builds. No database migration is required. Production deployment requires explicit approval because existing free accounts will lose upload access.

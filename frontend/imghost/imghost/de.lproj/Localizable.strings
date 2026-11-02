@@ -336,3 +336,7 @@
 "settings.section.feedback" = "Feedback";
 "settings.feedback.button.send" = "Send Feedback";
 "settings.feedback.button.send.subtitle" = "Report a bug or suggest a feature";
+
+// MARK: - Subscription Trial
+"paywall.trial.renewal_format" = "7 Tage kostenlos, danach %@, Abrechnung: %@. Mindestens 24 Stunden vor Ende des Tests kündigen, um eine Abbuchung zu vermeiden.";
+"paywall.legal.subscription_notice" = "Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Verwaltung und Kündigung in den App Store-Accounteinstellungen.";

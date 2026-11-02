@@ -54,6 +54,7 @@ struct PaywallView: View {
     @State private var isYearly = false
     @State private var isPurchasing = false
     @State private var isRestoring = false
+    @State private var isEligibleForTrial = false
     @State private var errorMessage: String?
     @State private var showError = false
     @State private var hasTrackedPaywallShown = false
@@ -90,6 +91,12 @@ struct PaywallView: View {
             if storeKit.products.isEmpty {
                 await storeKit.reloadProducts()
             }
+        }
+        .task(id: selectedProduct?.id) {
+            isEligibleForTrial = false
+            let eligible = await storeKit.isEligibleForSevenDayTrial(selectedProduct)
+            guard !Task.isCancelled else { return }
+            isEligibleForTrial = eligible
         }
         .onAppear {
             guard !hasTrackedPaywallShown else { return }
@@ -268,8 +275,14 @@ struct PaywallView: View {
                     }
                 }
 
+                if isEligibleForTrial, let product = selectedProduct {
+                    Text(trialDisclosure(for: product))
+                        .brutalTypography(.bodySmall, color: .brutalTextSecondary)
+                        .multilineTextAlignment(.center)
+                }
+
                 BrutalPrimaryButton(
-                    title: String(localized: "paywall.button.subscribe"),
+                    title: String(localized: isEligibleForTrial ? "paywall.button.start_trial" : "paywall.button.subscribe"),
                     action: { Task { await purchase() } },
                     isLoading: isPurchasing,
                     isDisabled: selectedProduct == nil
@@ -289,7 +302,7 @@ struct PaywallView: View {
 
     private var legalSection: some View {
         VStack(spacing: 12) {
-            Text("paywall.legal.renewal_notice")
+            Text("paywall.legal.subscription_notice")
                 .brutalTypography(.bodySmall, color: .brutalTextTertiary)
                 .multilineTextAlignment(.center)
 
@@ -307,6 +320,14 @@ struct PaywallView: View {
     }
 
     // MARK: - Actions
+
+    private func trialDisclosure(for product: Product) -> String {
+        String(
+            format: String(localized: "paywall.trial.renewal_format"),
+            product.displayPrice,
+            String(localized: isYearly ? "paywall.billing.yearly" : "paywall.billing.monthly")
+        )
+    }
 
     private func purchase() async {
         guard let product = selectedProduct else { return }

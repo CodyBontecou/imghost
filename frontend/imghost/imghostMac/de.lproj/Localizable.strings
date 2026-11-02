@@ -504,3 +504,7 @@
 "settings.feedback.mac.description" = "Opens your default email client with device diagnostics pre-filled.";
 "settings.feedback.diagnostics.title" = "Diagnostics";
 "settings.feedback.diagnostics.description" = "The following info will be included automatically:";
+
+// MARK: - Subscription Trial
+"paywall.trial.renewal_format" = "7 Tage kostenlos, danach %@, Abrechnung: %@. Mindestens 24 Stunden vor Ende des Tests kündigen, um eine Abbuchung zu vermeiden.";
+"paywall.legal.subscription_notice" = "Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Verwaltung und Kündigung in den App Store-Accounteinstellungen.";
