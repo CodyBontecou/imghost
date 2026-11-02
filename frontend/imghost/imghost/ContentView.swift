@@ -11,7 +11,7 @@ struct ContentView: View {
             if !hasCompletedOnboarding {
                 // First time user - show onboarding
                 OnboardingView()
-            } else if authState.isLoading || subscriptionState.isLoading {
+            } else if authState.isLoading || subscriptionState.isLoading || (authState.isAuthenticated && subscriptionState.status == .loading) {
                 // Loading state with brutal design
                 ZStack {
                     Color.brutalBackground.ignoresSafeArea()
@@ -78,9 +78,17 @@ struct ContentView: View {
                     }
                 }
                 .preferredColorScheme(.dark)
+            } else if subscriptionState.shouldShowPaywall {
+                VStack(spacing: 0) {
+                    PaywallView()
+                    Button(String(localized: "settings.account.button.sign_out")) {
+                        authState.logout()
+                    }
+                    .padding()
+                }
+                .background(Color.brutalBackground)
+                .environmentObject(subscriptionState)
             } else {
-                // All authenticated users access the main app.
-                // Free/unsubscribed users see ads and limits; upgrade is a soft sheet.
                 TabView(selection: $selectedTab) {
                     HistoryView()
                         .tabItem {

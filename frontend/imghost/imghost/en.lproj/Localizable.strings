@@ -110,11 +110,11 @@
 "onboarding.page3.subtitle" = "Instant shareable URLs";
 "onboarding.page4.title" = "STAY\nORGAN-\nIZED";
 "onboarding.page4.subtitle" = "All uploads in one place";
-"onboarding.page5.title" = "START\nFREE";
-"onboarding.page5.subtitle" = "1 GB free storage • upgrade anytime";
+"onboarding.page5.title" = "CHOOSE\nYOUR PLAN";
+"onboarding.page5.subtitle" = "";
 "onboarding.button.skip" = "SKIP";
 "onboarding.button.next" = "NEXT";
-"onboarding.button.start" = "START FREE";
+"onboarding.button.start" = "CONTINUE";
 "onboarding.button.view_plans" = "VIEW PLANS";
 "onboarding.page_indicator" = "%d/%d";
 

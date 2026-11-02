@@ -80,13 +80,7 @@ struct HistoryView: View {
                 loadHistory()
             }
             .preferredColorScheme(.dark)
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                // Banner ad — shown only for free/unsubscribed users
-                if subscriptionState.isFree {
-                    AdBannerView()
-                        .background(Color.brutalBackground)
-                }
-            }
+
         }
     }
 

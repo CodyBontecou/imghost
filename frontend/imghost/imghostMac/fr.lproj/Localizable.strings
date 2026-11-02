@@ -382,8 +382,8 @@
 "onboarding.page3.subtitle" = "macOS vous demandera d'accéder aux fichiers partagés — cela permet à imghost de lire les fichiers que vous partagez depuis d'autres applications comme Finder ou Safari";
 "onboarding.page4.title" = "OBTENEZ\nDES LIENS\nDIRECTS";
 "onboarding.page4.subtitle" = "URLs partageables instantanément";
-"onboarding.page5.title" = "GLISSER-\nDÉPOSER";
-"onboarding.page5.subtitle" = "Envoyez des fichiers sans effort";
+"onboarding.page5.title" = "CHOISISSEZ\nVOTRE OFFRE";
+"onboarding.page5.subtitle" = "";
 
 // MARK: - Mac Settings
 "settings.section.subscription" = "Abonnement";

@@ -180,17 +180,6 @@ struct MacSettingsView: View {
             .background(Color.brutalSurface)
             .overlay(Rectangle().stroke(Color.brutalBorder, lineWidth: 1))
 
-            // Free tier limits notice
-            if subscriptionState.isFree {
-                HStack(spacing: 6) {
-                    Image(systemName: "clock.fill")
-                        .font(.system(size: 11))
-                    Text(String(localized: "free.tier.limits"))
-                        .font(.system(size: 11, design: .monospaced))
-                }
-                .foregroundStyle(Color.brutalTextSecondary)
-            }
-
             if subscriptionState.status == .subscribed || subscriptionState.status == .trialing {
                 Button(action: {
                     MacURLOpener.open("https://apps.apple.com/account/subscriptions")

@@ -45,6 +45,8 @@ struct ImghostMacApp: App {
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .background {
                         AppAnalytics.shared.flush()
+                    } else if phase == .active && authState.isAuthenticated && authState.hasVerifiedEmailOrAnonymous {
+                        Task { await subscriptionState.checkStatus() }
                     }
                 }
         }

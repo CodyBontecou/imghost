@@ -49,7 +49,7 @@ The backend is a Cloudflare Worker backed by R2 object storage and D1 metadata. 
 
 The code is open source and free to self-host under the AGPL.
 
-The hosted imghost service includes a free tier for lightweight hosting and a Pro subscription for higher limits and all managed-service features. Current App Store products are:
+The hosted imghost service requires an active App Store subscription or subscription trial. There is no free hosting plan. Current App Store products are:
 
 | Plan | Price | Includes |
 |------|-------|----------|
@@ -57,6 +57,10 @@ The hosted imghost service includes a free tier for lightweight hosting and a Pr
 | Pro Annual | $24.99/year after a 7-day trial | Same Pro features with annual savings |
 
 Self-hosted deployments can change tiers, quotas, and billing logic in the Worker migrations and subscription handlers.
+
+The app gates access until the backend confirms a current subscription or subscription trial. Uploads and exports enforce the same policy for app, share extension, and API requests. Existing free accounts can subscribe or restore purchases; their stored images are not deleted by this change.
+
+Rollout requires deploying the Worker, publishing `landing/index.html` and `landing/terms.html` to their R2 objects, and releasing updated iOS and macOS builds. No database migration is required. Production deployment requires explicit approval because existing free accounts will lose upload access.
 
 ## Tech Stack
 

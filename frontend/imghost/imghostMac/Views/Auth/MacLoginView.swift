@@ -10,7 +10,6 @@ struct MacLoginView: View {
     @State private var errorMessage: String?
     @State private var showRegister = false
     @State private var showForgotPassword = false
-    @AppStorage("showUpgradeAfterAnonymousAuth") private var showUpgradeAfterAnonymousAuth = false
 
     var body: some View {
         ZStack {
@@ -216,7 +215,6 @@ struct MacLoginView: View {
         Task {
             do {
                 let response = try await AuthService.shared.continueAnonymously()
-                await MainActor.run { showUpgradeAfterAnonymousAuth = true }
                 await authState.setAuthenticated(response: response)
             } catch let error as AuthError {
                 await MainActor.run { errorMessage = error.errorDescription }

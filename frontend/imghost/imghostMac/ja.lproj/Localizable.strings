@@ -375,8 +375,8 @@
 // MARK: - Mac Onboarding (extra pages)
 "onboarding.page3.title" = "アクセスを\n許可";
 "onboarding.page3.subtitle" = "macOSが共有ファイルへのアクセスを求めます — FinderやSafariなどの他のアプリから共有したファイルをimghostが読み取れるようにします";
-"onboarding.page5.title" = "ドラッグ&\nドロップ";
-"onboarding.page5.subtitle" = "手軽にファイルをアップロード";
+"onboarding.page5.title" = "プランを\n選択";
+"onboarding.page5.subtitle" = "";
 
 // MARK: - Mac Upload
 "upload.confirm.files_plural" = "%dファイルをアップロードしますか？";

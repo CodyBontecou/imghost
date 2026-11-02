@@ -382,8 +382,8 @@
 "onboarding.page3.subtitle" = "macOS vraagt toegang tot gedeelde bestanden — dit laat imghost bestanden lezen die je deelt vanuit andere apps zoals Finder of Safari";
 "onboarding.page4.title" = "KRIJG DIRECTE\nLINKS";
 "onboarding.page4.subtitle" = "Direct deelbare URL's";
-"onboarding.page5.title" = "SLEPEN &\nNEERZETTEN";
-"onboarding.page5.subtitle" = "Upload bestanden moeiteloos";
+"onboarding.page5.title" = "KIES\nJE ABONNEMENT";
+"onboarding.page5.subtitle" = "";
 
 // MARK: - Mac Settings
 "settings.section.subscription" = "Abonnement";

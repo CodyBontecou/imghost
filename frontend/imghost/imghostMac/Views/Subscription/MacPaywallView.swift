@@ -5,7 +5,6 @@ import AppKit
 struct MacPaywallView: View {
     @StateObject private var storeKit = StoreKitManager.shared
     @EnvironmentObject var subscriptionState: SubscriptionState
-    @Environment(\.dismiss) private var dismiss
     @State private var selectedProduct: Product?
     @State private var isYearly = false
     @State private var isPurchasing = false
@@ -148,20 +147,6 @@ struct MacPaywallView: View {
                         }
                         .buttonStyle(.plain)
                         .disabled(isRestoring)
-
-                        // Continue with Free
-                        if allowDismiss || subscriptionState.isFree {
-                            Button(action: {
-                                AppAnalytics.shared.trackPaywallContinueFreeTapped(context: analyticsContext)
-                                dismiss()
-                            }) {
-                                Text("paywall.button.continue_free")
-                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                    .foregroundStyle(Color.brutalTextTertiary)
-                                    .tracking(1)
-                            }
-                            .buttonStyle(.plain)
-                        }
                     }
 
                     // Legal
@@ -297,16 +282,16 @@ private struct MacWindowAccessor: NSViewRepresentable {
     }
 }
 
-// MARK: - Tier Comparison Grid (Free | Starter)
+// MARK: - Starter Benefits
 
 struct MacTierComparisonView: View {
-    // (label, free, starter)
-    private let rows: [(String, String, String)] = [
-        ("paywall.comparison.row.storage",    "1 GB",  "10 GB"),
-        ("paywall.comparison.row.file_size",  "50 MB", "500 MB"),
-        ("paywall.comparison.row.link_ttl",   "•",     "•"),
-        ("paywall.comparison.row.export",     "✕",     "✓"),
-        ("paywall.comparison.row.transforms", "✕",     "✓"),
+    // (label, starter)
+    private let rows: [(String, String)] = [
+        ("paywall.comparison.row.storage",    "10 GB"),
+        ("paywall.comparison.row.file_size",  "500 MB"),
+        ("paywall.comparison.row.link_ttl",   "•"),
+        ("paywall.comparison.row.export",     "✓"),
+        ("paywall.comparison.row.transforms", "✓"),
     ]
 
     var body: some View {
@@ -314,7 +299,6 @@ struct MacTierComparisonView: View {
             // Column headers
             HStack {
                 Text("").frame(maxWidth: .infinity, alignment: .leading)
-                colHeader(String(localized: "paywall.comparison.free.label"),    dim: true)
                 colHeader(String(localized: "paywall.tier.starter.name"),        dim: false)
             }
             .padding(.bottom, 6)
@@ -329,7 +313,6 @@ struct MacTierComparisonView: View {
                         .foregroundStyle(Color.brutalTextSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     cell(row.1)
-                    cell(row.2)
                 }
                 .padding(.vertical, 7)
                 Rectangle().fill(Color.white.opacity(0.07)).frame(height: 1)

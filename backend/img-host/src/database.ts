@@ -97,7 +97,7 @@ export class Database {
   // Helper to get storage limit for tier
   private getStorageLimitForTier(tier: 'free' | 'trial' | 'pro' | 'enterprise' | 'ultimate'): number {
     switch (tier) {
-      case 'free': return 1_000_000_000;           // 1GB
+      case 'free': return 0;                       // Unsubscribed account
       case 'trial': return 10_000_000_000;         // 10GB (trial gets Starter limits)
       case 'pro': return 10_000_000_000;           // 10GB — Starter plan ($2/mo)
       case 'enterprise': return 100_000_000_000;   // 100GB — Pro plan ($7.50/mo)

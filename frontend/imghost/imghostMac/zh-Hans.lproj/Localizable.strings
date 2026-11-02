@@ -365,8 +365,8 @@
 "onboarding.page3.subtitle" = "macOS 将请求访问共享文件的权限——这使 imghost 能读取你从 Finder 或 Safari 等应用共享的文件";
 "onboarding.page4.title" = "获取\n直链";
 "onboarding.page4.subtitle" = "即时生成可分享链接";
-"onboarding.page5.title" = "拖放\n上传";
-"onboarding.page5.subtitle" = "轻松上传文件";
+"onboarding.page5.title" = "选择\n订阅方案";
+"onboarding.page5.subtitle" = "";
 
 
 "settings.section.subscription" = "订阅";

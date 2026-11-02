@@ -377,8 +377,8 @@
 "onboarding.page3.subtitle" = "O macOS pedirá acesso a arquivos compartilhados — isso permite que o imghost leia arquivos que você compartilha do Finder, Safari e outros apps";
 "onboarding.page4.title" = "OBTENHA LINKS\nDIRETOS";
 "onboarding.page4.subtitle" = "URLs compartilháveis instantâneas";
-"onboarding.page5.title" = "ARRASTAR\nE SOLTAR";
-"onboarding.page5.subtitle" = "Envie arquivos sem esforço";
+"onboarding.page5.title" = "ESCOLHA\nSEU PLANO";
+"onboarding.page5.subtitle" = "";
 
 // MARK: - Mac Upload
 "upload.confirm.files_plural" = "Enviar %d arquivos?";

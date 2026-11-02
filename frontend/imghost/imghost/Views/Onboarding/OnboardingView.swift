@@ -190,19 +190,19 @@ struct BrutalOnboardingPageView: View {
 // MARK: - Tier Comparison (final onboarding page)
 
 struct OnboardingTierComparisonView: View {
-    private let rows: [(label: String, free: String, pro: String)] = [
-        ("Storage",       "50 MB",      "10 GB"),
-        ("Max File",      "5 MB",       "500 MB"),
-        ("Links",         "7 days",     "Permanent"),
-        ("Export ZIP",    "✕",          "✓"),
-        ("Transforms",    "✕",          "✓"),
+    private let rows: [(label: String, pro: String)] = [
+        ("Storage",       "10 GB"),
+        ("Max File",      "500 MB"),
+        ("Links",         "Permanent"),
+        ("Export ZIP",    "✓"),
+        ("Transforms",    "✓"),
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Spacer().frame(height: GoogleSpacing.xl)
 
-            Text("FREE\nTO\nSTART")
+            Text("onboarding.page5.title")
                 .font(.system(size: 64, weight: .black))
                 .foregroundStyle(.white)
                 .minimumScaleFactor(0.7)
@@ -215,12 +215,7 @@ struct OnboardingTierComparisonView: View {
                 HStack {
                     Text("")
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("FREE")
-                        .font(.system(size: 11, weight: .bold, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.5))
-                        .tracking(2)
-                        .frame(width: 80, alignment: .center)
-                    Text("PRO")
+                    Text("paywall.tier.starter.name")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(.white)
                         .tracking(2)
@@ -238,10 +233,6 @@ struct OnboardingTierComparisonView: View {
                             .font(.system(size: 12, weight: .medium, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.6))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text(row.free)
-                            .font(.system(size: 12, weight: .medium, design: .monospaced))
-                            .foregroundStyle(row.free == "✕" ? .white.opacity(0.3) : .white.opacity(0.5))
-                            .frame(width: 80, alignment: .center)
                         Text(row.pro)
                             .font(.system(size: 12, weight: .bold, design: .monospaced))
                             .foregroundStyle(row.pro == "✓" ? Color.green : .white)

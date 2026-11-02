@@ -102,11 +102,8 @@ export async function handleRegisterV2(request: Request, env: Env): Promise<Resp
   const passwordHash = await Auth.hashPassword(password);
   const apiToken = Auth.generateApiToken();
 
-  // Create user on free tier
+  // Create an account without a hosting entitlement
   const user = await db.createUser(email, passwordHash, apiToken, 'free');
-
-  // Create free subscription (always active, no expiry)
-  await db.createSubscription(user.id, 'free', 'active');
 
   // Generate 6-digit verification code
   const verificationToken = Auth.generateVerificationCode();
@@ -165,7 +162,7 @@ export async function handleRegisterV2(request: Request, env: Env): Promise<Resp
 
 /**
  * Anonymous device account sign-in.
- * Lets users access free features and purchase IAPs without sharing personal information.
+ * Lets users purchase IAPs without sharing personal information.
  * POST /auth/anonymous
  */
 export async function handleAnonymousSignIn(request: Request, env: Env): Promise<Response> {
@@ -183,7 +180,6 @@ export async function handleAnonymousSignIn(request: Request, env: Env): Promise
   }
 
   const user = await db.createAnonymousUser('free');
-  await db.createSubscription(user.id, 'free', 'active');
 
   const jwtSecret = env.JWT_SECRET || 'default-secret-change-in-production';
   const accessToken = await Auth.createJWT(
@@ -740,11 +736,8 @@ export async function handleAppleSignIn(request: Request, env: Env): Promise<Res
           user.email_verified = 1;
         }
       } else {
-        // Create new user with Apple credentials on free tier
+        // Create an Apple account without a hosting entitlement
         user = await db.createAppleUser(email, appleUserId, 'free');
-
-        // Create free subscription (always active, no expiry)
-        await db.createSubscription(user.id, 'free', 'active');
       }
     }
 

@@ -97,11 +97,11 @@
 "onboarding.page3.subtitle" = "macOS will ask to access shared files — this lets imghost read files you share from other apps like Finder or Safari";
 "onboarding.page4.title" = "DRAG &\nDROP";
 "onboarding.page4.subtitle" = "Upload files effortlessly";
-"onboarding.page5.title" = "START\nFREE";
-"onboarding.page5.subtitle" = "50MB storage · 7-day links · upgrade anytime";
+"onboarding.page5.title" = "CHOOSE\nYOUR PLAN";
+"onboarding.page5.subtitle" = "";
 "onboarding.button.skip" = "SKIP";
 "onboarding.button.next" = "NEXT";
-"onboarding.button.start" = "START FREE";
+"onboarding.button.start" = "CONTINUE";
 "onboarding.page_indicator" = "%d/%d";
 
 // MARK: - Media View

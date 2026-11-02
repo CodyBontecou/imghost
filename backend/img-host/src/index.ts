@@ -105,9 +105,6 @@ export interface Env {
 }
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500MB max (Cloudflare Workers limit)
-const FREE_MAX_FILE_SIZE = 50_000_000;          // 50MB max per file for free tier
-const FREE_STORAGE_LIMIT = 1_000_000_000;       // 1GB total for free tier
-const FREE_DAILY_UPLOADS = 20;                  // max uploads per 24h for free tier (storage is the real cap)
 export const ANONYMOUS_UPLOAD_ERROR = 'Subscribe to upload now. Email registration is optional and only needed for access on other devices.';
 
 export function isAnonymousFreeTierUser(user: { is_anonymous?: number | null; subscription_tier: string }): boolean {
@@ -180,36 +177,16 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
     }, 403);
   }
 
-  const isFreeUser = user.subscription_tier === 'free';
-
-  if (!isFreeUser) {
-    // Paid/trial users: require an active subscription
-    const subscriptionCheck = await checkSubscriptionAccess(user.id, db);
-    if (!subscriptionCheck.hasAccess) {
-      return json({
-        error: 'Subscription required',
-        subscription_required: true,
-        reason: subscriptionCheck.reason,
-        current_tier: subscriptionCheck.tier,
-        current_status: subscriptionCheck.status,
-      }, 403);
-    }
-  } else {
-    // Free users: enforce daily upload rate limit
-    const rateLimiter = new RateLimiter(env.DB);
-    const uploadLimit = await rateLimiter.checkUserRateLimit(
-      user.id,
-      '/upload',
-      { windowMs: 24 * 60 * 60 * 1000, maxRequests: FREE_DAILY_UPLOADS }
-    );
-    if (!uploadLimit.allowed) {
-      return json({
-        error: 'Daily upload limit reached for free tier',
-        upgrade_required: true,
-        limit: FREE_DAILY_UPLOADS,
-        resets_at: new Date(uploadLimit.reset).toISOString(),
-      }, 429);
-    }
+  const subscriptionCheck = await checkSubscriptionAccess(user.id, db);
+  if (!subscriptionCheck.hasAccess) {
+    return json({
+      error: 'Subscription required',
+      subscription_required: true,
+      upgrade_required: true,
+      reason: subscriptionCheck.reason,
+      current_tier: subscriptionCheck.tier,
+      current_status: subscriptionCheck.status,
+    }, 403);
   }
 
   // Check if user is suspended
@@ -347,15 +324,6 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
     }
   }
 
-  // Validate file size — free tier has a 5MB per-file cap
-  if (isFreeUser && file.size > FREE_MAX_FILE_SIZE) {
-    return json({
-      error: 'Free tier limit: files must be under 5MB',
-      upgrade_required: true,
-      limit_bytes: FREE_MAX_FILE_SIZE,
-    }, 413);
-  }
-
   // Validate file size against absolute maximum (500MB paid plan limit)
   if (file.size > MAX_FILE_SIZE) {
     return json({ error: 'File exceeds 500MB limit' }, 400);
@@ -366,10 +334,7 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
   if (!hasSpace) {
     const usage = await db.getStorageUsage(user.id);
     return json({
-      error: isFreeUser
-        ? 'Free tier storage limit reached (1 GB). Upgrade to Starter for 10 GB.'
-        : 'Storage limit exceeded',
-      upgrade_required: isFreeUser,
+      error: 'Storage limit exceeded',
       current_usage: usage.total_bytes_used,
       limit: user.storage_limit_bytes,
     }, 403);
@@ -393,7 +358,7 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
     },
   });
 
-  // All images are permanent; storage quota is the limiting factor for free users
+  // Uploaded images remain permanent.
   const expiresAt = null;
 
   // Save image metadata to database
@@ -653,11 +618,8 @@ async function handleRegister(request: Request, env: Env): Promise<Response> {
     const passwordHash = await Auth.hashPassword(password);
     const apiToken = Auth.generateApiToken();
 
-    // Create user
-    const user = await db.createUser(email, passwordHash, apiToken, 'trial');
-
-    // Create trial subscription
-    await db.createSubscription(user.id, 'trial', 'trialing');
+    // Registration creates an identity; hosting access requires a purchase.
+    const user = await db.createUser(email, passwordHash, apiToken, 'free');
 
     // Clear any failed attempts on successful registration
     await rateLimiter.clearFailedAttempts(email, 'register');
@@ -984,10 +946,11 @@ async function handleExportInitiate(request: Request, env: Env, ctx: ExecutionCo
     return json({ error: 'Unauthorized' }, 401);
   }
 
-  // Free tier cannot export — images expire after 7 days anyway
-  if (user.subscription_tier === 'free') {
+  const access = await checkSubscriptionAccess(user.id, db);
+  if (!access.hasAccess) {
     return json({
-      error: 'Export is not available on the free tier',
+      error: 'Subscription required',
+      subscription_required: true,
       upgrade_required: true,
     }, 403);
   }

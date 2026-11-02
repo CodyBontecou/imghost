@@ -4,8 +4,6 @@ struct MacContentView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var subscriptionState: SubscriptionState
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
-    @AppStorage("showUpgradeAfterAnonymousAuth") private var showUpgradeAfterAnonymousAuth = false
-    @State private var showPostAnonymousPaywall = false
 
     enum SidebarItem: String, CaseIterable, Identifiable {
         case media = "Media"
@@ -38,7 +36,14 @@ struct MacContentView: View {
             } else if subscriptionState.status == .error {
                 subscriptionErrorView
             } else if subscriptionState.shouldShowPaywall {
-                MacPaywallView()
+                VStack(spacing: 0) {
+                    MacPaywallView()
+                    Button(String(localized: "settings.account.button.sign_out")) {
+                        authState.logout()
+                    }
+                    .buttonStyle(.plain)
+                    .padding()
+                }
             } else {
                 mainApp
             }
@@ -48,40 +53,20 @@ struct MacContentView: View {
             // Check subscription status when authenticated with either verified email or anonymous device auth.
             if authState.isAuthenticated && authState.hasVerifiedEmailOrAnonymous {
                 await subscriptionState.checkStatus()
-                presentAnonymousUpgradeIfNeeded()
             }
         }
         .onChange(of: authState.isAuthenticated) { _, isAuthenticated in
             if isAuthenticated && authState.hasVerifiedEmailOrAnonymous {
                 Task {
                     await subscriptionState.checkStatus()
-                    presentAnonymousUpgradeIfNeeded()
                 }
             } else if !isAuthenticated {
                 subscriptionState.reset()
             }
         }
-        .onChange(of: authState.currentUser?.isAnonymous) { _, _ in
-            presentAnonymousUpgradeIfNeeded()
-        }
         .onChange(of: selectedItem) { _, item in
             AppAnalytics.shared.trackTabSelected(item == .settings ? .settings : .media)
         }
-        .sheet(isPresented: $showPostAnonymousPaywall, onDismiss: {
-            showUpgradeAfterAnonymousAuth = false
-        }) {
-            MacPaywallView(allowDismiss: true)
-                .environmentObject(subscriptionState)
-                .frame(width: 540, height: 620)
-        }
-    }
-
-    private func presentAnonymousUpgradeIfNeeded() {
-        guard showUpgradeAfterAnonymousAuth,
-              authState.isAuthenticated,
-              authState.isAnonymous else { return }
-        selectedItem = .settings
-        showPostAnonymousPaywall = true
     }
 
     // MARK: - Main App

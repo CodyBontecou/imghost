@@ -49,7 +49,6 @@ private enum PaidTier: String, CaseIterable, Identifiable {
 struct PaywallView: View {
     @StateObject private var storeKit = StoreKitManager.shared
     @EnvironmentObject var subscriptionState: SubscriptionState
-    @Environment(\.dismiss) private var dismiss
 
     @State private var selectedTier: PaidTier = .starter
     @State private var isYearly = false
@@ -209,10 +208,6 @@ struct PaywallView: View {
             // Column headers
             HStack {
                 Text("").frame(maxWidth: .infinity, alignment: .leading)
-                Text("paywall.comparison.free.label")
-                    .brutalTypography(.monoSmall, color: .brutalTextSecondary)
-                    .tracking(1)
-                    .frame(width: 68, alignment: .center)
                 Text(selectedTier.displayName.uppercased())
                     .brutalTypography(.mono, color: selectedTier.accentColor)
                     .tracking(1)
@@ -224,27 +219,23 @@ struct PaywallView: View {
             .overlay(Rectangle().frame(height: 1).foregroundColor(.brutalBorder), alignment: .bottom)
 
             // Rows
-            comparisonRow("paywall.comparison.row.storage",    free: "1 GB",       paid: selectedTier.storageLabel)
-            comparisonRow("paywall.comparison.row.file_size",  free: "50 MB",      paid: "500 MB")
-            comparisonRow("paywall.comparison.row.link_ttl",   free: "paywall.comparison.free.link_ttl", paid: "paywall.comparison.pro.link_ttl", localizeValues: true)
-            comparisonRow("paywall.comparison.row.export",     free: "✕",          paid: "✓")
-            comparisonRow("paywall.comparison.row.transforms", free: "✕",          paid: "✓")
+            comparisonRow("paywall.comparison.row.storage",    paid: selectedTier.storageLabel)
+            comparisonRow("paywall.comparison.row.file_size",  paid: "500 MB")
+            comparisonRow("paywall.comparison.row.link_ttl",   paid: "paywall.comparison.pro.link_ttl", localizeValues: true)
+            comparisonRow("paywall.comparison.row.export",     paid: "✓")
+            comparisonRow("paywall.comparison.row.transforms", paid: "✓")
         }
         .padding(.horizontal, 16)
         .padding(.bottom, 8)
     }
 
-    private func comparisonRow(_ labelKey: String, free: String, paid: String, localizeValues: Bool = false) -> some View {
-        let freeText  = localizeValues ? String(localized: String.LocalizationValue(free))  : free
+    private func comparisonRow(_ labelKey: String, paid: String, localizeValues: Bool = false) -> some View {
         let paidText  = localizeValues ? String(localized: String.LocalizationValue(paid))  : paid
         let labelText = String(localized: String.LocalizationValue(labelKey))
         return HStack {
             Text(labelText)
                 .brutalTypography(.bodySmall, color: .brutalTextSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Text(freeText)
-                .brutalTypography(.monoSmall, color: freeText == "✕" ? .brutalTextTertiary : .brutalTextSecondary)
-                .frame(width: 68, alignment: .center)
             Text(paidText)
                 .brutalTypography(.mono, color: paidText == "✓" ? selectedTier.accentColor : .white)
                 .frame(width: 68, alignment: .center)
@@ -288,13 +279,6 @@ struct PaywallView: View {
                     Task { await restore() }
                 }
                 .opacity(isRestoring ? 0.5 : 1)
-
-                if allowDismiss || subscriptionState.isFree {
-                    BrutalTextButton(title: String(localized: "paywall.button.continue_free")) {
-                        AppAnalytics.shared.trackPaywallContinueFreeTapped(context: analyticsContext)
-                        dismiss()
-                    }
-                }
             }
         }
         .padding(.horizontal, 16)

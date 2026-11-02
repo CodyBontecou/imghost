@@ -15,10 +15,6 @@ struct ImghostApp: App {
         Task {
             await StoreKitManager.shared.startListening()
         }
-        // Initialize AdMob + UMP consent (must run before first ad request)
-        Task { @MainActor in
-            AdManager.shared.initialize()
-        }
     }
 
     var body: some Scene {
@@ -48,6 +44,8 @@ struct ImghostApp: App {
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .background {
                         AppAnalytics.shared.flush()
+                    } else if phase == .active && authState.isAuthenticated && authState.isEmailVerified {
+                        Task { await subscriptionState.checkStatus() }
                     }
                 }
         }

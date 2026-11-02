@@ -163,26 +163,11 @@ export async function handleSubscriptionStatus(request: Request, env: Env): Prom
       });
     }
 
-    // Check if subscription is still valid
+    // Use the same entitlement policy as uploads and exports.
+    const access = await checkSubscriptionAccess(user.id, db);
+    const effectiveStatus = access.status;
+    const hasAccess = access.hasAccess;
     const now = Date.now();
-    let effectiveStatus = subscription.status;
-
-    // Check trial expiration
-    if (subscription.status === 'trialing' && subscription.trial_ends_at && subscription.trial_ends_at < now) {
-      effectiveStatus = 'expired';
-      // Update the subscription status in the database
-      await db.updateSubscriptionStatus(user.id, 'expired');
-    }
-
-    // Check subscription expiration
-    if (subscription.current_period_end && subscription.current_period_end < now) {
-      if (subscription.status === 'active' || subscription.status === 'trialing') {
-        effectiveStatus = 'expired';
-        await db.updateSubscriptionStatus(user.id, 'expired');
-      }
-    }
-
-    const hasAccess = effectiveStatus === 'active' || effectiveStatus === 'trialing';
 
     // Calculate trial days remaining
     let trialDaysRemaining: number | undefined;
@@ -344,9 +329,8 @@ export async function handleRestorePurchases(request: Request, env: Env): Promis
 
 /**
  * Check if user has subscription access (helper for other handlers).
- * Registered free-tier users have access with upload-time limits; anonymous free-tier
- * users are blocked by the upload handler so App Review can access IAP without
- * enabling free anonymous file hosting.
+ * Only a current paid subscription or subscription trial grants access.
+ * Legacy free accounts remain valid identities but have no hosting entitlement.
  */
 export async function checkSubscriptionAccess(userId: string, db: Database): Promise<{
   hasAccess: boolean;
@@ -359,33 +343,33 @@ export async function checkSubscriptionAccess(userId: string, db: Database): Pro
     return { hasAccess: false, tier: 'free', status: 'none', reason: 'User not found' };
   }
 
-  // Free tier users always have upload access (limits enforced in the upload handler)
-  if (user.subscription_tier === 'free') {
-    const subscription = await db.getSubscriptionByUserId(userId);
-    if (subscription?.status === 'active') {
-      return { hasAccess: true, tier: 'free', status: 'active' };
-    }
-    // Free users with no subscription record still get access
-    return { hasAccess: true, tier: 'free', status: 'active' };
-  }
-
   const subscription = await db.getSubscriptionByUserId(userId);
 
-  // No subscription record on a paid tier = no access
+  // An account without a subscription has no hosting access
   if (!subscription) {
     return { hasAccess: false, tier: user.subscription_tier, status: 'none', reason: 'No subscription' };
+  }
+
+  if (subscription.tier === 'free') {
+    return { hasAccess: false, tier: 'free', status: 'none', reason: 'Subscription required' };
+  }
+
+  // App Store subscriptions always have an expiration date. Do not grant
+  // indefinite access to legacy trial or malformed subscription records.
+  if (!subscription.current_period_end) {
+    return { hasAccess: false, tier: subscription.tier, status: 'none', reason: 'No subscription expiration' };
   }
 
   const now = Date.now();
 
   // Check trial expiration
-  if (subscription.status === 'trialing' && subscription.trial_ends_at && subscription.trial_ends_at < now) {
+  if (subscription.status === 'trialing' && subscription.trial_ends_at && subscription.trial_ends_at <= now) {
     await db.updateSubscriptionTierAndStatus(userId, 'free', 'expired');
     return { hasAccess: false, tier: 'free', status: 'expired', reason: 'Trial expired' };
   }
 
   // Check subscription period expiration
-  if (subscription.current_period_end && subscription.current_period_end < now) {
+  if (subscription.current_period_end && subscription.current_period_end <= now) {
     if (subscription.status === 'active' || subscription.status === 'trialing') {
       await db.updateSubscriptionTierAndStatus(userId, 'free', 'expired');
       return { hasAccess: false, tier: 'free', status: 'expired', reason: 'Subscription expired' };

@@ -3,17 +3,17 @@ import SwiftUI
 // MARK: - Tier Comparison (last onboarding page)
 
 struct MacOnboardingTierView: View {
-    private let rows: [(label: String, free: String, pro: String)] = [
-        ("Storage",   "50 MB",   "10 GB"),
-        ("Max File",  "5 MB",    "500 MB"),
-        ("Links",     "7 days",  "Permanent"),
-        ("Export",    "✕",       "✓"),
-        ("Transforms","✕",       "✓"),
+    private let rows: [(label: String, pro: String)] = [
+        ("Storage",   "10 GB"),
+        ("Max File",  "500 MB"),
+        ("Links",     "Permanent"),
+        ("Export",    "✓"),
+        ("Transforms","✓"),
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("FREE\nTO START")
+            Text("onboarding.page5.title")
                 .font(.system(size: 48, weight: .black))
                 .foregroundStyle(.white)
                 .lineSpacing(-4)
@@ -22,12 +22,7 @@ struct MacOnboardingTierView: View {
                 // Header
                 HStack {
                     Text("").frame(maxWidth: .infinity, alignment: .leading)
-                    Text("FREE")
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.4))
-                        .tracking(2)
-                        .frame(width: 70, alignment: .center)
-                    Text("PRO")
+                    Text("paywall.tier.starter.name")
                         .font(.system(size: 10, weight: .bold, design: .monospaced))
                         .foregroundStyle(.white)
                         .tracking(2)
@@ -43,10 +38,6 @@ struct MacOnboardingTierView: View {
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.5))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text(row.free)
-                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .foregroundStyle(row.free == "✕" ? .white.opacity(0.2) : .white.opacity(0.45))
-                            .frame(width: 70, alignment: .center)
                         Text(row.pro)
                             .font(.system(size: 11, weight: .bold, design: .monospaced))
                             .foregroundStyle(row.pro == "✓" ? Color.green : .white)

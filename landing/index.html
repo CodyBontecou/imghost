@@ -1845,7 +1845,7 @@
                             </h1>
                             <p class="hero-subtitle">imghost turns a photo or screenshot on your iPhone into a clean hosted URL. Copy raw, Markdown, HTML, BBCode, Obsidian, or custom link formats.</p>
                             <div class="hero-actions">
-                                <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-primary">Download free on App Store</a>
+                                <a href="https://apps.apple.com/us/app/imghost/id6758588596" class="btn-primary">Download on App Store</a>
                                 <a href="mailto:cody@isolated.tech" class="btn-secondary">Support</a>
                             </div>
                             <p class="btn-note">Static fallback loaded. JavaScript adds the web login/dashboard, but the App Store download and product details work without it.</p>
@@ -1918,7 +1918,7 @@
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                                 </svg>
-                                Download free on App Store
+                                Download on App Store
                             </a>
                             <a href="#how-it-works" class="btn-secondary">See the flow</a>
                             <p class="btn-note">Web login is secondary: use it for an existing account, gallery, and link copying. New users should start with the App Store app.</p>
@@ -2121,7 +2121,7 @@
                         <div class="pricing-tier">Trial</div>
                         <div class="pricing-name">7 Days</div>
                         <div class="pricing-price">$0<span>/trial</span></div>
-                        <p class="pricing-desc">Start in the iPhone app. Apple handles the trial, purchase confirmation, renewal, cancellation, and receipts.</p>
+                        <p class="pricing-desc">A subscription is required; there is no free hosting plan. Eligible subscriptions include a trial. Apple handles the trial, purchase confirmation, renewal, cancellation, and receipts.</p>
                         <ul class="pricing-features">
                             <li>Pro feature access during trial</li>
                             <li>Direct links and copy formats</li>
@@ -2247,7 +2247,7 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
-                    Download free on App Store
+                    Download on App Store
                 </a>
             </div>
         </section>
@@ -2921,7 +2921,7 @@
                             <h2 class="settings-section-title">Subscription</h2>
                             <div class="settings-row">
                                 <span class="settings-label">Plan</span>
-                                <span class="settings-value">${user.subscription_tier?.toUpperCase() || 'FREE'}</span>
+                                <span class="settings-value">${user.subscription_tier && user.subscription_tier !== 'free' ? user.subscription_tier.toUpperCase() : 'SUBSCRIPTION REQUIRED'}</span>
                             </div>
                             <div class="settings-row">
                                 <span class="settings-label">Status</span>

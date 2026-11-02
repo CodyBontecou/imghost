@@ -16,7 +16,7 @@ final class SubscriptionState: ObservableObject {
 
     enum Status: Equatable {
         case loading
-        case free                // Free tier — has access with limits (50MB, 7-day TTL)
+        case free                // Legacy account without a subscription
         case noSubscription      // Never subscribed, no trial - show paywall
         case trialing            // In free trial - allow access
         case trialExpired        // Trial ended, needs subscription - show paywall
@@ -49,26 +49,25 @@ final class SubscriptionState: ObservableObject {
         }
     }
 
-    /// Whether user has access to app features (upload/view).
-    /// In the ad-supported model all authenticated users have access.
-    var hasAccess: Bool { status != .loading && status != .error }
+    /// Access must be granted by the backend for a current subscription or trial.
+    @Published private var hasSubscriptionAccess = false
 
-    /// Whether this is a free-tier user (limited storage, 7-day TTL on uploads, sees ads)
-    var isFree: Bool {
+    var hasAccess: Bool {
         switch status {
-        case .free, .noSubscription, .trialExpired, .expired:
-            return true
+        case .subscribed, .trialing, .cancelled:
+            return hasSubscriptionAccess
         default:
             return false
         }
     }
 
-    /// Hard paywall gate is removed — everyone can use the app.
-    /// PaywallView is still accessible as a soft upgrade sheet from Settings.
-    var shouldShowPaywall: Bool { false }
+    var isFree: Bool { !hasAccess }
 
-    /// Show a soft upgrade nudge banner (not a blocking gate)
-    var shouldNudgeUpgrade: Bool { isFree }
+    var shouldShowPaywall: Bool {
+        !hasAccess && status != .loading && status != .error
+    }
+
+    var shouldNudgeUpgrade: Bool { false }
 
     /// Check subscription status from backend (with retry for transient errors)
     func checkStatus() async {
@@ -109,6 +108,7 @@ final class SubscriptionState: ObservableObject {
     /// Update state from backend response
     func updateFromResponse(_ response: SubscriptionStatusResponse) {
         tier = response.tier
+        hasSubscriptionAccess = response.hasAccess && response.tier != "free"
 
         switch response.status {
         case "active":
@@ -155,6 +155,7 @@ final class SubscriptionState: ObservableObject {
     /// Reset state on logout
     func reset() {
         status = .loading
+        hasSubscriptionAccess = false
         tier = "free"
         trialDaysRemaining = nil
         currentPeriodEnd = nil
