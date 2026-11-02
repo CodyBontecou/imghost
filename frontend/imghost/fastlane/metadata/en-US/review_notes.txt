@@ -1,0 +1,9 @@
+imghost 1.4.3 (build 17) requires an active App Store subscription or subscription trial for hosting. There is no ongoing free plan.
+
+Both approved subscriptions, imghost.pro.monthly and imghost.pro.yearly, offer a seven-day introductory free trial to eligible App Store customers. Apple determines eligibility and presents the purchase confirmation. After the trial, the selected subscription renews at the price displayed by StoreKit. Returning customers who are ineligible see the regular Subscribe action. Restore Purchases remains available.
+
+On iOS, complete onboarding, then sign in with the supplied demo account (or register and verify an account). Unsubscribed users see the paywall. The View Pro Plans button on the sign-in screen also previews the plans; sign in before completing a purchase.
+
+On macOS, complete onboarding and choose Continue without account to reach the paywall, or use the supplied demo credentials. Email registration is optional for the anonymous device account.
+
+Start the trial using an eligible sandbox account to test uploads, direct links, and the share extension. Cancelled purchases and pending payments keep hosting locked. After a valid subscription expires, uploads and exports require renewal; existing hosted images are preserved.
