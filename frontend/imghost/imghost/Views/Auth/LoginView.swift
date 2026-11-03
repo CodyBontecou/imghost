@@ -4,6 +4,12 @@ import AuthenticationServices
 struct LoginView: View {
     @EnvironmentObject var authState: AuthState
 
+    let passwordResetService: AuthService
+
+    init(passwordResetService: AuthService = .shared) {
+        self.passwordResetService = passwordResetService
+    }
+
     @State private var email = ""
     @State private var password = ""
     @State private var isLoading = false
@@ -113,6 +119,7 @@ struct LoginView: View {
                             BrutalTextButton(title: String(localized: "auth.login.button.forgot_password")) {
                                 showForgotPassword = true
                             }
+                            .accessibilityIdentifier("auth.login.forgotPassword")
                         }
                         .padding(.horizontal, 24)
 
@@ -143,7 +150,9 @@ struct LoginView: View {
                 RegisterView()
             }
             .navigationDestination(isPresented: $showForgotPassword) {
-                ForgotPasswordView()
+                ForgotPasswordView(passwordResetService: passwordResetService) {
+                    showForgotPassword = false
+                }
             }
             .preferredColorScheme(.dark)
             .sheet(isPresented: $showPlansPreview) {

@@ -3,6 +3,11 @@
    Localizable.strings (Dutch)
    ========================================================= */
 
+// MARK: - Existing reset code entry
+"auth.forgot_password.button.existing_code" = "Ik heb al een herstelcode";
+"auth.forgot_password.request_accepted" = "Als er een account met dit e-mailadres bestaat, worden instructies voor het herstellen verzonden.";
+"auth.reset_password.button.back" = "Terug";
+
 // MARK: - Common Buttons
 "button.ok" = "OK";
 "button.cancel" = "Annuleer";

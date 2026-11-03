@@ -1,393 +1,127 @@
-# Authentication System Setup Guide
+# Authentication setup and password-reset verification
 
-Quick setup guide for implementing the enhanced authentication system.
+The Worker uses D1, PBKDF2 passwords, JWTs and **Amazon SES v2** (`src/ses.ts`).
+SendGrid/Postmark `EMAIL_API_KEY` is not used. No email body, verification code or
+reset code is logged, even when credentials are missing. Missing SES credentials
+fail delivery instead of pretending an email was sent.
 
-## Prerequisites
+## Configuration (owner-managed; not performed by issue CI)
 
-- Cloudflare account with Wrangler CLI installed
-- D1 database already created (from initial setup)
-- Node.js and npm installed
-
-## Step 1: Run Database Migration
-
-The authentication system requires additional database tables for JWT refresh tokens, rate limiting, and email verification.
-
-### Local Development
-
-```bash
-# Run the authentication migration
-npm run db:migrate:auth:local
-
-# Verify tables were created
-npm run db:tables:local
-```
-
-Expected output should include:
-- `users` (with new columns)
-- `refresh_tokens`
-- `rate_limits`
-- `email_verification_attempts`
-
-### Production
-
-```bash
-# Run the authentication migration
-npm run db:migrate:auth
-
-# Verify tables were created
-npm run db:tables
-```
-
-## Step 2: Configure Environment Variables
-
-### Generate JWT Secret
-
-```bash
-# Generate a secure random secret (32 bytes base64 encoded)
-openssl rand -base64 32
-```
-
-### Local Development
-
-Create `.dev.vars` file (copy from `.dev.vars.example`):
-
-```bash
-cp .dev.vars.example .dev.vars
-```
-
-Edit `.dev.vars`:
-
-```env
-# Required: Your generated JWT secret
-JWT_SECRET=your-generated-secret-here
-
-# Optional: Email configuration
-EMAIL_FROM=noreply@your-domain.com
-EMAIL_API_KEY=your-sendgrid-api-key
-BASE_URL=http://localhost:8787
-
-# Legacy (optional)
-UPLOAD_TOKEN=legacy-test-token
-```
-
-### Production
-
-Set secrets using Wrangler:
-
-```bash
-# Set JWT secret (will prompt for input)
-wrangler secret put JWT_SECRET
-
-# Optional: Set email API key
-wrangler secret put EMAIL_API_KEY
-```
-
-Update `wrangler.toml` for non-secret variables:
+Keep `JWT_SECRET`, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in Worker secrets
+(or an untracked `.dev.vars` for a disposable test Worker). Never commit them.
+The SES identity and IAM permission must allow `ses:SendEmail` for the selected
+sender. Configure these non-secret variables:
 
 ```toml
 [vars]
-EMAIL_FROM = "noreply@your-production-domain.com"
-BASE_URL = "https://your-production-domain.com"
+EMAIL_FROM = "noreply@your-verified-domain.com"
+AWS_REGION = "us-east-1"
 ```
 
-## Step 3: Test the Implementation
-
-### Start Development Server
-
-```bash
-npm run dev
-```
-
-### Run Authentication Tests
-
-```bash
-# Run the test suite
-./examples/test-auth.sh http://localhost:8787
-```
-
-### Manual Testing
-
-#### 1. Register a New User
-
-```bash
-curl -X POST http://localhost:8787/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "SecurePassword123"
-  }'
-```
-
-Expected response:
-```json
-{
-  "access_token": "eyJhbGc...",
-  "refresh_token": "...",
-  "api_token": "uuid-here",
-  "expires_in": 3600,
-  "token_type": "Bearer",
-  "user_id": "uuid",
-  "email": "test@example.com",
-  "subscription_tier": "free",
-  "email_verified": false,
-  "message": "Registration successful. Please check your email to verify your account."
-}
-```
-
-#### 2. Login
-
-```bash
-curl -X POST http://localhost:8787/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "SecurePassword123"
-  }'
-```
-
-#### 3. Test JWT Authentication
-
-```bash
-# Save the access token from login/register response
-ACCESS_TOKEN="your-access-token-here"
-
-# Make authenticated request
-curl -X GET http://localhost:8787/user \
-  -H "Authorization: Bearer $ACCESS_TOKEN"
-```
-
-#### 4. Test Token Refresh
-
-```bash
-# Save the refresh token from login/register response
-REFRESH_TOKEN="your-refresh-token-here"
-
-# Refresh access token
-curl -X POST http://localhost:8787/auth/refresh \
-  -H "Content-Type: application/json" \
-  -d "{\"refresh_token\":\"$REFRESH_TOKEN\"}"
-```
-
-## Step 4: Email Verification Setup (Optional)
-
-### Development (Console Logging)
-
-By default, emails are logged to the console. Check server logs for:
-- Email verification tokens
-- Password reset tokens
-
-Example log output:
-```
-[EMAIL] To: test@example.com
-Subject: Verify your email address
-Body: Welcome to imghost! Please verify your email by clicking this link: http://localhost:8787/auth/verify-email?token=...
-```
-
-### Production (Email Service Integration)
-
-Edit `src/auth-handlers.ts` and uncomment the email service integration code.
-
-#### Option 1: SendGrid
-
-1. Sign up at https://sendgrid.com
-2. Create an API key
-3. Set `EMAIL_API_KEY` secret
-4. Uncomment SendGrid code in `sendEmail()` function
-
-#### Option 2: Postmark
-
-Similar setup with Postmark API
-
-#### Option 3: Cloudflare Email Workers
-
-Use Cloudflare's email routing and workers
-
-## Step 5: Verify Email Flow
-
-### Get Verification Token from Logs
-
-After registration, check console logs for the verification token.
-
-### Verify Email
-
-```bash
-# Using token from logs
-VERIFY_TOKEN="token-from-logs"
-
-curl -X POST http://localhost:8787/auth/verify-email \
-  -H "Content-Type: application/json" \
-  -d "{\"token\":\"$VERIFY_TOKEN\"}"
-```
-
-Expected response:
-```json
-{
-  "message": "Email successfully verified!",
-  "email_verified": true
-}
-```
-
-## Step 6: Test Password Reset Flow
-
-### Request Password Reset
-
-```bash
-curl -X POST http://localhost:8787/auth/forgot-password \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com"
-  }'
-```
-
-### Get Reset Token from Logs
-
-Check console logs for the password reset token.
-
-### Reset Password
-
-```bash
-# Using token from logs
-RESET_TOKEN="token-from-logs"
-
-curl -X POST http://localhost:8787/auth/reset-password \
-  -H "Content-Type: application/json" \
-  -d '{
-    "token": "'"$RESET_TOKEN"'",
-    "new_password": "NewSecurePassword456"
-  }'
-```
-
-### Login with New Password
-
-```bash
-curl -X POST http://localhost:8787/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "NewSecurePassword456"
-  }'
-```
-
-## Step 7: Deploy to Production
-
-### Build and Deploy
-
-```bash
-# Deploy to Cloudflare Workers
-npm run deploy
-```
-
-### Run Production Migration
-
-```bash
-# Run authentication migration on production database
-npm run db:migrate:auth
-```
-
-### Verify Production
-
-```bash
-# Test production endpoints
-./examples/test-auth.sh https://your-worker-url.workers.dev
-```
-
-## Troubleshooting
-
-### Migration Errors
-
-**Error: "table already exists"**
-- Some tables may have been created by other migrations
-- Check which migration added them
-- You can skip duplicate table creation or run migrations individually
-
-**Error: "no such table: users"**
-- Run the initial schema migration first: `npm run db:migrate:local`
-
-### JWT Errors
-
-**Error: "Invalid JWT signature"**
-- Ensure `JWT_SECRET` is set in `.dev.vars` or production secrets
-- Secret must be the same across all instances
-- Generate a new secret if needed: `openssl rand -base64 32`
-
-**Error: "JWT expired"**
-- Access tokens expire after 1 hour
-- Use the refresh token to get a new access token
-- See Step 4 for refresh token usage
-
-### Rate Limiting
-
-**Error: "Too many requests"**
-- Rate limits are working correctly
-- Wait for the window to reset (shown in `retry_after` field)
-- For development, you can clear rate limits:
-  ```bash
-  npm run db:query:local "DELETE FROM rate_limits;"
-  ```
-
-### Email Issues
-
-**Emails not sending**
-- Check that `EMAIL_API_KEY` and `EMAIL_FROM` are configured
-- Verify email service credentials
-- Check email service logs/dashboard
-- In development, emails are logged to console by default
-
-**Can't find verification token**
-- Check console logs where `wrangler dev` is running
-- Look for `[EMAIL]` prefix in logs
-- Token is included in the email body
-
-## Security Checklist
-
-Before going to production:
-
-- [ ] Generated strong `JWT_SECRET` (32+ bytes)
-- [ ] Set `JWT_SECRET` as a Wrangler secret (not in code)
-- [ ] Configured `BASE_URL` to production domain
-- [ ] Email service configured and tested
-- [ ] HTTPS enforced on production domain
-- [ ] Rate limiting tested and working
-- [ ] Password requirements enforced (min 8 characters)
-- [ ] Email verification flow tested
-- [ ] Password reset flow tested
-- [ ] Token refresh tested
-- [ ] Old API tokens still work (backward compatibility)
-
-## Performance Optimization
-
-### Database Indexes
-
-All necessary indexes are created by the migration:
-- Email lookup index
-- API token index
-- Refresh token index
-- Rate limit indexes
-
-### Cleanup Scheduled Tasks
-
-Consider adding scheduled cleanup tasks:
-
-```typescript
-// In a scheduled worker or cron job
-await db.cleanupExpiredRefreshTokens();
-await db.cleanupOldRateLimits(3600000); // 1 hour
-await db.cleanupOldApiUsage(30); // 30 days
-```
-
-## Next Steps
-
-1. Review [AUTHENTICATION.md](./AUTHENTICATION.md) for complete API documentation
-2. Integrate with your iOS app using the JWT tokens
-3. Set up email service for production
-4. Configure monitoring and alerts
-5. Implement OAuth providers (optional)
-6. Add two-factor authentication (optional)
-
-## Support
-
-For issues or questions:
-1. Check [AUTHENTICATION.md](./AUTHENTICATION.md)
-2. Check [DATABASE.md](./DATABASE.md)
-3. Review server logs for detailed error messages
-4. Verify environment variables are set correctly
+`EMAIL_FROM` defaults to `noreply@isolated.tech`; `AWS_REGION` defaults to
+`us-east-1`. Verify the sender identity in **that region**. SES sandbox status is
+region-specific and only permits verified recipients or the mailbox simulator.
+An SES API 200 means acceptance, not proof of inbox delivery. An authorized owner
+must verify delivery, bounce/suppression status and any production-access needs.
+
+For Sign in with Apple private-relay recipients, the owner must register the
+outbound source with Apple and meet its SPF/DKIM authentication requirements.
+When SES uses its own envelope sender, Apple's documentation requires aligned
+DKIM with the registered header From domain. Do not assume API acceptance proves
+relay forwarding. A user can also have disabled forwarding.
+
+References verified for this implementation:
+- [SES v2 SendEmail](https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_SendEmail.html)
+- [SES sandbox restrictions](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html)
+- [Apple private email relay configuration](https://developer.apple.com/help/account/capabilities/configure-private-email-relay-service/)
+- [D1 result metadata (`meta.changes`)](https://developers.cloudflare.com/d1/worker-api/return-object/)
+- [D1 transactional batch and rollback](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch)
+
+Use the existing database schema/migrations for a new disposable environment.
+This reset fix needs **no migration**, makes no changes to account IDs, Apple
+links, API keys, subscriptions or images, and does not touch device-local data.
+Do not rerun initialization or destructive migrations on existing accounts.
+
+## Password-reset contract
+
+1. In imghost on iOS or macOS choose **Forgot Password**, enter the account's
+   stored email and request a code. For Apple accounts this may be the private
+   relay address rather than the user's personal inbox address.
+2. The email contains the full copyable reset token on its own line, not a
+   numeric verification code and not a URL. It names **Enter Code** and the
+   **Reset Code** field used by both native clients. Labels are localized in the
+   app; these are their English equivalents.
+3. Return to the app's request-success screen, choose Enter Code, paste the entire
+   token, and enter/confirm a password of at least 8 characters.
+4. Sign in with the same email and new password. Apple-only accounts acquire a
+   password on the existing user row; Apple sign-in remains linked to that row.
+
+`POST /auth/forgot-password` and `POST /auth/reset-password` request and success
+JSON contracts are unchanged. Tokens are 32 random bytes encoded as base64,
+bound to the user's password-reset fields, expire after one hour, and are replaced
+on another request. After hashing, one D1 transaction uses matching account,
+challenge and expiry guards to revoke that user's refresh sessions, change the
+password and clear the code. Invalid/reused codes revoke nothing; a storage
+failure rolls back all three effects so the code remains available for retry.
+Malformed input/invalid codes return 400; internal reset failure returns a generic
+500, not a false post-commit "invalid request body". Legacy API keys remain valid
+for backwards compatibility and existing access JWTs expire normally (one hour).
+Confirmation-mail failure does not undo a committed reset or tell the client
+that its already-consumed code failed.
+
+For emails sent by an older backend, `GET /auth/reset-password?token=...` now
+shows the code with instructions to return to the native app. It is **not a web
+password form**. GET never consumes a token (including mail-scanner visits).
+The page escapes input, has no scripts/third-party assets, forbids framing,
+suppresses referrers, and is non-cacheable/non-indexable. Existing query-string
+links can still be retained by a user's mail provider/browser; new emails omit
+URLs to avoid that exposure. The page does not validate codes; POST does.
+
+Never obtain codes from production logs or paste secrets into issue reports.
+Do not run `examples/test-auth.sh` against production: it creates accounts and
+prints session/API credentials; it is a legacy disposable-environment helper,
+not the CI regression suite.
+
+## Deterministic CI (no cloud accounts/secrets required)
+
+`.github/workflows/backend-tests.yml` runs **all** registered Vitest files,
+including `tests/password-reset.test.ts`, on a public GitHub-hosted Ubuntu runner
+with Node 22 and at most two workers. The reset suite executes real production
+SQL against an in-memory Node SQLite database, adapts `first/run/meta.changes`
+and serialized transactional `batch` to D1, calls the actual Worker routes, uses
+real PBKDF2 and the SES signing code,
+and replaces only the outbound fetch with a test transport. It uses `schema.sql`
+as the fixture; it does not prove migration ordering or live D1 behavior.
+
+The existing lockfile requires `npm ci --legacy-peer-deps` because its unused
+coverage-v8 4 plugin has a Vitest 4 peer while the suite uses Vitest 3. CI does not
+invoke that plugin. No new dependencies are required for this fix.
+
+Named coverage includes ordinary/Apple-only same-account login, data/API key
+preservation, refresh revocation, email instructions, legacy GET safety, invalid/
+wrong-purpose/expired/replaced/reused tokens, concurrent consumption, expiry or
+replacement during hashing, invalid password/token types, request rate limits,
+missing credentials/SES rejection/network failure without secret logs, and
+confirmation delivery failure after a successful reset, malformed JSON bodies,
+and injected session-revocation failure with rollback and explicit retry.
+
+## Required owner/device QA before considering the issue complete
+
+In an authorized **nonproduction** environment with disposable ordinary and
+Apple/private-relay accounts, on both a physical iOS device and macOS:
+
+- Record app/backend version and platform; verify the actual received email has
+  a copyable code, localized screen navigation, and no advertised broken link.
+- Complete reset by copying from Mail to the app (including base64 `+`, `/`, `=`);
+  no console, URL parsing or sign-up should be needed. Confirm password mismatch
+  feedback and successful same-email login. Confirm Apple sign-in still works.
+- Capture non-secret before/after user ID, image count and subscription tier;
+  confirm existing images, subscriptions and device-local data remain unchanged.
+- Confirm expired/invalid/reused/replaced codes are rejected and request another
+  code when needed. Confirm an old email link displays native instructions.
+- Verify SES delivery **and Apple relay forwarding**, not just HTTP acceptance;
+  record delivery/bounce metadata, never codes, passwords or message bodies.
+
+This lane does not deploy, change SES/Apple account settings, send real mail or
+claim native runtime/device verification. Backend unit CI cannot substitute for
+these delivery and physical-device checks.

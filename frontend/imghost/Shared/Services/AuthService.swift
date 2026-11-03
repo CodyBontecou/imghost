@@ -20,6 +20,12 @@ final class AuthService {
         self.session = URLSession(configuration: config)
     }
 
+    // Internal injection seam for isolated callers; the production singleton
+    // continues to use the default configuration and its 30-second timeout.
+    init(session: URLSession) {
+        self.session = session
+    }
+
     private var baseURL: String {
         Config.backendURL
     }

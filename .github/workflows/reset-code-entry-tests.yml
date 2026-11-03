@@ -1,0 +1,444 @@
+name: Native cold reset code entry
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/imghost/**'
+      - '.github/workflows/reset-code-entry-tests.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reset-code-entry-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    runs-on: macos-15
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - platform: iOS
+            app_scheme: imghost
+            ui_scheme: ResetCodeEntry-iOS
+          - platform: macOS
+            app_scheme: imghostMac
+            ui_scheme: ResetCodeEntry-macOS
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      APP_SCHEME: ${{ matrix.app_scheme }}
+      UI_SCHEME: ${{ matrix.ui_scheme }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      EVENT_SHA: ${{ github.sha }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+      WORKFLOW_REF: ${{ github.workflow_ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 8
+          persist-credentials: false
+      - name: Exact source, tool and frozen graph provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RUNNER_TEMP:?Runner temporary directory is unavailable}"
+          export RECEIPTS="$RUNNER_TEMP/reset-entry-receipts"
+          printf 'RECEIPTS=%s\n' "$RECEIPTS" >> "$GITHUB_ENV"
+          mkdir -p "$RECEIPTS"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git show -s --format=%P HEAD)" = 4bae3c05048c6298c08a71c2cd9d55d5b4c26772
+          {
+            printf 'source=%s\nevent=%s\nworkflow_sha=%s\nworkflow_ref=%s\n' "$SOURCE_SHA" "$EVENT_SHA" "$WORKFLOW_SHA" "$WORKFLOW_REF"
+            git show -s --format='commit=%H%ntree=%T%nparents=%P' HEAD
+            printf 'run=%s\nattempt=%s\njob=%s\nplatform=%s\nref=%s\nevent_name=%s\nimage=%s/%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_JOB" "$PLATFORM" "$GITHUB_REF" "$GITHUB_EVENT_NAME" "${ImageOS:-unknown}" "${ImageVersion:-unknown}"
+            sw_vers
+            xcodebuild -version
+            xcrun swift --version
+            xcodebuild -showsdks
+          } | tee "$RECEIPTS/provenance.txt"
+          printf '%s\n' \
+            'd75ed55143bb46a8e565bab3cef08aff5bfe644bd140102d6057660fa31f98db  package.json' \
+            'd8796c212823cc056b44796c92f92876d728b9c55287e353acd5567b1681e6df  package-lock.json' \
+            '843d28b89187fa99a3517caea11dc8ee7d7e84d769414f663a6c47ff0b160d97  backend/img-host/package.json' \
+            '0edda0d1feeae00769ac43bf44835bacf5295dd719be4f9eea94504d25fc4ad0  backend/img-host/package-lock.json' > "$RECEIPTS/frozen.sha256"
+          shasum -a 256 -c "$RECEIPTS/frozen.sha256"
+          git diff --exit-code c5faf15a8b9f2e6de3da425cc9c91dadc95f5ea6 HEAD -- backend/img-host package.json package-lock.json
+      - name: Original target graph and actual UI source registration (not UI execution)
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROJECT=frontend/imghost/imghost.xcodeproj/project.pbxproj
+          git show c5faf15a8b9f2e6de3da425cc9c91dadc95f5ea6:"$PROJECT" > "$RECEIPTS/baseline.pbxproj"
+          plutil -lint "$PROJECT"
+          plutil -convert json -o "$RECEIPTS/current-project.json" "$PROJECT"
+          plutil -convert json -o "$RECEIPTS/baseline-project.json" "$RECEIPTS/baseline.pbxproj"
+          python3 - <<'PY'
+          import copy, json, os, pathlib, re, xml.etree.ElementTree as ET
+          root = pathlib.Path('frontend/imghost')
+          out = pathlib.Path(os.environ['RECEIPTS'])
+          current = json.loads((out/'current-project.json').read_text())['objects']
+          baseline = json.loads((out/'baseline-project.json').read_text())['objects']
+          stripped = copy.deepcopy(current)
+          stripped['A10000A0000']['children'].remove('E7000000004')
+          for item in ['E7000010001','E7000020001','E7000030001','E7000040001']:
+              stripped['A10000E0000']['children'].remove(item)
+          for item in ['E7000010000','E7000020000','E7000030000','E7000040000']:
+              stripped['A1000000000']['targets'].remove(item)
+              del stripped['A1000000000']['attributes']['TargetAttributes'][item]
+          for identifier, body in baseline.items():
+              assert stripped[identifier] == body, ('original object changed', identifier)
+          def files(target, kind):
+              phases = [current[p] for p in current[target]['buildPhases'] if current[p]['isa'] == kind]
+              assert len(phases) == 1
+              return [current[f]['fileRef'] for f in phases[0]['files']]
+          for original, host, entry, ui, scheme in [
+              ('A10000F0000','E7000010000','A1000001000','E7000030000','ResetCodeEntry-iOS'),
+              ('3953672CF2B18CA551B981D2','E7000020000','DF02C598282236C1976A945C','E7000040000','ResetCodeEntry-macOS')]:
+              inherited = [f for f in files(original,'PBXSourcesBuildPhase') if f != entry]
+              assert files(host,'PBXSourcesBuildPhase') == ['E7000000001','E7000000002'] + inherited
+              assert files(host,'PBXResourcesBuildPhase') == files(original,'PBXResourcesBuildPhase')
+              assert files(ui,'PBXSourcesBuildPhase') == ['E7000000003']
+              assert current[host]['dependencies'] == []
+              tree = ET.parse(root/'imghost.xcodeproj/xcshareddata/xcschemes'/f'{scheme}.xcscheme')
+              refs = tree.findall('.//TestableReference')
+              assert len(refs) == 1 and refs[0].get('skipped') == 'NO'
+              assert refs[0].find('BuildableReference').get('BlueprintIdentifier') == ui
+              assert not tree.findall('.//SkippedTests') and not tree.findall('.//SelectedTests')
+          source = (root/'Tests/ResetCodeEntryTests/ResetCodeEntryUITests.swift').read_text()
+          names = re.findall(r'^    func (test\w+)\(\) throws \{', source, re.M)
+          assert len(names) == len(set(names)) == 16
+          (out/'registered-methods.json').write_text(json.dumps(names, indent=2)+'\n')
+          print('SOURCE REGISTRATION ONLY: original objects unchanged; both hosts use actual source references; 16 bodies/platform')
+          print('\n'.join(names))
+          PY
+      - name: Compile complete original app and embedded extension unsigned (no launch)
+        shell: bash
+        working-directory: frontend/imghost
+        run: |
+          set -euo pipefail
+          if [[ "$PLATFORM" == iOS ]]; then DESTINATION='generic/platform=iOS Simulator'; else DESTINATION='platform=macOS'; fi
+          xcodebuild -project imghost.xcodeproj -scheme "$APP_SCHEME" -configuration Debug \
+            -destination "$DESTINATION" -jobs 2 -derivedDataPath "$RUNNER_TEMP/reset-original-build" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee "$RECEIPTS/original-build.log"
+          grep -F '** BUILD SUCCEEDED **' "$RECEIPTS/original-build.log"
+      - name: Run registered genuine native controls in isolated hosts (ad-hoc only)
+        shell: bash
+        working-directory: frontend/imghost
+        run: |
+          set -euo pipefail
+          if [[ "$PLATFORM" == iOS ]]; then
+            DEVICE=$(xcrun simctl list devices available -j | python3 -c 'import sys,json; d=json.load(sys.stdin); a=[v["udid"] for k,vs in d["devices"].items() if "iOS" in k for v in vs if v["name"].startswith("iPhone")]; assert a; print(a[0])')
+            DESTINATION="platform=iOS Simulator,id=$DEVICE"
+          else
+            DESTINATION='platform=macOS'
+          fi
+          # Observational invocation scope only; not process ownership or launch proof.
+          python3 - "${DEVICE:-}" <<'PY'
+          import datetime, json, os, pathlib, re, subprocess, time, uuid
+          platform = os.environ['PLATFORM']
+          device = __import__('sys').argv[1]
+          assert platform in ('iOS', 'macOS')
+          assert (platform == 'iOS' and str(uuid.UUID(device)) == device.lower()) or (platform == 'macOS' and not device)
+          scope = {key: os.environ[key] for key in ('SOURCE_SHA', 'EVENT_SHA', 'WORKFLOW_SHA', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'PLATFORM')}
+          assert all(re.fullmatch(r'[0-9a-f]{40}', scope[key]) for key in ('SOURCE_SHA', 'EVENT_SHA', 'WORKFLOW_SHA'))
+          assert all(scope[key].isdigit() for key in ('GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT'))
+          scope['tree'] = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          scope['selected_device'] = device or None
+          scope['start_epoch'] = time.time()
+          scope['start_utc'] = datetime.datetime.fromtimestamp(scope['start_epoch'], datetime.timezone.utc).isoformat()
+          scope['limitation'] = 'Invocation metadata only; NOT process ownership, environment delivery or launch proof'
+          data = (json.dumps(scope, sort_keys=True) + '\n').encode()
+          assert len(data) <= 4096
+          with (pathlib.Path(os.environ['RECEIPTS'])/'native-run-scope.json').open('xb') as file:
+              file.write(data)
+          print(data.decode(), end='')
+          PY
+          xcodebuild -project imghost.xcodeproj -scheme "$UI_SCHEME" -configuration Debug \
+            -destination "$DESTINATION" -jobs 2 -parallel-testing-enabled NO \
+            -test-timeouts-enabled YES -default-test-execution-time-allowance 120 \
+            -maximum-test-execution-time-allowance 120 -collect-test-diagnostics never \
+            -derivedDataPath "$RUNNER_TEMP/reset-isolated-ui" \
+            -resultBundlePath "$RUNNER_TEMP/reset-isolated-ui.xcresult" \
+            CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= CODE_SIGN_ENTITLEMENTS= \
+            test 2>&1 | tee "$RECEIPTS/native-ui.log"
+          grep -F '** TEST SUCCEEDED **' "$RECEIPTS/native-ui.log"
+          python3 - <<'PY'
+          import json, os, pathlib, re
+          root = pathlib.Path(os.environ['RECEIPTS'])
+          data = (root/'native-ui.log').read_bytes()
+          assert len(data) <= 4*1024*1024, 'native log budget exceeded (no truncation for green)'
+          log = data.decode()
+          expected = json.loads((root/'registered-methods.json').read_text())
+          passed = re.findall(r"^Test Case '[^\n']*[ .](test\w+)(?:\(\)|\])?' passed", log, re.M)
+          assert len(passed) == 16 and len(set(passed)) == 16 and set(passed) == set(expected), passed
+          assert re.search(r'Executed 16 tests, with 0 failures', log), 'missing XCTest footer'
+          assert 'SYNTHETIC_RECEIPT ' in log and 'NATIVE_FIELD_OBSERVATION ' in log
+          assert 'CRLF/tab/clipboard NOT QUALIFIED' in log
+          print('Actual individually named native PASS receipts matched all 16 registered bodies; bounded fixture/native evidence only')
+          PY
+      - name: Bounded readonly isolated-host launch observations (NOT native acceptance)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RECEIPTS:?Missing invocation scope; launch diagnostics UNVERIFIED}"
+          test -d "$RECEIPTS"
+          python3 - <<'PY'
+          import datetime, hashlib, json, math, os, pathlib, plistlib, re, stat, time, uuid
+          started = time.monotonic()
+          deadline = started + 19 # Reserve the final second of the 20s budget for bounded publication.
+          end_epoch = time.time()
+          report = {'acceptance': 'UNQUALIFIED', 'limitations': 'Readonly bounded observations; absence is NOT no crash; no root-cause or durable process-ownership proof', 'outcomes': {}, 'crash': 'unavailable'}
+          counts = {'entries': 0, 'crash_bytes_read': 0}
+          receipts = pathlib.Path(os.environ['RECEIPTS'])
+          flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+          class Budget(Exception): pass
+          class Unverified(Exception): pass
+          def check():
+              if time.monotonic() >= deadline: raise Budget('collector_time_budget')
+          def directory(path):
+              check()
+              path = pathlib.Path(path)
+              if not path.is_absolute() or '..' in path.parts: raise Unverified('directory_scope')
+              fd = os.open('/', flags | os.O_DIRECTORY)
+              try:
+                  for part in path.parts[1:]:
+                      check()
+                      next_fd = os.open(part, flags | os.O_DIRECTORY, dir_fd=fd)
+                      os.close(fd)
+                      fd = next_fd
+                  check()
+                  return fd
+              except BaseException:
+                  os.close(fd)
+                  raise
+          def read_at(folder, name, cap, crash=False):
+              check()
+              before = os.stat(name, dir_fd=folder, follow_symlinks=False)
+              if not stat.S_ISREG(before.st_mode): raise Unverified('nonregular_or_symlink')
+              if before.st_size > cap: raise Unverified('oversized_input')
+              if crash and counts['crash_bytes_read'] + before.st_size > 8*1024*1024: raise Budget('aggregate_read_budget')
+              fd = os.open(name, flags, dir_fd=folder)
+              try:
+                  opened = os.fstat(fd)
+                  if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino, opened.st_size, opened.st_mtime_ns) != (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns): raise Unverified('changed_input')
+                  data = b''
+                  while len(data) < before.st_size:
+                      check()
+                      chunk = os.read(fd, min(4096, before.st_size-len(data)))
+                      if crash: counts['crash_bytes_read'] += len(chunk)
+                      check()
+                      if not chunk: raise Unverified('short_input')
+                      data += chunk
+                      if crash and b'\n' in data:
+                          # Header binds bundle/name before reading any further body chunks.
+                          header = json.loads(data.split(b'\n', 1)[0])
+                          if not isinstance(header, dict) or header.get('bundleID') != bundle or header.get('app_name') != executable: raise Unverified('scope_negative_header')
+                      elif crash and len(data) >= 4096: raise Unverified('unverified_header')
+                  after = os.fstat(fd)
+                  if (after.st_size, after.st_mtime_ns) != (before.st_size, before.st_mtime_ns): raise Unverified('changed_input')
+                  check()
+                  return data
+              finally: os.close(fd)
+          def read_path(path, cap):
+              fd = directory(path.parent)
+              try: return read_at(fd, path.name, cap)
+              finally: os.close(fd)
+          def epoch(value):
+              if not isinstance(value, str): raise Unverified('missing_time')
+              parsed = datetime.datetime.fromisoformat(value)
+              if parsed.tzinfo is None: raise Unverified('unverified_time')
+              return parsed.timestamp()
+          def small(value):
+              if type(value) is int: return value
+              if isinstance(value, str) and len(value) <= 192 and re.fullmatch(r'[A-Za-z0-9_.$+\-:<> ()?,=\[\]{}*&]+', value): return value
+              return 'unavailable_or_nonallowlisted'
+          def compact(body):
+              result = {}
+              for key, fields in [('exception', ('type', 'signal', 'codes')), ('termination', ('namespace', 'code', 'flags', 'indicator'))]:
+                  value = body.get(key)
+                  result[key] = {field: small(value[field]) for field in fields if field in value} if isinstance(value, dict) else 'unavailable'
+              # Only known synthetic-host guard text, never whole ASI/environment/application data.
+              known = ('Isolated reset host requires a synthetic URL and a unique case owner', 'Cannot install isolated transport interceptor', 'Synthetic receipt budget exceeded', 'Synthetic response construction failed')
+              asi = body.get('asi', {})
+              strings = [text for values in asi.values() if isinstance(values, list) for text in values if isinstance(text, str)] if isinstance(asi, dict) else []
+              result['known_host_assertions'] = [text for text in known if any(text in value for value in strings)]
+              index, threads, images = body.get('faultingThread'), body.get('threads'), body.get('usedImages')
+              if type(index) is not int or not isinstance(threads, list) or not 0 <= index < len(threads) or not isinstance(threads[index], dict) or not isinstance(images, list):
+                  result['faulting_frames'] = 'unavailable'
+                  return result
+              frames = threads[index].get('frames')
+              if not isinstance(frames, list):
+                  result['faulting_frames'] = 'unavailable'
+                  return result
+              result['faulting_frames'] = []
+              for frame in frames[:20]:
+                  check()
+                  if not isinstance(frame, dict): continue
+                  item = {key: small(frame[key]) for key in ('symbol', 'symbolLocation', 'imageOffset') if key in frame}
+                  image_index = frame.get('imageIndex')
+                  if type(image_index) is int and 0 <= image_index < len(images) and isinstance(images[image_index], dict):
+                      item['image_name'] = small(images[image_index].get('name'))
+                  result['faulting_frames'].append(item)
+              return result
+          output_folder = None
+          try:
+              output_folder = directory(receipts)
+              scope_data = read_at(output_folder, 'native-run-scope.json', 4096)
+              scope = json.loads(scope_data)
+              if not isinstance(scope, dict): raise Unverified('malformed_scope')
+              for key in ('SOURCE_SHA', 'EVENT_SHA', 'WORKFLOW_SHA', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'PLATFORM'):
+                  if scope.get(key) != os.environ.get(key): raise Unverified('scope_binding_mismatch')
+              lower = scope.get('start_epoch')
+              if type(lower) not in (int, float) or not math.isfinite(lower) or not lower <= end_epoch: raise Unverified('scope_interval')
+              platform = scope['PLATFORM']
+              if platform not in ('iOS', 'macOS'): raise Unverified('platform_scope')
+              device = scope.get('selected_device')
+              if platform == 'iOS' and (not isinstance(device, str) or str(uuid.UUID(device)) != device.lower()): raise Unverified('device_scope')
+              if platform == 'macOS' and device is not None: raise Unverified('device_scope')
+              bundle = 'tech.isolated.synthetic.ResetCodeEntryHost.' + platform
+              executable = 'ResetCodeEntryHost-' + platform
+              report['scope'] = {'source': scope['SOURCE_SHA'], 'event': scope['EVENT_SHA'], 'workflow': scope['WORKFLOW_SHA'], 'tree': scope.get('tree'), 'run': scope['GITHUB_RUN_ID'], 'attempt': scope['GITHUB_RUN_ATTEMPT'], 'platform': platform, 'selected_device': device, 'start_utc': scope['start_utc'], 'end_utc': datetime.datetime.fromtimestamp(end_epoch, datetime.timezone.utc).isoformat()}
+              relative = 'Debug-iphonesimulator/ResetCodeEntryHost-iOS.app/Info.plist' if platform == 'iOS' else 'Debug/ResetCodeEntryHost-macOS.app/Contents/Info.plist'
+              try:
+                  info = plistlib.loads(read_path(pathlib.Path(os.environ['RUNNER_TEMP'])/'reset-isolated-ui/Build/Products'/relative, 65536))
+                  check()
+                  if not isinstance(info, dict): raise Unverified('malformed_plist')
+                  report['plist'] = {'status': 'observed', 'expected_bundle': bundle, 'bundle_present': 'CFBundleIdentifier' in info, 'bundle_equal': info.get('CFBundleIdentifier') == bundle, 'expected_executable': executable, 'executable_present': 'CFBundleExecutable' in info, 'executable_equal': info.get('CFBundleExecutable') == executable, 'backend_present': 'BackendURL' in info, 'backend_is_string': isinstance(info.get('BackendURL'), str), 'backend_synthetic_equal': info.get('BackendURL') == 'https://reset-code-entry.invalid'}
+              except (OSError, ValueError, plistlib.InvalidFileException, Unverified) as error:
+                  report['plist'] = {'status': str(error) if isinstance(error, Unverified) else 'absent_unavailable_or_malformed'}
+              home = pathlib.Path.home()
+              allowed = [('host', home/'Library/Logs/DiagnosticReports')]
+              if platform == 'iOS': allowed.insert(0, ('selected_simulator', home/'Library/Developer/CoreSimulator/Devices'/device/'data/Library/Logs/CrashReporter'))
+              selected = None
+              for label, path in allowed:
+                  check()
+                  if counts['entries'] >= 128: raise Budget('entry_scan_budget')
+                  try: fd = directory(path)
+                  except (OSError, Unverified):
+                      report['outcomes'][label] = 'directory_absent_unavailable_or_symlink'
+                      continue
+                  try:
+                      names = []
+                      with os.scandir(fd) as entries:
+                          while counts['entries'] < 128:
+                              check()
+                              try: entry = next(entries)
+                              except StopIteration: break
+                              counts['entries'] += 1
+                              # Filename is a bounded prefilter ONLY, never ownership authority.
+                              if re.fullmatch(re.escape(executable) + r'-[A-Za-z0-9._-]{1,96}\.ips', entry.name): names.append(entry.name)
+                      if counts['entries'] >= 128: raise Budget('entry_scan_budget')
+                      for name in sorted(names):
+                          check()
+                          try:
+                              raw = read_at(fd, name, 1024*1024, crash=True)
+                              header_raw, body_raw = raw.split(b'\n', 1)
+                              header, body = json.loads(header_raw), json.loads(body_raw)
+                              check()
+                              if not isinstance(body, dict) or not isinstance(body.get('bundleInfo'), dict): raise Unverified('unknown_schema')
+                              if body['bundleInfo'].get('CFBundleIdentifier') != bundle or body.get('procName') != executable: raise Unverified('scope_negative_identity')
+                              proc_path = body.get('procPath')
+                              if not isinstance(proc_path, str): raise Unverified('missing_process_path')
+                              parts = pathlib.PurePosixPath(proc_path).parts
+                              suffix = (executable+'.app', executable) if platform == 'iOS' else (executable+'.app', 'Contents', 'MacOS', executable)
+                              if not pathlib.PurePosixPath(proc_path).is_absolute() or '..' in parts or tuple(parts[-len(suffix):]) != suffix: raise Unverified('scope_negative_process_path')
+                              if platform == 'iOS' and not any(parts[i] == 'Devices' and parts[i+1].lower() == device.lower() for i in range(len(parts)-1)): raise Unverified('scope_negative_selected_uuid')
+                              stamp, header_stamp = epoch(body.get('captureTime')), epoch(header.get('timestamp'))
+                              if not lower <= stamp <= end_epoch or not lower <= header_stamp <= end_epoch: raise Unverified('stale_or_outside_interval')
+                              digest = hashlib.sha256(raw).hexdigest()
+                              selected = {'status': 'verified_candidate_NOT_rootcause', 'directory': label, 'input_bytes': len(raw), 'input_sha256': digest, 'capture_utc': datetime.datetime.fromtimestamp(stamp, datetime.timezone.utc).isoformat(), 'observations': compact(body)}
+                              break # First fully verified candidate; no further content reads/compaction.
+                          except (OSError, ValueError, TypeError, Unverified) as error:
+                              status = str(error) if isinstance(error, Unverified) else 'malformed_or_unavailable'
+                              report['outcomes'][status] = report['outcomes'].get(status, 0) + 1
+                  finally: os.close(fd)
+                  if selected is not None: break
+              if selected is not None:
+                  report['crash'] = selected
+              else: report['crash'] = 'no_verified_candidate_in_bounded_scan_NOT_no_crash'
+              check()
+          except Budget as error:
+              report['crash'] = 'UNVERIFIED_budget'
+              report['budget_status'] = str(error)
+          except (OSError, ValueError, TypeError, KeyError, Unverified) as error:
+              report['crash'] = 'UNVERIFIED_scope_or_input'
+              report['scope_status'] = str(error) if isinstance(error, Unverified) else 'absent_unavailable_or_malformed'
+          report['counts'] = counts
+          report['elapsed_seconds'] = round(time.monotonic()-started, 6)
+          if time.monotonic()-started >= 20:
+              report = {'acceptance': 'UNQUALIFIED', 'status': 'UNVERIFIED_20s_budget_exceeded'}
+          data = (json.dumps(report, sort_keys=True) + '\n').encode()
+          scope_size = 0
+          try:
+              if output_folder is None: raise Unverified('unavailable_receipt_directory')
+              metadata = os.stat('native-run-scope.json', dir_fd=output_folder, follow_symlinks=False)
+              if not stat.S_ISREG(metadata.st_mode): raise Unverified('unsafe_scope_receipt')
+              scope_size = metadata.st_size
+          except FileNotFoundError: pass
+          except (OSError, Unverified):
+              data = b'{"acceptance":"UNQUALIFIED","status":"UNVERIFIED_unsafe_scope_receipt"}\n'
+          if len(data) + scope_size > 65536:
+              data = b'{"acceptance":"UNQUALIFIED","status":"UNVERIFIED_output_budget"}\n'
+          assert len(data) + scope_size <= 65536
+          if output_folder is None:
+              print(data.decode(), end='')
+              raise SystemExit('UNVERIFIED unavailable receipt directory')
+          try:
+              fd = os.open('host-launch-diagnostics.json', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600, dir_fd=output_folder)
+              with os.fdopen(fd, 'wb') as file: file.write(data)
+          finally: os.close(output_folder)
+          print(data.decode(), end='')
+          PY
+      - name: Recheck frozen manifests after builds/tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RECEIPTS:?Receipts path was not established}"
+          test -f "$RECEIPTS/frozen.sha256"
+          shasum -a 256 -c "$RECEIPTS/frozen.sha256"
+      - name: Prepare bounded raw receipts only (no screenshots/video/xcresult upload)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RECEIPTS:?Receipts path was not established}"
+          test -d "$RECEIPTS"
+          mkdir -p "$RUNNER_TEMP/reset-entry-upload"
+          # Strict combined scope+diagnostics budget, independent of raw-test budgets.
+          DIAGNOSTIC_BYTES=0
+          for file in native-run-scope.json host-launch-diagnostics.json; do
+            if [[ -L "$RECEIPTS/$file" || ( -e "$RECEIPTS/$file" && ! -f "$RECEIPTS/$file" ) ]]; then
+              printf 'UNVERIFIED unsafe diagnostic receipt: %s\n' "$file"
+              exit 1
+            fi
+            if [[ -f "$RECEIPTS/$file" ]]; then
+              SIZE=$(wc -c < "$RECEIPTS/$file")
+              DIAGNOSTIC_BYTES=$((DIAGNOSTIC_BYTES + SIZE))
+            else
+              printf 'UNVERIFIED missing or unsafe diagnostic receipt: %s\n' "$file"
+            fi
+          done
+          test "$DIAGNOSTIC_BYTES" -le 65536
+          for file in provenance.txt frozen.sha256 registered-methods.json original-build.log native-ui.log native-run-scope.json host-launch-diagnostics.json; do
+            if [[ -f "$RECEIPTS/$file" ]]; then
+              SIZE=$(wc -c < "$RECEIPTS/$file")
+              test "$SIZE" -le 4194304
+              cp "$RECEIPTS/$file" "$RUNNER_TEMP/reset-entry-upload/$file"
+            fi
+          done
+          shasum -a 256 "$RUNNER_TEMP/reset-entry-upload/"* > "$RUNNER_TEMP/reset-entry-upload/receipt-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reset-code-entry-${{ matrix.platform }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/reset-entry-upload/
+          retention-days: 1
+          compression-level: 9
+          if-no-files-found: error

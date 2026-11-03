@@ -3,6 +3,11 @@
    Localizable.strings (Italian)
    ========================================================= */
 
+// MARK: - Existing reset code entry
+"auth.forgot_password.button.existing_code" = "Ho già un codice di reimpostazione";
+"auth.forgot_password.request_accepted" = "Se esiste un account con questa email, verranno inviate istruzioni per reimpostare la password.";
+"auth.reset_password.button.back" = "Indietro";
+
 // MARK: - Common Buttons
 "button.ok" = "OK";
 "button.cancel" = "Annulla";
